@@ -1,3 +1,6 @@
+import { result } from "ts-utils";
+import { findDisputsByUserId } from "./db.js";
+
 const Server = require("./server.js");
 const builder = require('botbuilder');
 const db = require("./db.js");
@@ -739,7 +742,7 @@ bot.dialog('SecondMenu', [
             user_id: session.message.user.id
         }, function (err, doc) {
             if (doc.length != 0) {
-                builder.Prompts.choice(session, "## Главное меню", '⚡️ Быстрая покупка|💳 Кошелёк|💹 Криптобиржа|📞 Оплатить телефон|🔥 Получить бонус', {
+                builder.Prompts.choice(session, "## Главное меню", '⚡️ Быстрая покупка|💳 Кошелёк|💹 Криптобиржа|📞 Оплатить телефон|🔥 Получить бонус|Ставки', {
                     listStyle: builder.ListStyle.button
                 });
             } else {
@@ -769,6 +772,9 @@ bot.dialog('SecondMenu', [
                 break;
             case 4:
                 session.beginDialog('referal');
+                break;
+            case 5:
+                session.beginDialog('rates');
                 break;
             default:
                 session.endDialog();
@@ -4521,3 +4527,111 @@ bot.dialog('confirmFastSwap', [
 ]).triggerAction({
     matches: /^rOfd2r9dHww24f*/
 });
+
+bot.dialog('rates', [
+    (session) => {
+        builder.Prompts.choice(session, 'Выберите на что ставить', 'ЧМ по Футболу|Ещё что-то|И ещё что-то|И ещё немного|Назад', {
+            listStyle: builder.ListStyle.button
+        });
+    },
+    (session, results, next) => {
+        session.userData.disputType = results.response.entity;
+        switch (results.response.index) {
+            case 0: 
+                next();
+                break;
+            case 1: 
+                session.beginDialog('SecondMenu');
+                break;
+            case 2: 
+                session.beginDialog('SecondMenu');
+            case 3: 
+                session.beginDialog('SecondMenu');
+                break;
+            case 4: 
+                session.beginDialog('SecondMenu');
+                break;
+        }
+    },
+    (session, results) => {
+        builder.Prompts.choice(session, 'Выберите', 'Мои споры|Создать спор|Принять участие в споре|Назад', {
+            listStyle: builder.ListStyle.button
+        });
+    },
+    (session, results, next) => {
+        switch (results.response.index) {
+            case 0: 
+                session.beginDialog('myDisputs');
+                break;
+            case 0: 
+                session.beginDialog('createDisput');
+                break;
+            case 1: 
+                session.beginDialog('takePlaceInDisput');
+                break;
+            case 2: 
+                session.beginDialog('rates');
+                break;
+        }
+    }
+]);
+
+bot.dialog('myDisputs', [
+    (session) => {
+        db.findDisputsByUserId(session.message.user.id, (disputsArr) => {
+            for (let i in disputsArr) {
+                let card = Cards.disputCard(session, disputsArr[i].num, tdisputsArr[i].whatType, disputtsArr[i].match, disputsArr[i].score)
+                let msg = new builder.Message(session).addAttachment(card);
+                session.send(msg);
+
+                if (i == (disputsArr.length-1)) {
+                    let card = Cards.cancelButton(session);
+                    let msg = new builder.Message(session).addAttachment(card);
+                    session.send(msg);
+                }
+            }
+        });
+    }
+]);
+
+const teams = {
+    'Германия-Россия': 'g-r',
+    'Россия-Франция': 'r-f',
+    'Англия-США': 'a-u',
+    'Италия-Швеция': 'i-s'
+}
+
+bot.dialog('createDisput', [
+    (session) => {
+        builder.Prompts.choice(session, 'Выберите матч', teams, {
+            listStyle: builder.ListStyle.button
+        });
+    },
+    (session, results, next) => {
+        session.userData.match = results.response.entity;
+        builder.Prompts.text(session, 'Введите предполагаемый счёт. \n\n\0\n\nПример: 0-0')
+    },
+    (session, results) => {
+        session.userData.score = results.response;
+        session.send('Вы создали спор.');
+        db.createDisput(session.message.user.id, session.userData.disputType, session.userData.match, session.userData.score);
+    }
+]);
+
+bot.dialog('takePlaceInDisput', [
+    (session) => {
+        db.findUnconfirmedDisputs((disputsArr) => {
+            for (let i in disputsArr) {
+                let card = Cards.disputCard(session, disputsArr[i].num, tdisputsArr[i].whatType, disputtsArr[i].match, disputsArr[i].score)
+                let msg = new builder.Message(session).addAttachment(card);
+                session.send(msg);
+
+                if (i == (disputsArr.length-1)) {
+                    let card = Cards.cancelButton(session);
+                    let msg = new builder.Message(session).addAttachment(card);
+                    session.send(msg);
+                }
+            }
+        });
+    }
+]);

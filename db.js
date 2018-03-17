@@ -15,6 +15,7 @@ const Phone = require('./schemes/phoneScheme.js');
 const Out = require('./schemes/outScheme.js');
 const BadTransfer = require('./schemes/badTransferScheme.js');
 const Exchange = require('./schemes/exchangeScheme.js');
+const Disput = require('./schemes/disputSchema.js');
 const Waves = require("./waves.js");
 
 
@@ -471,172 +472,42 @@ module.exports.endFastSwap = (_type,_num, callback) => {
     callback(true);
   })
 }
-// Быстрый вввод/вывод КОНЕЦ
 
-// FastSwap.find({}, (err,doc) => {
-//   console.log(doc)
-// } )
-
-// Exchange.find({}, (err,res) => {
-//   console.log(res);
-// })
-
-// Link.remove({user_id: '218510420'}, function (err,doc) {console.log(doc)})
-// Link.remove({user_id: '308328003'}, function (err,doc) {console.log(doc)})
-// Link.remove({user_id: '302115726'}, function (err,doc) {console.log(doc)})
-
-
-// Referal.find({}, (err,doc) => {
-//   var d = 0;
-//   var c = 0;
-//   var t = 0;
-//   for (i in doc) {
-//     if (doc[i].lastReferal1 != 'undefined') {
-//       d = d + 1;
-//     }
-//     if (doc[i].lastReferal2 != 'undefined' && doc[i].lastReferal2 != 'no') {
-      
-//       c = c + 1;
-//     }
-//     if (doc[i].lastReferal3 != 'undefined' && doc[i].lastReferal3 != 'no') {
-//       t = t + 1;
-//     }
-//   }
-//   console.log('Рефералов первого уровня: '+d+' человек');
-//   console.log('Рефералов второго уровня: '+c+' человек');
-//   console.log('Рефералов третьего уровня: '+t+' человек\n');
-// })
-// Place.distinct('user_id', (err, doc) => {
-//   console.log('Всего людей, перешедших по ссылкам: '+ (doc.length)+ ' человек\n')
-// })
-
-// Place.find({place: 'MarketOverview_12800_5000'}, (err, doc) => {
-//   console.log('Всего кликов по MarketOverview_12800_5000: '+ (doc.length)+ ' \n')
-// })
-
-// Place.find({place: 'true_crypto_signals_2700_2500'}, (err, doc) => {
-//   console.log('Всего кликов по true_crypto_signals_2700_2500: '+ (doc.length)+ ' \n')
-// })
-
-// Place.find({place: 'cryptomoney_4900_4000'}, (err, doc) => {
-//   console.log('Всего кликов по cryptomoney_4900_4000: '+ (doc.length)+ ' \n')
-// })
-  
-
-// Place.find({place: 'cryptolamer_834_1000'}, (err, doc) => {
-//   console.log('Всего кликов по cryptolamer_834_1000: '+ (doc.length)+ ' \n')
-// })
-
-
-// Place.find({place: 'cryptocurrency_1500_399'}, (err, doc) => {
-//   console.log('Всего пользователей от cryptocurrency_1500_399: '+ (doc.length)+ ' \n')
-// })
-
-// Link.find({}, (err,doc) => {console.log('По факту пользователей в боте: '+doc.length+' человек\n')})
-// Referal.find({refCount1: {$gte: 147}}, (err,doc) => {
+module.exports.createDisput = (_userid, _whatType, _match, _score) => {
+  Disput.find({}, (err,doc) => {
+    if(doc.length != 0) {
+      var _num = Number(doc[doc.length-1].num)+1;
+      Disput.create({user_id1: _userid, num: Number(_num), whatType: _whatType, match: _match, score: _score}, (err,res) => {
     
-//     console.log(doc);
-// })
-// Link.find({name: 'vasilill'}, (err,res) => {
-//   console.log(res);
-// })
+      });
+    } else {
+      Disput.create({user_id1: _userid, num: 1, whatType: _whatType, match: _match, score: _score}, (err,res) => {
+    
+      });
+    }
+  });
+}
 
-// RefAddUsers.find({date: {$gte: 1519753383}}, {ref_user_id: 1}, (res,doc) => {
-//   var obj = [];
-//     for (let in doc) {
-//       var p = 0;
-//       for (let i in obj) {
-//         if (obj[i] == )
-//       }
-//     }
-// })
+module.exports.findDisputsByUserId = (_userid, callback) => {
+  Disput.find({user_id1: _userid}, (err,res) => {
+    callback(res);
+  });
+}
 
-// Link.find({},{address: 1}, (err,doc) => {
+module.exports.acceptDisput = (_num, _userid) => {
+  Disput.update({num: Number(_num)}, {user_id2: _userid}, (err,res) => {
+    
+  });
+}
 
-//     Waves.checkWavesBalance(doc[i].address, )
-// })
-
-// RefAddUsers.find({},{},{sort: {date: -1}}, (err,doc) => {
-//   console.log(doc)
-// }).limit(40)
-
-// Exchange.find({}, (err,doc) => {
-//   console.log(doc)
-// })
-
-// Referal.find({refCount1: {$gte: 33}}, (err,doc) => {
-//   console.log(doc)
-//   for (let i in doc) {
-//     console.log(doc[i].user_id + ': '+doc[i].refCount1)
-//   }
-  // var names = [];
-  // for (let i in doc) {
-  //   Link.find({user_id: doc[i].user_id}, (err,res) => {
-  //     names.push(res[0].name);
-  //     if (i == 19) {
-  //         console.log(names)
-  //     }
-  //   });
-  // }
-  
-  // 309917277: 394: albertfinn
-  // 210179264: 334: shokis
-  // 347025571: 299: OIV1980
-  // 264859933: 107: BIT444
-  // 424996861: 136: Sasho4ek
-  // 418289750: 538: kolotibit
-  // 365529802: 36: dalno88
-  // 504006047: 49: witwl
-  // 452299020: 81: tanii4ka
-  // 75168775: 74: Mafia_uz
-  // 502250171: 33: Leo_163
-  // 353264408: 75: DENARO_IO_SUPPORTER
-  // 510152192: 36: alexdll
-  // 294116027: 108: tamcik
-  // 321848959: 42: strannik29
-  // 284384203: 36: Dmitr161
-  // 462036479: 35: IGNATrus161
-  // 522045932: 45: Natali_Vas
-  // 397963003: 103: tonymoney
-  // 525729616: 33: Legioner213
-  // 482897587: 123: fazadis
-  // console.log(doc.length);
-  // var g = [];1
-  // console.log(doc)
-  // for (var i in doc) {
-   
-  //   g.push(doc[i].user_id);
-  //   if (i == doc.length-1) {
-        // Place.find({user_id: '309917277'}, (err, res) => {console.log(res)})
-  //   }
-  // }
-  // console.log(g);
-// })
-
-// Out.find({}, (err,doc) => {console.log('Количество выводов на другие блокчейны: '+doc.length+'\n')});
-
-// Transaction.find({}, (err,doc) => {console.log('Количество переводов: '+doc.length+'\n')});
-
-// Phone.find({}, (err,doc) => {console.log('Количество пополнений телефона: '+doc.length+'\n')});
-// Phone.find({number: '98936171125'}, (err,doc) => {console.log(doc)});
-
-// Не раскоменчивать
-// Link.find({}, (err, doc)=> {
-//   for (le i in doc) {
-//     setTimeout(() => {
-//      nt.sendNot(doc[i].user_id, '', '🔥 Теперь вы можете купить Bitcoin, Ethereum или Waves за РУБЛИ в главном меню!')
-// }, 2000)
-//   }
-// })
-
-// Exchange.find({}, (err,doc) => {
-//   console.log(doc)
-// })
-
-// FastSwap.find({type: 0}, (err,res) => {console.log(res)})
-
-// Referal.find({user_id: '302115726'}, (err,res) => {
-//   console.log(res)
-// })
-
-// FastSwap.find({sumRub: 100}, (err,doc) => {console.log(doc)})
+module.exports.findUnconfirmedDisputs = (callback) => {
+  Disput.find({}, (err,res) => {
+      var disputsObj = [];
+      for (let i in res) {
+        if (res[i].user_id2 == '') {
+          disputsObj.push(res[i]);
+        }
+      }
+      callback(disputsObj);
+  });
+}

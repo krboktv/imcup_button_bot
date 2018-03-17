@@ -268,3 +268,22 @@ module.exports.confirmSendFunds = (session) => {
         builder.CardAction.imBack(session, 'отмена', 'Отменить заявку')
     ])
 }
+
+
+module.exports.disputCard = (session, _num, type, _match, _score) => {
+    var disput = 'Спор номер '+_num+': \n\n\0\n\n'+type+'\n\n\0\n\nМатч: '+_match+'\n\n\0\n\nСчёт: '+_score
+    return new builder.HeroCard(session)
+    .text(disput)
+    .buttons([
+        builder.CardAction.imBack(session, String('takePlaceInDisput'+_num), 'Принять участие в споре'),
+    ])
+}
+
+module.exports.disputCard1 = (session, _num, type, _match, _score) => {
+    var disput = 'Спор номер '+_num+': \n\n\0\n\n'+type+'\n\n\0\n\nМатч: '+_match+'\n\n\0\n\nСчёт: '+_score
+    return new builder.HeroCard(session)
+    .text(disput)
+    .buttons([
+        builder.CardAction.imBack(session, String('deleteDisput'+_num), 'Удалить'),
+    ])
+}
