@@ -1,7 +1,7 @@
 // Setup Restify Server
 var restify = require('restify');
 var builder = require('botbuilder');
-const LuisModelUrl = "https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/d896d777-c71e-4daa-b4fa-c72eb4ab6e11?subscription-key=c387a1314b264fc7a6946958617eeb52&verbose=true&timezoneOffset=180&q=";
+const LuisModelUrl = "https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/bf1028ad-4afd-4a6d-9e3a-565d49111da4?subscription-key=c387a1314b264fc7a6946958617eeb52&verbose=true&timezoneOffset=180&q=";
 
 var recognizer = new builder.LuisRecognizer(LuisModelUrl);
 var server = restify.createServer();
