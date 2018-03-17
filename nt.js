@@ -29,10 +29,8 @@ function sendNot(session, bot, _userid, _userName, _text, isButton, card) {
                 id: _userid,
             },
             bot: {
-                id: 'button_wallet_bot',
-                name: 'button_bot'
-                // id: 'brostobot',
-                // name: 'Prvt'
+                id: 'imcup_button_bot',
+                name: 'imcup_button_bot'
             },
             serviceUrl: 'https://telegram.botframework.com'
         };

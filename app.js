@@ -739,8 +739,6 @@ bot.dialog('SecondMenu', [
             user_id: session.message.user.id
         }, function (err, doc) {
             if (doc.length != 0) {
-                let msg = "➡️ <b>Официальный канал</b> криптокошелька в твоём телеграмме!\n<a href='https://t.me/joinchat/AAAAAES9pAVNX673ARRUNQ'>>Присоединиться</a>\n\n➡️ <b>Вступай</b> в наш чат, где вместе мы делаем сервис лучше!\n<a href='https://t.me/joinchat/EmC2Qw8D4BbSVx7XiLW9jA'>>Присоединиться</a>";
-                nt.sendNot(session, bot, session.message.user.id, session.message.user.name, msg);
                 builder.Prompts.choice(session, "## Главное меню", '⚡️ Быстрая покупка|💳 Кошелёк|💹 Криптобиржа|📞 Оплатить телефон|🔥 Получить бонус', {
                     listStyle: builder.ListStyle.button
                 });
