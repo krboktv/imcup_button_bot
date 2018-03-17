@@ -20,7 +20,7 @@ const Waves = require("./waves.js");
 
 mongoose.Promise = global.Promise;
 
-var uri = 'mongodb:// 52.174.19.192:27017/db';
+var uri = 'mongodb://52.174.19.192:27017/db';
 
 const options = {
   autoIndex: false,
@@ -30,7 +30,7 @@ const options = {
   // If not connected, return errors immediately rather than waiting for reconnect
   bufferMaxEntries: 0
 };
-// const db = mongoose.connect(uri, options).then(console.log('Mongo DB works fine'));
+const db = mongoose.connect(uri, options).then(console.log('Mongo DB works fine'));
 
 // Swap.remove({}, function(err, row) {
 //   if (err) {
