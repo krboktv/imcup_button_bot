@@ -20,11 +20,7 @@ const Waves = require("./waves.js");
 
 mongoose.Promise = global.Promise;
 
-const user = 'admin';
-const password = 'kiRbejmcSpiliVili228';
-const uri = 'mongodb://'+user+':'+password+'@40.68.244.86:27017/db'; // Мейн нет ПОМЕНЯТЬ
-
-// var uri = 'mongodb://52.232.68.160:27017/db';
+var uri = 'mongodb:// 52.174.19.192:27017/db';
 
 const options = {
   autoIndex: false,
