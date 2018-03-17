@@ -372,7 +372,9 @@ var bot = new builder.UniversalBot(Server.connector, [
     function (session) {
         session.beginDialog('start');
     }
-]).set('storage', Server.memory.inMemoryStorage); // Register in memory storage     
+]).set('storage', Server.memory.inMemoryStorage); // Register in memory storage   
+
+bot.recognizer(Server.recognizer);
 
 bot.dialog('start', [
     function (session, args, next) {
@@ -4521,3 +4523,19 @@ bot.dialog('confirmFastSwap', [
 ]).triggerAction({
     matches: /^rOfd2r9dHww24f*/
 });
+
+
+
+var intents = new builder.IntentDialog({
+    recognizers: [Server.recognizer]
+})
+
+.matches('wallets', (session) => {
+    // session.send('You reached Eat intent, you said \'%s\'.', session.message.text);
+    session.beginDialog('wallet');
+})
+.onDefault((session) => {
+    // session.send('Sorry, I did not understand \'%s\'.', session.message.text);
+});
+
+bot.beginDialogAction('wallet', 'wallets');

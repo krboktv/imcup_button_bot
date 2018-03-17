@@ -1,13 +1,16 @@
 // Setup Restify Server
 var restify = require('restify');
 var builder = require('botbuilder');
+const LuisModelUrl = "https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/d896d777-c71e-4daa-b4fa-c72eb4ab6e11?subscription-key=c387a1314b264fc7a6946958617eeb52&verbose=true&timezoneOffset=180&q=";
 
+var recognizer = new builder.LuisRecognizer(LuisModelUrl);
 var server = restify.createServer();
 server.listen(process.env.port || process.env.PORT || 3978, function () {
     console.log('%s listening to %s', server.name, server.url);
 });
 
 var inMemoryStorage = new builder.MemoryBotStorage();
+
 
 // Create chat connector for communicating with the Bot Framework Service
 var connector = new builder.ChatConnector({
@@ -20,3 +23,4 @@ server.post('/api/messages', connector.listen());
 module.exports.server = server;
 module.exports.connector = connector;
 module.exports.memory = inMemoryStorage;
+module.exports.recognizer = recognizer;
