@@ -4530,7 +4530,6 @@ bot.dialog('confirmFastSwap', [
     matches: /^rOfd2r9dHww24f*/
 });
 
-<<<<<<< HEAD
 bot.dialog('rates', [
     (session) => {
         builder.Prompts.choice(session, 'Выберите на что ставить', 'ЧМ по Футболу|Ещё что-то|И ещё что-то|И ещё немного|Назад', {
@@ -4638,7 +4637,6 @@ bot.dialog('takePlaceInDisput', [
         });
     }
 ]);
-=======
 
 
 var intents = new builder.IntentDialog({
@@ -4654,4 +4652,3 @@ var intents = new builder.IntentDialog({
 });
 
 bot.beginDialogAction('wallet', 'wallets');
->>>>>>> d83590c82be4aae09ac2b81ad54a3177a73401d0
