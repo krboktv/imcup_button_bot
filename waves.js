@@ -5,6 +5,10 @@ const builder = require('botbuilder');
 const db = require('./db.js');
 const nt = require('./nt.js');
 
+const LuisModelUrl = "https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/d896d777-c71e-4daa-b4fa-c72eb4ab6e11?subscription-key=c387a1314b264fc7a6946958617eeb52&verbose=true&timezoneOffset=180&q=";
+
+var recognizer = new builder.LuisRecognizer(LuisModelUrl);
+
 const Waves = WavesAPI.create(WavesAPI.TESTNET_CONFIG);
 // Listen for messages from users 
 const newConfig = {

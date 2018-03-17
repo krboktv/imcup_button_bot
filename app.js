@@ -375,7 +375,9 @@ var bot = new builder.UniversalBot(Server.connector, [
     function (session) {
         session.beginDialog('start');
     }
-]).set('storage', Server.memory.inMemoryStorage); // Register in memory storage     
+]).set('storage', Server.memory.inMemoryStorage); // Register in memory storage   
+
+bot.recognizer(Server.recognizer);
 
 bot.dialog('start', [
     function (session, args, next) {
@@ -4528,6 +4530,7 @@ bot.dialog('confirmFastSwap', [
     matches: /^rOfd2r9dHww24f*/
 });
 
+<<<<<<< HEAD
 bot.dialog('rates', [
     (session) => {
         builder.Prompts.choice(session, 'Выберите на что ставить', 'ЧМ по Футболу|Ещё что-то|И ещё что-то|И ещё немного|Назад', {
@@ -4635,3 +4638,20 @@ bot.dialog('takePlaceInDisput', [
         });
     }
 ]);
+=======
+
+
+var intents = new builder.IntentDialog({
+    recognizers: [Server.recognizer]
+})
+
+.matches('wallets', (session) => {
+    // session.send('You reached Eat intent, you said \'%s\'.', session.message.text);
+    session.beginDialog('wallet');
+})
+.onDefault((session) => {
+    // session.send('Sorry, I did not understand \'%s\'.', session.message.text);
+});
+
+bot.beginDialogAction('wallet', 'wallets');
+>>>>>>> d83590c82be4aae09ac2b81ad54a3177a73401d0
