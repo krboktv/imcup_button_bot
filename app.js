@@ -4619,7 +4619,7 @@ bot.dialog('takePlaceInDisput', [
     (session) => {
         db.findUnconfirmedDisputs((disputsArr) => {
             if (disputsArr.length == 0) {
-                session.send('Активных споров ещё не создано')
+                session.send('Активных споров не обнаружено')
                 session.beginDialog('rates');
                 return;
             }
