@@ -4565,13 +4565,13 @@ bot.dialog('rates', [
             case 0: 
                 session.beginDialog('myDisputs');
                 break;
-            case 0: 
+            case 1: 
                 session.beginDialog('createDisput');
                 break;
-            case 1: 
+            case 2: 
                 session.beginDialog('takePlaceInDisput');
                 break;
-            case 2: 
+            case 3: 
                 session.beginDialog('rates');
                 break;
         }
