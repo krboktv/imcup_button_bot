@@ -4670,7 +4670,7 @@ bot.dialog('acceptDisput', [
                 session.beginDialog('rates');
             } else {
                 session.send('Нельзя принять свою ставку. Попробуйте принять другую.');
-                session.beginDialog(takePlaceInDisput);
+                session.beginDialog('takePlaceInDisput');
             }
         });
     }
