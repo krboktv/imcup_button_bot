@@ -4582,10 +4582,11 @@ bot.dialog('myDisputs', [
     (session) => {
         db.findDisputsByUserId(session.message.user.id, (disputsArr) => {
             for (let i in disputsArr) {
+                    var card;
                 if (disputsArr[i].user_id2 != '') {
-                    let card = Cards.disputCard1(session, disputsArr[i].num, disputsArr[i].whatType, disputsArr[i].match, disputsArr[i].score, 'Нет');
+                    card = Cards.disputCard1(session, disputsArr[i].num, disputsArr[i].whatType, disputsArr[i].match, disputsArr[i].score, 'Нет');
                 } else {
-                    let card = Cards.disputCard1(session, disputsArr[i].num, disputsArr[i].whatType, disputsArr[i].match, disputsArr[i].score, 'Да');
+                    card = Cards.disputCard1(session, disputsArr[i].num, disputsArr[i].whatType, disputsArr[i].match, disputsArr[i].score, 'Да');
                 }
                 let msg = new builder.Message(session).addAttachment(card);
                 session.send(msg);
