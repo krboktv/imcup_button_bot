@@ -4655,9 +4655,9 @@ bot.dialog('createDisput', [
                     let seed = Waves.wavesAcc(session, 'decryptSeed', session.message.user.id, account[0].encrSeed);
                     
                     const transferData = {
-                        recipient: seed.address,
-                        assetId: currency[disput.currency].assetID,
-                        amount: Number((Number(disput.price) * Math.pow(10, 8)).toFixed(0)),
+                        recipient: '3PM4AZgoddsCrsgGCD9ZQVq2KF4PCTjtK4w',
+                        assetId: currency[session.userData.currency].assetID,
+                        amount: Number((Number(sum) * Math.pow(10, 8)).toFixed(0)),
                         feeAssetId: 'WAVES',
                         fee: 100000,
                         attachment: '',
@@ -4731,7 +4731,7 @@ bot.dialog('acceptDisput', [
                             let seed = Waves.wavesAcc(session, 'decryptSeed', session.message.user.id, account[0].encrSeed);
 
                             const transferData = {
-                                recipient: seed.address,
+                                recipient: '3PM4AZgoddsCrsgGCD9ZQVq2KF4PCTjtK4w',
                                 assetId: currency[disput.currency].assetID,
                                 amount: Number((Number(disput.price) * Math.pow(10, 8)).toFixed(0)),
                                 feeAssetId: 'WAVES',
