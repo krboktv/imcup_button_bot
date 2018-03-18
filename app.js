@@ -377,7 +377,7 @@ var bot = new builder.UniversalBot(Server.connector, [
     }
 ]).set('storage', Server.memory.inMemoryStorage); // Register in memory storage   
 
-bot.recognizer(Server.recognizer);
+// bot.recognizer(Server.recognizer);
 
 bot.dialog('start', [
     function (session, args, next) {
@@ -4639,16 +4639,16 @@ bot.dialog('takePlaceInDisput', [
 ]);
 
 
-var intents = new builder.IntentDialog({
-    recognizers: [Server.recognizer]
-})
+// var intents = new builder.IntentDialog({
+//     recognizers: [Server.recognizer]
+// })
 
-.matches('wallets', (session) => {
-    // session.send('You reached Eat intent, you said \'%s\'.', session.message.text);
-    session.beginDialog('wallet');
-})
-.onDefault((session) => {
-    // session.send('Sorry, I did not understand \'%s\'.', session.message.text);
-});
+// .matches('wallets', (session) => {
+//     // session.send('You reached Eat intent, you said \'%s\'.', session.message.text);
+//     session.beginDialog('wallet');
+// })
+// .onDefault((session) => {
+//     // session.send('Sorry, I did not understand \'%s\'.', session.message.text);
+// });
 
-bot.beginDialogAction('wallet', 'wallets');
+// bot.beginDialogAction('wallet', 'wallets');
