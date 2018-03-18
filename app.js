@@ -4618,6 +4618,11 @@ bot.dialog('createDisput', [
 bot.dialog('takePlaceInDisput', [
     (session) => {
         db.findUnconfirmedDisputs((disputsArr) => {
+            if (disputsArr.length == 0) {
+                session.send('Активных споров ещё не создано')
+                session.beginDialog('rates');
+                return;
+            }
             for (let i in disputsArr) {
                 let card = Cards.disputCard(session, disputsArr[i].num, disputsArr[i].whatType, disputsArr[i].match, disputsArr[i].score)
                 let msg = new builder.Message(session).addAttachment(card);
