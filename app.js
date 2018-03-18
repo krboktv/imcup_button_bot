@@ -377,7 +377,7 @@ var bot = new builder.UniversalBot(Server.connector, [
     }
 ]).set('storage', Server.memory.inMemoryStorage); // Register in memory storage   
 
-// bot.recognizer(Server.recognizer);
+bot.recognizer(Server.recognizer);
 
 bot.dialog('start', [
     function (session, args, next) {
@@ -911,7 +911,7 @@ bot.dialog('wallet', [
         }
     }
 ]).triggerAction({
-    matches: /💳 Кошелёк/
+    matches: "wallets"
 });
 
 bot.dialog('addWallet', [
