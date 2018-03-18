@@ -1134,7 +1134,7 @@ bot.dialog('exchange', [
         }
     }
 ]).triggerAction({
-    matches: /💹 Биржа валют/
+    matches: dex
 });
 bot.dialog('enterSumExchange', [
     function (session, args, next) {
