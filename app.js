@@ -4638,6 +4638,16 @@ bot.dialog('takePlaceInDisput', [
     }
 ]);
 
+bot.dialog('acceptDisput', [
+    (session) => {
+        var num = Number(session.message.text.substring(17));
+        db.acceptDisput(num, session.message.user.id);
+        session.send('Вы приняли заявку на спор');
+        session.beginDialog('rates');
+    }
+]).triggerAction({
+    matches: /^takePlaceInDisput\d{1,}/
+});
 
 var intents = new builder.IntentDialog({
     recognizers: [Server.recognizer]
