@@ -4584,7 +4584,7 @@ bot.dialog('myDisputs', [
     (session) => {
         db.findDisputsByUserId(session.message.user.id, (disputsArr) => {
             for (let i in disputsArr) {
-                    var card;
+                var card;
                 if (disputsArr[i].user_id2 != '') {
                     card = Cards.myDisputCard(session, disputsArr[i].num, disputsArr[i].whatType, disputsArr[i].match, disputsArr[i].score, true);
                 } else {
@@ -4652,7 +4652,7 @@ bot.dialog('deleteDisput', [
         db.removeDisputsByNum(num, (isTrue) => {
             session.send('Вы удалили спор');
             session.beginDialog('myDisputs');
-        })
+        });
     }
 ]).triggerAction({
     matches: /^deleteDisput\d{1,}/
@@ -4665,7 +4665,7 @@ bot.dialog('acceptDisput', [
         db.findDisputsByNum(num, (disput) => {
             if (disput.user_id1 != session.message.user.id) {
                 db.acceptDisput(num, session.message.user.id);
-                nt.sendNot(session, bot, disput.user_id1, '', 'Ваш спор номер '+num+' приняли');
+                nt.sendNot(session, bot, disput.user_id1, '', 'Ваш спор номер ' + num + ' приняли');
                 session.send('Вы приняли заявку на спор');
                 session.beginDialog('rates');
             } else {
