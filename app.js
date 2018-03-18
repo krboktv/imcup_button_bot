@@ -4628,7 +4628,7 @@ bot.dialog('createDisput', [
             listStyle: builder.ListStyle.button
         });
     },
-    (session, result) => {
+    (session, results) => {
         session.userData.currency = results.response.entity;
         session.beginDialog('enterDisputPrice');
     }
@@ -4693,7 +4693,7 @@ bot.dialog('takePlaceInDisput', [
                 return;
             }
             for (let i in disputsArr) {
-                let card = Cards.disputCard(session, disputsArr[i].num, disputsArr[i].whatType, disputsArr[i].match, disputsArr[i].score)
+                let card = Cards.disputCard(session, disputsArr[i].num, disputsArr[i].whatType, disputsArr[i].match, disputsArr[i].score, disputsArr[i].currency, disputsArr[i].price)
                 let msg = new builder.Message(session).addAttachment(card);
                 session.send(msg);
 

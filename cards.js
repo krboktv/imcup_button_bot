@@ -270,8 +270,8 @@ module.exports.confirmSendFunds = (session) => {
 }
 
 
-module.exports.disputCard = (session, _num, type, _match, _score) => {
-    var disput = '**Спор номер** '+_num+': \n\n'+type+'\n\n**Матч**: '+_match+'\n\n**Счёт**: '+_score;
+module.exports.disputCard = (session, _num, type, _match, _score, _currency, _price) => {
+    var disput = '**Спор номер** '+_num+': \n\n'+type+'\n\n**Матч**: '+_match+'\n\n**Счёт**: '+_score+'\n\nВалюта: '+_currency+'\n\nСумма спора: '+_price;
     return new builder.HeroCard(session)
     .text(disput)
     .buttons([
