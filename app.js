@@ -1134,7 +1134,7 @@ bot.dialog('exchange', [
         }
     }
 ]).triggerAction({
-    matches: dex
+    matches: "dex"
 });
 bot.dialog('enterSumExchange', [
     function (session, args, next) {
