@@ -4583,6 +4583,11 @@ bot.dialog('rates', [
 bot.dialog('myDisputs', [
     (session) => {
         db.findDisputsByUserId(session.message.user.id, (disputsArr) => {
+            if (disputsArr.length == 0) {
+                session.send('Вы ещё не создали ни одного спора')
+                session.beginDialog('rates');
+                return;
+            }
             for (let i in disputsArr) {
                 var card;
                 if (disputsArr[i].user_id2 != '') {
