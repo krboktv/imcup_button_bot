@@ -4576,7 +4576,9 @@ bot.dialog('rates', [
                 break;
         }
     }
-]);
+]).triggerAction({
+    matches: "bets"
+})
 
 bot.dialog('myDisputs', [
     (session) => {
