@@ -4532,30 +4532,6 @@ bot.dialog('confirmFastSwap', [
 
 bot.dialog('rates', [
     (session) => {
-        builder.Prompts.choice(session, 'Выберите на что ставить', 'ЧМ по Футболу|Ещё что-то|И ещё что-то|И ещё немного|Назад', {
-            listStyle: builder.ListStyle.button
-        });
-    },
-    (session, results, next) => {
-        session.userData.disputType = results.response.entity;
-        switch (results.response.index) {
-            case 0:
-                next();
-                break;
-            case 1:
-                session.beginDialog('SecondMenu');
-                break;
-            case 2:
-                session.beginDialog('SecondMenu');
-            case 3:
-                session.beginDialog('SecondMenu');
-                break;
-            case 4:
-                session.beginDialog('SecondMenu');
-                break;
-        }
-    },
-    (session, results) => {
         builder.Prompts.choice(session, 'Выберите', 'Мои споры|Создать спор|Принять участие в споре|Назад', {
             listStyle: builder.ListStyle.button
         });
@@ -4617,6 +4593,12 @@ const teams = {
 
 bot.dialog('createDisput', [
     (session) => {
+        builder.Prompts.choice(session, 'Выберите на что ставить', 'ЧМ по Футболу|Ещё что-то|И ещё что-то|И ещё немного|Назад', {
+            listStyle: builder.ListStyle.button
+        });
+    },
+    (session, results) => {
+        session.userData.disputType = results.response.entity;
         builder.Prompts.choice(session, 'Выберите матч', teams, {
             listStyle: builder.ListStyle.button
         });
