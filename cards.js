@@ -279,11 +279,18 @@ module.exports.disputCard = (session, _num, type, _match, _score) => {
     ])
 }
 
-module.exports.disputCard1 = (session, _num, type, _match, _score, isAccept) => {
-    var disput = '**Спор номер** '+_num+': \n\n'+type+'\n\n**Матч**: '+_match+'\n\n**Счёт**: '+_score+'**Второй участник**: '+isAccept;
+module.exports.myDisputCard = (session, _num, type, _match, _score, isAccept) => {
+    var buttons = [];
+    var secondPerson;
+    if (isAccept == true) {
+        secondPerson = 'Да';
+    } else {
+        secondPerson = 'Нет';
+        buttons.push(builder.CardAction.imBack(session, String('deleteDisput'+_num), 'Удалить'));
+    } 
+
+    var disput = '**Спор номер** '+_num+': \n\n'+type+'\n\n**Матч**: '+_match+'\n\n**Счёт**: '+_score+'**Второй участник**: '+secondPerson;
     return new builder.HeroCard(session)
     .text(disput)
-    .buttons([
-        builder.CardAction.imBack(session, String('deleteDisput'+_num), 'Удалить'),
-    ])
+    .buttons(buttons)
 }

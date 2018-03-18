@@ -4584,9 +4584,9 @@ bot.dialog('myDisputs', [
             for (let i in disputsArr) {
                     var card;
                 if (disputsArr[i].user_id2 != '') {
-                    card = Cards.disputCard1(session, disputsArr[i].num, disputsArr[i].whatType, disputsArr[i].match, disputsArr[i].score, 'Да');
+                    card = Cards.myDisputCard(session, disputsArr[i].num, disputsArr[i].whatType, disputsArr[i].match, disputsArr[i].score, true);
                 } else {
-                    card = Cards.disputCard1(session, disputsArr[i].num, disputsArr[i].whatType, disputsArr[i].match, disputsArr[i].score, 'Нет');
+                    card = Cards.myDisputCard(session, disputsArr[i].num, disputsArr[i].whatType, disputsArr[i].match, disputsArr[i].score, false);
                 }
                 let msg = new builder.Message(session).addAttachment(card);
                 session.send(msg);
@@ -4643,6 +4643,18 @@ bot.dialog('takePlaceInDisput', [
         });
     }
 ]);
+
+bot.dialog('takePlaceInDisput', [
+    (session) => {
+        var num = Number(session.message.text.substring(12));
+        db.removeDisputsByNum(num, (isTrue) => {
+            session.send('Вы удалили спор');
+            session.beginDialog('myDisputs');
+        })
+    }
+]).triggerAction({
+    matches: /^deleteDisput\d{1,}/
+});
 
 bot.dialog('acceptDisput', [
     (session) => {

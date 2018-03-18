@@ -500,6 +500,12 @@ module.exports.findDisputsByNum = (_num, callback) => {
   });
 }
 
+module.exports.removeDisputsByNum = (_num, callback) => {
+  Disput.remove({num: Number(_num)}, (err,res) => {
+    callback(true);
+  });
+}
+
 module.exports.acceptDisput = (_num, _userid) => {
   Disput.update({num: Number(_num)}, {user_id2: _userid}, (err,res) => {
     
