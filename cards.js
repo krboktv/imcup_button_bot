@@ -271,7 +271,7 @@ module.exports.confirmSendFunds = (session) => {
 
 
 module.exports.disputCard = (session, _num, type, _match, _score) => {
-    var disput = 'Спор номер '+_num+': \n\n\0\n\n'+type+'\n\n\0\n\nМатч: '+_match+'\n\n\0\n\nСчёт: '+_score
+    var disput = '**Спор номер** '+_num+': \n\n'+type+'\n\n**Матч**: '+_match+'\n\n**Счёт**: '+_score;
     return new builder.HeroCard(session)
     .text(disput)
     .buttons([
@@ -279,8 +279,8 @@ module.exports.disputCard = (session, _num, type, _match, _score) => {
     ])
 }
 
-module.exports.disputCard1 = (session, _num, type, _match, _score) => {
-    var disput = 'Спор номер '+_num+': \n\n\0\n\n'+type+'\n\n\0\n\nМатч: '+_match+'\n\n\0\n\nСчёт: '+_score
+module.exports.disputCard1 = (session, _num, type, _match, _score, isAccept) => {
+    var disput = '**Спор номер** '+_num+': \n\n'+type+'\n\n**Матч**: '+_match+'\n\n**Счёт**: '+_score+'**Второй участник**: '+isAccept;
     return new builder.HeroCard(session)
     .text(disput)
     .buttons([

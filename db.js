@@ -494,6 +494,12 @@ module.exports.findDisputsByUserId = (_userid, callback) => {
   });
 }
 
+module.exports.findDisputsByNum = (_num, callback) => {
+  Disput.find({num: Number(_num)}, (err,res) => {
+    callback(res[0]);
+  });
+}
+
 module.exports.acceptDisput = (_num, _userid) => {
   Disput.update({num: Number(_num)}, {user_id2: _userid}, (err,res) => {
     

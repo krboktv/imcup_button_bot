@@ -4539,18 +4539,18 @@ bot.dialog('rates', [
     (session, results, next) => {
         session.userData.disputType = results.response.entity;
         switch (results.response.index) {
-            case 0: 
+            case 0:
                 next();
                 break;
-            case 1: 
+            case 1:
                 session.beginDialog('SecondMenu');
                 break;
-            case 2: 
+            case 2:
                 session.beginDialog('SecondMenu');
-            case 3: 
+            case 3:
                 session.beginDialog('SecondMenu');
                 break;
-            case 4: 
+            case 4:
                 session.beginDialog('SecondMenu');
                 break;
         }
@@ -4562,16 +4562,16 @@ bot.dialog('rates', [
     },
     (session, results, next) => {
         switch (results.response.index) {
-            case 0: 
+            case 0:
                 session.beginDialog('myDisputs');
                 break;
-            case 1: 
+            case 1:
                 session.beginDialog('createDisput');
                 break;
-            case 2: 
+            case 2:
                 session.beginDialog('takePlaceInDisput');
                 break;
-            case 3: 
+            case 3:
                 session.beginDialog('rates');
                 break;
         }
@@ -4582,11 +4582,15 @@ bot.dialog('myDisputs', [
     (session) => {
         db.findDisputsByUserId(session.message.user.id, (disputsArr) => {
             for (let i in disputsArr) {
-                let card = Cards.disputCard1(session, disputsArr[i].num, disputsArr[i].whatType, disputsArr[i].match, disputsArr[i].score)
+                if (disputsArr[i].user_id2 != '') {
+                    let card = Cards.disputCard1(session, disputsArr[i].num, disputsArr[i].whatType, disputsArr[i].match, disputsArr[i].score, 'Нет');
+                } else {
+                    let card = Cards.disputCard1(session, disputsArr[i].num, disputsArr[i].whatType, disputsArr[i].match, disputsArr[i].score, 'Да');
+                }
                 let msg = new builder.Message(session).addAttachment(card);
                 session.send(msg);
 
-                if (i == (disputsArr.length-1)) {
+                if (i == (disputsArr.length - 1)) {
                     let card = Cards.cancelButton(session);
                     let msg = new builder.Message(session).addAttachment(card);
                     session.send(msg);
@@ -4628,7 +4632,7 @@ bot.dialog('takePlaceInDisput', [
                 let msg = new builder.Message(session).addAttachment(card);
                 session.send(msg);
 
-                if (i == (disputsArr.length-1)) {
+                if (i == (disputsArr.length - 1)) {
                     let card = Cards.cancelButton(session);
                     let msg = new builder.Message(session).addAttachment(card);
                     session.send(msg);
@@ -4641,9 +4645,18 @@ bot.dialog('takePlaceInDisput', [
 bot.dialog('acceptDisput', [
     (session) => {
         var num = Number(session.message.text.substring(17));
-        db.acceptDisput(num, session.message.user.id);
-        session.send('Вы приняли заявку на спор');
-        session.beginDialog('rates');
+
+        db.findDisputsByNum(num, (disput) => {
+            if (disput.user_id1 != session.message.user.id) {
+                db.acceptDisput(num, session.message.user.id);
+                nt.sendNot(session, bot, disput.user_id1, '', 'Ваш спор номер '+num+' приняли');
+                session.send('Вы приняли заявку на спор');
+                session.beginDialog('rates');
+            } else {
+                session.send('Нельзя принять свою ставку. Попробуйте принять другую.');
+                session.beginDialog(takePlaceInDisput);
+            }
+        });
     }
 ]).triggerAction({
     matches: /^takePlaceInDisput\d{1,}/
