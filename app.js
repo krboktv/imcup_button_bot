@@ -4582,7 +4582,7 @@ bot.dialog('myDisputs', [
     (session) => {
         db.findDisputsByUserId(session.message.user.id, (disputsArr) => {
             for (let i in disputsArr) {
-                let card = Cards.disputCard(session, disputsArr[i].num, disputsArr[i].whatType, disputtsArr[i].match, disputsArr[i].score)
+                let card = Cards.disputCard(session, disputsArr[i].num, disputsArr[i].whatType, disputsArr[i].match, disputsArr[i].score)
                 let msg = new builder.Message(session).addAttachment(card);
                 session.send(msg);
 
