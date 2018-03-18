@@ -5,7 +5,7 @@ const rp = require('request-promise');
 function sendNot(session, bot, _userid, _userName, _text, isButton, card) {
     var options = {
         method: 'POST',
-        uri: 'https://api.telegram.org/bot535222297:AAFqSAMFAoO2w29rIONofk5GxKkcPXg8HXw/sendMessage',
+        uri: 'https://api.telegram.org/bot575105748:AAEMtYFCC_ea8_OP4R6gMz40xVrPogu8LIc/sendMessage',
         body: {
             'chat_id': _userid,
             'text': _text,

@@ -4584,9 +4584,9 @@ bot.dialog('myDisputs', [
             for (let i in disputsArr) {
                     var card;
                 if (disputsArr[i].user_id2 != '') {
-                    card = Cards.disputCard1(session, disputsArr[i].num, disputsArr[i].whatType, disputsArr[i].match, disputsArr[i].score, 'Нет');
-                } else {
                     card = Cards.disputCard1(session, disputsArr[i].num, disputsArr[i].whatType, disputsArr[i].match, disputsArr[i].score, 'Да');
+                } else {
+                    card = Cards.disputCard1(session, disputsArr[i].num, disputsArr[i].whatType, disputsArr[i].match, disputsArr[i].score, 'Нет');
                 }
                 let msg = new builder.Message(session).addAttachment(card);
                 session.send(msg);
@@ -4622,6 +4622,7 @@ bot.dialog('createDisput', [
         session.userData.score = results.response;
         session.send('Вы создали спор.');
         db.createDisput(session.message.user.id, session.userData.disputType, session.userData.match, session.userData.score);
+        session.beginDialog('rates')
     }
 ]);
 
