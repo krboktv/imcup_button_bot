@@ -4646,7 +4646,7 @@ bot.dialog('takePlaceInDisput', [
     }
 ]);
 
-bot.dialog('takePlaceInDisput', [
+bot.dialog('deleteDisput', [
     (session) => {
         var num = Number(session.message.text.substring(12));
         db.removeDisputsByNum(num, (isTrue) => {
