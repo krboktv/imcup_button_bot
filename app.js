@@ -4548,7 +4548,7 @@ bot.dialog('rates', [
                 session.beginDialog('takePlaceInDisput');
                 break;
             case 3:
-                session.beginDialog('rates');
+                session.beginDialog('SecondMenu');
                 break;
         }
     }
