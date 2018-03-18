@@ -473,15 +473,15 @@ module.exports.endFastSwap = (_type,_num, callback) => {
   })
 }
 
-module.exports.createDisput = (_userid, _whatType, _match, _score) => {
+module.exports.createDisput = (_userid, _whatType, _match, _score, _currency, _price) => {
   Disput.find({}, (err,doc) => {
     if(doc.length != 0) {
       var _num = Number(doc[doc.length-1].num)+1;
-      Disput.create({user_id1: _userid, num: Number(_num), whatType: _whatType, match: _match, score: _score}, (err,res) => {
+      Disput.create({user_id1: _userid, num: Number(_num), whatType: _whatType, match: _match, score: _score, currency: _currency, price: Number(_price)}, (err,res) => {
     
       });
     } else {
-      Disput.create({user_id1: _userid, num: 1, whatType: _whatType, match: _match, score: _score}, (err,res) => {
+      Disput.create({user_id1: _userid, num: 1, whatType: _whatType, match: _match, score: _score, currency: _currency, price: _price}, (err,res) => {
     
       });
     }

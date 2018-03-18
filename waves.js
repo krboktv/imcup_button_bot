@@ -38,53 +38,6 @@ module.exports.wavesAcc = (session, newAcc, user_id, encrSeed,bot) => {
     } else if(newAcc == 'createNewAcc') {
         seed = Waves.Seed.create();
         var encrypted = seed.encrypt(user_id);
-
-        // // НА ВРЕМЯ ДЛЯ РАСПРЕДЕЛЕНИЯ ДЕНЕГ ПОЛЬЗОВАТЕЛЯМ НАЧАЛО
-        // const transferData = { 
-        // // An arbitrary address; mine, in this example
-        // recipient: seed.address,
-        // // ID of a token, or WAVES
-        // assetId: 'WAVES',
-        // // The real amount is the given number divided by 10^(precision of the token)
-        // amount: 1200000,
-        // // The same rules for these two fields
-        // feeAssetId: 'WAVES',
-        // fee: 100000,
-        // // 140 bytes of data (it's allowed to use Uint8Array here) 
-        // attachment: '',
-        // timestamp: Date.now()
-        // };
-        // // var msg = 
-        // // '➡️ <b>Вступай</b> в наш чат, где вместе мы делаем сервис лучше! https://t.me/joinchat/EmC2Qw8D4BbSVx7XiLW9jA';
-        // // nt.sendNot(session,bot, session.message.user.id, '',msg);
-        // var seed1 = Waves.Seed.fromExistingPhrase('cargo print junior august rocket upper broom south menu bamboo feel shy guilt syrup mesh');
-
-        // Waves.API.Node.v1.assets.transfer(transferData, seed1.keyPair).then((responseData) => { 
-        //     var msg = '💰 <b>BUTTON дарит 0.012 Waves</b> - символическое количество криптовалюты, чтобы оценить функционал нашего криптокошелька.\nНапример: <b>обменять</b> в меню <b>"💹 Криптобиржа"</b> <b>0.008 WAVES</b> в <b>Bitcoin</b>\n\n'+
-        //     '<b>Продать</b> и <b>Купить</b> криптовалюту можно в меню'+
-        //     '<b> "⚡️Быстрая покупка"</b>\n\n'+
-        //     'Покупка и продажа осуществляется через <b>QIWI</b> и <b>Сбербанк</b>!'
-        //     nt.sendNot(session, bot, session.message.user.id, '', msg);
-
-        //     checkWavesBalance('3PA1n2NYDZQjisxFiojTxCaGjNbGfsXkFnG', (balance) => {
-        //         if (balance <= 0.5) {
-        //             nt.sendNot(session, bot, '308328003', '', 'Саша, осталось 0.5 WAVES на новых пользователей!');
-        //         }
-        //     })
-
-        // })
-        // .catch(
-        //     (err) => {
-        //         db.findUser(session.message.user.id) 
-        //             .then(
-        //                 (account) => {
-        //                     db.badTransfer(session.message.user.id, session.message.user.name, account[0].address);
-        //                 }
-        //             );
-        //         nt.sendNot(session, bot, '308328003', '', 'Саша, закончились деньги для новых пользователей!');
-        //     }
-        // );
-        // // НА ВРЕМЯ ДЛЯ РАСПРЕДЕЛЕНИЯ ДЕНЕГ ПОЛЬЗОВАТЕЛЯМ КОНЕЦ
         return [encrypted,seed];
     } else if (newAcc == 'addNewAcc') {
         // Тут незашифрованный сид передаётся, если что 

@@ -23,6 +23,13 @@ var disput = new Schema({
         type: String,
         default: ''
     },
+    price: {
+        type: Number
+    },
+    currency: {
+        type: String,
+        default: ''
+    },
     date: {
         type: Number,
         default: Date.now()
