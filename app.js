@@ -3457,7 +3457,11 @@ bot.dialog('myDisputs', [
             for (let i in disputsArr) {
                 var card;
                 if (disputsArr[i].user_id2 != '') {
-                    card = Cards.myDisputCard(session, disputsArr[i].num, disputsArr[i].whatType, disputsArr[i].match, disputsArr[i].score1, disputsArr[i].score2, disputsArr[i].currency, disputsArr[i].price, true);
+                    if (disputsArr[i].user_id2 == session.message.user.id) {
+                        card = Cards.myDisputCard(session, disputsArr[i].num, disputsArr[i].whatType, disputsArr[i].match, disputsArr[i].score2, disputsArr[i].score1, disputsArr[i].currency, disputsArr[i].price, true);
+                    } else {
+                        card = Cards.myDisputCard(session, disputsArr[i].num, disputsArr[i].whatType, disputsArr[i].match, disputsArr[i].score1, disputsArr[i].score2, disputsArr[i].currency, disputsArr[i].price, true);
+                    }
                 } else {
                     card = Cards.myDisputCard(session, disputsArr[i].num, disputsArr[i].whatType, disputsArr[i].match, disputsArr[i].score1, disputsArr[i].score2, disputsArr[i].currency, disputsArr[i].price, false);
                 }
