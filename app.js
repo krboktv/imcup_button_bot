@@ -11,6 +11,7 @@ const Data = require("./data.js");
 const Link = require('./schemes/linkScheme.js');
 const Transaction = require('./schemes/transactionScheme.js');
 const Gift = require('./schemes/giftScheme.js');
+const Swap = require('./schemes/swapScheme.js');
 const Hex = require('./hex.js');
 const Cards = require('./cards.js');
 const Course = require('./course.js')
@@ -1632,6 +1633,1512 @@ bot.dialog('makeAtransaction', [
 ]).cancelAction('cancelAction', 'Вы отменили перевод.', {
     matches: /отмена/i
 });
+
+
+bot.dialog('swap', [
+    // (session) => {
+    //     session.endDialog("Функция будет доступна в ближайшее время");
+    // }
+    function (session) {
+        session.send('💵 Тут можно **продавать и покупать** криптовалюту у других пользователей за **реальные деньги.**\n\n\0\n\n🔐 Бот выступает **гарантом** между участниками, это позволяет максимально **обезопасить** процесс обмена.\n\n\0\n\n⚠️ Для **безопасности** перевода, пока обе стороны не подтвердят заявку, средства у продавца временно **замораживаются.** В случае проблем с обменом, пишите в **техническую поддержку.**');
+        builder.Prompts.choice(session, "Для этого вам требуется создать заявку на продажу или покупку", "📈 Купить валюту|📉 Продать валюту|📄 Мои заявки|❌ Назад", {
+            listStyle: builder.ListStyle.button
+        })
+    },
+    function (session, results) {
+        switch (results.response.index) {
+            case 0:
+                session.beginDialog('sellRubToCrypta');
+                break;
+
+            case 1:
+                session.beginDialog('sellCryptaToRub');
+                break;
+
+            case 2:
+                session.beginDialog('myChoice');
+                break;
+
+            default:
+                session.beginDialog('SecondMenu');
+                break;
+        }
+    }
+]).triggerAction({
+    matches: /RUB 🔄 Crypto/
+});
+
+
+
+// bot.dialog('AllList', [
+//     function (session) {
+//         builder.Prompts.choice(session, 'В данном разделе находятся **все** заявки на покупки и продажу криптовалюты.\n\n\0\n\nЗаявки на покупку - все заявки людей, которые хотят купить криптовалюту за RUB.\n\n\0\n\nЗаявки на продажу - все заявки людей, которые хотят продать криптовалюту и получить RUB. ', '🔴 Заявки на покупку|🔵 Заявки на продажу|❌ Назад', {
+//             listStyle: builder.ListStyle.button
+//         })
+//     },
+//     function (session, results) {
+//         switch (results.response.index) {
+//             case 0:
+//                 var type = {
+//                     type: results.response.index
+//                 }
+//                 session.beginDialog('findOrder', type);
+//                 break;
+
+//             case 1:
+//                 var type = {
+//                     type: results.response.index
+//                 }
+//                 session.beginDialog('findOrder', type);
+//                 break;
+
+//             case 2:
+//                 session.beginDialog('swap');
+//                 break;
+//         }
+//     }
+// ]);
+
+bot.dialog('findOrder', [
+        (session, args, next) => {
+
+            var skip; // сколько заявок пропустить
+
+            var type; // тип продажа / покупка ( 1 / 0)
+
+            var cur; // тип валюты
+
+            if (args == undefined) {
+                args = {
+                    type: 0,
+                    skip: 0,
+                    currency: session.userData.zayvkaCrypto.name
+                }
+                cur = session.userData.zayvkaCrypto.name;
+            }
+            if (Object.keys(args).length > 1) {
+                skip = args.skip;
+                type = args.type;
+                cur = args.currency;
+            } else {
+                cur = session.userData.zayvkaCrypto.name;
+                skip = 0;
+                type = args.type;
+            }
+
+            session.userData.skip = skip;
+            session.userData.type = type;
+
+            db.findOrders(cur, type, skip, session.userData.sellersService, function (orders) {
+                var g = 0;
+                for (let i in orders) {
+                    if (orders[i].user_id2 == 'no') {
+                        g = g + 1;
+                        let card = Cards.createOrderCard(session, currency, orders[i].sumCripto, orders[i].sumRub, orders[i].currency, orders[i].cardService, 'noCardNum', orders[i].type, 'yes', orders[i].num);
+                        let msg = new builder.Message(session).addAttachment(card);
+                        session.send(msg);
+                    }
+                }
+                if (g != 0) {
+                    var msg1;
+                    if (g > 4) {
+                        msg1 = new builder.Message(session).addAttachment(Cards.createButtonCard(session, session.userData.type));
+                    } else {
+                        msg1 = new builder.Message(session).addAttachment(Cards.createButtonCard(session, session.userData.type, false));
+                    }
+                    session.send(msg1);
+                    next();
+                } else {
+                    var whatOrder;
+                    if (type == 0)
+                        whatOrder = 'покупку';
+                    else
+                        whatOrder = 'продажу';
+
+                    if (skip > 0) {
+                        const card = new builder.ThumbnailCard(session);
+                        card.buttons([
+                            new builder.CardAction(session).title('В главное меню').value('start').type('imBack'),
+                        ]).text(`Извините, заявок на ${whatOrder} больше нет`);
+                        const message = new builder.Message(session).addAttachment(card);
+                        session.send(message);
+                    } else {
+                        session.send('🔎 Извините, заявки на' + whatOrder + ' ещё не созданы. Вы можете создать новую.');
+                        msg1 = new builder.Message(session).addAttachment(Cards.createButtonCard(session, session.userData.type, false));
+                        console.log(msg1);
+                        session.send(msg1);
+                    }
+                }
+            });
+        },
+        (session, results) => {
+            // не удалять эту функцию
+            // почему? Что за костыль?
+        }
+    ])
+    .beginDialogAction('NextOrders', 'Other', {
+        matches: /отмена|other|pls*/,
+        dialogArgs: {
+            action: 'other'
+        }
+    });
+
+bot.dialog('Other', [
+    (session, args, next) => {
+        if (session.message.text == 'other') {
+            session.beginDialog('findOrder', {
+                type: session.userData.type,
+                skip: session.userData.skip + 5
+            });
+            return;
+        } else if (session.message.text == 'отмена') {
+            session.beginDialog('SecondMenu');
+            return;
+        } else {
+            var num = Number(session.message.text.substring(3));
+            session.userData.orderNum = num;
+
+            db.findOrUpdateOrder('find', num, session.userData.type)
+                .then(
+                    function (swap) {
+                        if (swap[0]) {
+                            if (swap[0].user_id1 != session.message.user.id) {
+                                if (session.userData.type == 0) {
+                                    session.userData.swapCurrency = swap[0].currency;
+                                    session.userData.swapSum = swap[0].sumCripto;
+                                    db.findUser(session.message.user.id)
+                                        .then(
+                                            (account) => {
+                                                Waves.getBalance(session, account[0].address, currency[swap[0].currency].assetID, 'noCourse', (balance) => {
+                                                    if (balance >= session.userData.swapSum) {
+                                                        session.beginDialog('enterCard2');
+                                                    } else {
+                                                        session.send('Недостаточно средств, чтобы подтвердить заявку');
+                                                        session.beginDialog('SecondMenu');
+                                                    }
+                                                });
+                                            }
+                                        );
+                                } else {
+                                    db.findOrUpdateOrder('update', num, session.userData.type, session.message.user.id)
+                                        .then(
+                                            function (err, doc) {
+                                                Swap.find({
+                                                        num: session.userData.orderNum,
+                                                        type: session.userData.type
+                                                    })
+                                                    .then(
+                                                        function (swap) {
+                                                            // Когда ты удаляешь свою заявку - (делать проверку на наличие второго человека, ибо ты можешь никому наявку кинуть)
+                                                            db.findUser(swap[0].user_id1)
+                                                                .then(
+                                                                    (account) => {
+                                                                        // let card = Cards.createNtCard(session, swap[0].type, swap[0].num, '1');
+
+                                                                        let _text = 'Вашу заявку на продажу ' + swap[0].sumCripto + ' ' + swap[0].currency + ' приняли.';
+                                                                        nt.sendNot(session, bot, swap[0].user_id1, account[0].name, _text);
+                                                                        // session.send("Для гарантии совершения сделки бот выступает посрдеником между участниками. Требуется дополнительная комиссия при переводе. Она равна 0.001 Waves");
+                                                                        session.send('Вы приняли участие в обмене.\n\n\0\n\n`Сумма к оплате:` ' + swap[0].sumRub + ' рублей.\n\n\0\n\n`Платёжное средство:` ' + swap[0].cardService + '.\n\n\0\n\n`Номер платёжного средства:` ' + swap[0].cardServiceNum);
+                                                                        let card = Cards.createNtCard(session, swap[0].type, swap[0].num, '0');
+                                                                        let msg = new builder.Message().addAttachment(card);
+                                                                        session.send(msg);
+                                                                    }
+                                                                );
+                                                        }
+                                                    );
+                                                session.beginDialog('SecondMenu');
+                                                return;
+                                            }
+                                        );
+                                }
+                            } else {
+                                session.send('Нельзя принять свою заявку');
+                                session.beginDialog('SecondMenu');
+                                return;
+                            }
+
+                        } else {
+                            session.send('Такой заявки не существует');
+                            session.beginDialog('SecondMenu');
+                            return;
+                        }
+                    }
+                );
+        }
+    },
+]);
+bot.dialog('enterCard2', [
+    (session, results, next) => {
+
+
+
+        if (session.userData.sellersService != 'QIWI' && session.userData.sellersService != 'Яндекс.Деньги') {
+            builder.Prompts.number(session, `💳 Введите **номер вашей карты** ${session.userData.sellersService}\n\n *Например: 4568673647833762*`);
+        } else {
+            builder.Prompts.number(session, `💳 Введите **адрес вашего счета** ${session.userData.sellersService} `);
+        }
+        let card = Cards.cancelButton(session);
+        let msg = new builder.Message(session).addAttachment(card);
+        session.send(msg);
+    },
+    (session, results) => {
+        if (String(results.response).length != 16) {
+            session.send('Введите **16 цифр** без пробелов');
+            session.beginDialog('enterCard2');
+            return;
+        }
+        session.userData.numberservice = Number(results.response);
+
+        if (session.userData.swapCurrency != 'US Dollar' && session.userData.swapCurrency != 'Euro') {
+            session.userData.stepen = 8;
+        } else {
+            session.userData.stepen = 2;
+        }
+
+        sum = Number(((session.userData.swapSum) * Math.pow(10, session.userData.stepen)).toFixed(0));
+
+        const transferData = {
+            recipient: '3PGe5geMhpaRMBWp3AfSbFnaVpvZ8zHL8yd',
+            assetId: currency[session.userData.swapCurrency].assetID,
+            amount: sum,
+            feeAssetId: 'WAVES',
+            fee: 100000,
+            attachment: '',
+            timestamp: Date.now()
+        };
+
+        const transferData1 = {
+            recipient: '3PGe5geMhpaRMBWp3AfSbFnaVpvZ8zHL8yd',
+            assetId: 'WAVES',
+            amount: 100000,
+            feeAssetId: 'WAVES',
+            fee: 100000,
+            attachment: '',
+            timestamp: Date.now()
+        };
+
+        db.findUser(session.message.user.id)
+            .then(
+                function (account) {
+                    var seed = Waves.wavesAcc(session, 'decryptSeed', session.message.user.id, account[0].encrSeed)
+                    Waves.transfer(transferData, seed.keyPair)
+                        .then(function (res) {
+                            Waves.transfer(transferData1, seed.keyPair)
+                                .then(function (res) {
+                                    Swap.update({
+                                        num: parseInt(session.userData.orderNum),
+                                        type: session.userData.type
+                                    }, {
+                                        user_id2: session.message.user.id,
+                                        cardServiceNum: session.userData.numberservice
+                                    }, function (err, doc) {
+
+                                        db.findOrUpdateOrder('find', parseInt(session.userData.orderNum), session.userData.type)
+                                            .then(
+                                                (swap) => {
+                                                    db.findUser(swap[0].user_id1)
+                                                        .then(
+                                                            (account) => {
+                                                                /* #менятьТекст
+                                                                    Тут приходит уведомление человеку, который создал заявку на покупку крипты.
+                                                                    т.е. нужно передавать следующие переменные:
+                                                                    
+                                                                    swap[0].cardService - средство оплаты (Сбер, Qiwi и тд)
+                                                                    
+                                                                    swap[0].cardServiceNum - номер карты (счёта)
+
+                                                                    swap[0].sumCripto - сумма в крипте
+
+                                                                    swap[0].sumRub - Сколько нужно скинуть в рублях
+                                                                
+                                                                    swap[0].currency - какую валюту покупают
+
+                                                                    
+                                                                    Пример текста:
+                                                                    Вашу заявку на покупку swap[0].sumCripto swap[0].currency приняли.
+                                                                    Сумма к оплате: swap[0].sumRub рублей. 
+                                                                    Платёжное средство: swap[0].cardService. 
+                                                                    Номер платёжного средства: swap[0].cardServiceNum
+
+                                                                    После оплаты перейдите в меню "RUB 🔄 Crypto" -> Мои завки -> Есть участник,
+                                                                    чтобы подтвердить отправку средств.
+                                                                */
+                                                                let card = Cards.createNtCard(session, swap[0].type, swap[0].num, '0');
+
+                                                                let _text = 'Вашу заявку на покупку ' + swap[0].sumCripto + ' ' + swap[0].currency + ' приняли.\n\0`Сумма к оплате:` ' + swap[0].sumRub + ' рублей.\n\0`Платёжное средство:` ' + swap[0].cardService + '.\n\0`Номер платёжного средства:` ' + swap[0].cardServiceNum;
+
+                                                                nt.sendNot(session, bot, account[0].user_id, account[0].name, _text, true, card);
+
+                                                                /* #менятьТекст
+
+                                                                    Вы приняли участие в обмене.
+                                                                    Как только другой человек отправит вам swap[0].sumRub рублей - вам придёт уведомление.
+
+                                                                */
+                                                                session.send('Вы приняли участие в обмене.' + " Как только другой человек отправит вам " + swap[0].sumRub + " рублей - вам придёт уведомление.");
+                                                                session.beginDialog('SecondMenu');
+                                                            }
+                                                        );
+                                                }
+                                            );
+                                    });
+                                });
+                        })
+                        .catch(
+                            function (err) {
+                                session.send('Недостаточно средств на балансе');
+                                session.beginDialog('SecondMenu');
+                                return;
+                            }
+                        );
+                }
+            );
+    }
+]).triggerAction({
+    matches: /other/i,
+    onSelectAction: (session, args) => {
+        switch (args.action) {
+            case 'other':
+
+                break;
+            default:
+                session.send('Я вас не понимаю');
+                break;
+        }
+    }
+});
+
+bot.dialog('myChoice', [
+    function (session) {
+        builder.Prompts.choice(session, "В данном разделе будут отображаться заявки, на которые **еще никто не ответил** 1️⃣\n\n\0\n\n А также те заявки, в которых **еще не произведена оплата, но есть 2 участник** 2️⃣", "1️⃣ Никто не ответил|2️⃣ Есть участник|❌ Назад", {
+            listStyle: builder.ListStyle.button
+        })
+    },
+    function (session, results) {
+        switch (results.response.index) {
+            case 0:
+                session.beginDialog('myOrders');
+                session.userData.type1 = 'no';
+                break;
+
+            case 1:
+                session.beginDialog('myOrders');
+                session.userData.type1 = 'yes';
+                break;
+            default:
+                session.beginDialog('swap');
+                break;
+        }
+    }
+]);
+
+bot.dialog('myOrders', [
+    function (session, args, next) {
+        var g = 0;
+        Swap.find({
+                user_id1: session.message.user.id
+            })
+            .then(
+                function (swap) {
+                    for (let i in swap) {
+                        if ((swap[i].user_id2 != 'no' && session.userData.type1 == 'yes') && (swap[i].end != true)) {
+                            g = g + 1;
+                            var btn;
+                            var fct;
+                            var cardNum;
+
+                            if (swap[i].type == 0) {
+                                cardNum = swap[i].cardServiceNum;
+                                btn = [
+                                    builder.CardAction.imBack(session, 'agtyu0' + (swap[i].type) + (swap[i].num).toString(), 'Подтвердить отправку средств'),
+                                    builder.CardAction.imBack(session, swap[i].type + 'удалить_' + (swap[i].num).toString(), 'Удалить заявку')
+                                ];
+                                fct = swap[i].confirmSell;
+                            } else {
+                                cardNum = 'noCardNum';
+                                btn = [
+                                    builder.CardAction.imBack(session, 'agtyu1' + (swap[i].type) + (swap[i].num).toString(), 'Подтвердить получение средств'),
+                                    builder.CardAction.imBack(session, swap[i].type + 'удалить_' + (swap[i].num).toString(), 'Удалить заявку')
+                                ];
+                                fct = swap[i].confirmBuy;
+                            }
+
+                            if (swap[i].confirmBuy == 'да' || swap[i].confirmSell == 'да') {
+                                btn.splice(1, 1);
+                                if (swap[i].type == 0) {
+                                    if (swap[i].confirmBuy == 'да' && swap[i].user_id1 == session.message.user.id) {
+                                        btn.splice(0, 1);
+                                    }
+                                } else {
+                                    if (swap[i].confirmSell == 'да' && swap[i].user_id1 == session.message.user.id) {
+                                        btn.splice(0, 1);
+                                    }
+                                }
+                            }
+
+                            let card = Cards.createOrderCard(session, currency, swap[i].sumCripto, swap[i].sumRub, swap[i].currency, swap[i].cardService, cardNum, swap[i].type, 'no', swap[i].num).buttons(btn);
+                            let msg = new builder.Message(session).addAttachment(card);
+                            session.send(msg);
+                        } else if ((swap[i].user_id2 == 'no' && session.userData.type1 == 'no') && (swap[i].end != true)) {
+                            g = g + 1;
+
+                            let card = Cards.createOrderCard(session, currency, swap[i].sumCripto, swap[i].sumRub, swap[i].currency, swap[i].cardService, 'noCardNum', swap[i].type, 'no', swap[i].num).buttons([
+                                builder.CardAction.imBack(session, swap[i].type + 'удалить_' + (swap[i].num).toString(), 'Удалить заявку')
+                            ]);
+
+                            let msg = new builder.Message(session).addAttachment(card);
+                            session.send(msg);
+                        }
+                    }
+                    if (session.userData.type1 == 'yes') {
+                        Swap.find({
+                                user_id2: session.message.user.id
+                            })
+                            .then(
+                                function (swap) {
+                                    for (let i in swap) {
+                                        if (swap[i].end != true) {
+                                            var btn;
+                                            var fct;
+                                            var cardNum;
+                                            g = g + 1;
+
+                                            if (swap[i].type == 1) {
+                                                cardNum = swap[i].cardServiceNum;
+                                                btn = [
+                                                    builder.CardAction.imBack(session, 'agtyu0' + (swap[i].type) + (swap[i].num).toString(), 'Подтвердить отправку средств'),
+                                                    builder.CardAction.imBack(session, swap[i].type + 'удалить!' + (swap[i].num).toString(), 'Отменить участие в обмене')
+                                                ];
+                                                fct = swap[i].confirmSell;
+                                            } else {
+                                                cardNum = 'noCardNum';
+                                                btn = [
+                                                    builder.CardAction.imBack(session, 'agtyu1' + (swap[i].type) + (swap[i].num).toString(), 'Подтвердить получение средств'),
+                                                    builder.CardAction.imBack(session, swap[i].type + 'удалить!' + (swap[i].num).toString(), 'Отменить участие в обмене')
+                                                ];
+                                                fct = swap[i].confirmBuy;
+                                            }
+                                            if (swap[i].confirmBuy == 'да' || swap[i].confirmSell == 'да') {
+                                                btn.splice(1, 1);
+                                                if (swap[i].type == 0) {
+                                                    if (swap[i].confirmSell == 'да' && swap[i].user_id2 == session.message.user.id) {
+                                                        btn.splice(0, 1);
+                                                    }
+                                                } else {
+                                                    if (swap[i].confirmBuy == 'да' && swap[i].user_id2 == session.message.user.id) {
+                                                        btn.splice(0, 1);
+                                                    }
+                                                }
+                                            }
+                                            let card = Cards.createOrderCard(session, currency, swap[i].sumCripto, swap[i].sumRub, swap[i].currency, swap[i].cardService, cardNum, swap[i].type, 'no', swap[i].num).buttons(btn);
+                                            let msg = new builder.Message(session).addAttachment(card);
+                                            session.send(msg);
+                                        }
+                                    }
+
+                                    if (g != 0) {
+                                        var msg = new builder.Message(session).addAttachment(Cards.cancelButton(session));
+                                        session.send(msg);
+                                    } else {
+                                        session.send('Нет заявок в состоянии "В ожидании оплаты"');
+                                        session.beginDialog('SecondMenu');
+                                    }
+                                }
+                            );
+                    } else {
+                        if (g != 0) {
+                            var msg = new builder.Message(session).addAttachment(Cards.cancelButton(session));
+                            session.send(msg);
+                        } else {
+                            session.send('Вы ещё не создавали заявок');
+                            session.beginDialog('SecondMenu');
+                        }
+                    }
+                }
+            );
+    },
+    function (session, results) {
+        // Не удалять функцию
+    }
+]).beginDialogAction('Confirm', 'Confirm', {
+    matches: /.удалить*|отмена|^agtyu\d{2,}/,
+    dialogArgs: {
+        action: 'отмена'
+    }
+});
+
+// Подтверждение отправки/получения средств
+bot.dialog('Confirm', [
+    (session, args, next) => {
+        var re = new RegExp('удалить_'); // Для своей заявки
+        var re1 = new RegExp('удалить!'); // Для чужой заявки
+
+
+        if (session.message.text.match(re)) {
+            var num = Number(session.message.text.substring(9));
+            var type = Number(session.message.text.substr(0, 1));
+
+            console.log('Номер заявки: ' + num);
+            console.log('Тип заявки: ' + type);
+
+            db.findOrUpdateOrder('find', num, type)
+                .then(
+                    function (swap) {
+
+                        if (swap[0].end == true) {
+                            let date = Data.getTransactionData('no', String(swap[0].exitTime).substring(0, String(swap[0].exitTime).length - 3));
+                            session.send('Извините, эта заявка была завершена ' + date);
+                            session.beginDialog('SecondMenu');
+                            return;
+                        }
+                        console.log('swap: ' + swap[0]);
+                        if (swap[0].currency != 'US Dollar' && swap[0].currency != 'Euro') {
+                            session.userData.stepen = 8;
+                        } else {
+                            session.userData.stepen = 2;
+                        }
+
+                        var user_id = swap[0].user_id1;
+                        session.userData.usId2 = swap[0].user_id2;
+                        session.userData.swap = swap[0];
+                        if (type == 1) {
+
+                            db.findUser(user_id)
+                                .then(
+                                    function (account) {
+
+                                        sum = Number((swap[0].sumCripto * Math.pow(10, session.userData.stepen)).toFixed(0));
+
+                                        const transferData = {
+                                            recipient: account[0].address,
+                                            assetId: currency[swap[0].currency].assetID,
+                                            amount: sum,
+                                            feeAssetId: 'WAVES',
+                                            fee: 100000,
+                                            attachment: '',
+                                            timestamp: Date.now()
+                                        };
+
+                                        var seed = Waves.returnedWaves.Seed.fromExistingPhrase('bachelor build imitate spy sphere pizza canyon source harsh mushroom gospel bamboo update cabin order');
+
+                                        Waves.transfer(transferData, seed.keyPair)
+                                            .then(function (res) {
+                                                Swap.remove({
+                                                        num: num,
+                                                        type: type
+                                                    })
+                                                    .then(
+                                                        function (remove) {
+                                                            if (session.userData.usId2 != 'no') {
+                                                                // Когда ты удаляешь свою заявку - (делать проверку на наличие второго человека, ибо ты можешь никому наявку кинуть)
+                                                                db.findUser(session.userData.usId2)
+                                                                    .then(
+                                                                        (account) => {
+                                                                            /* #менятьТекст
+                                                                    Тут человек удаляет заявку на продажу, т.е. 
+                                                                    уведомление приходит человеку, который принимал учатие в сделке (хотел купить крипту).
+
+                                                                    session.userData.swap.sum - сумма в крипте
+                                                                
+                                                                    session.userData.swap.currency - какую валюту покупают
+
+
+                                                                    Пример текста:
+                                                                    Извините, заявка на продажу session.userData.swap.sum session.userData.swap.currency была удалена.
+
+                                                                    Чтобы купить криптовалюту - перейдите в меню RUB 🔄 Crypto.
+                                                                */
+                                                                            let _text = `Извините, заявка на продажу ${session.userData.swap.sumCripto} ${session.userData.swap.currency} была удалена. \n\0 Чтобы купить криптовалюту - перейдите в меню RUB 🔄 Crypto.`
+                                                                            nt.sendNot(session, bot, session.userData.usId2, account[0].name, _text);
+                                                                        }
+                                                                    );
+                                                            }
+                                                            /*  
+                                                                #менятьТекст
+                                                                Вы удалили сввою заявку на продажу.
+                                                                session.userData.swap.sum session.userData.swap.currency были возвращены вам на счёт.
+                                                            */
+                                                            session.send('Вы удалили заявку ' + session.userData.swap.sumCripto + ". " + session.userData.swap.currency + " были возвращены вам на счёт.");
+                                                            session.beginDialog('SecondMenu');
+                                                        }
+                                                    )
+                                            })
+                                            .catch(
+                                                function (err) {
+                                                    session.send('Недостаточно средств на балансе');
+                                                    session.beginDialog('SecondMenu');
+                                                    return;
+                                                }
+                                            );
+                                    }
+                                );
+                        } else if (type == 0 && swap[0].user_id2 != 'no') {
+                            db.findUser(swap[0].user_id2)
+                                .then(
+                                    function (account) {
+
+                                        sum = Number((swap[0].sumCripto * Math.pow(10, session.userData.stepen)).toFixed(0));
+
+                                        const transferData = {
+                                            recipient: account[0].address,
+                                            assetId: currency[swap[0].currency].assetID,
+                                            amount: sum,
+                                            feeAssetId: 'WAVES',
+                                            fee: 100000,
+                                            attachment: '',
+                                            timestamp: Date.now()
+                                        };
+
+                                        var seed = Waves.returnedWaves.Seed.fromExistingPhrase('bachelor build imitate spy sphere pizza canyon source harsh mushroom gospel bamboo update cabin order');
+
+                                        Waves.transfer(transferData, seed.keyPair)
+                                            .then(function (res) {
+                                                Swap.remove({
+                                                        num: num,
+                                                        type: type
+                                                    })
+                                                    .then(
+                                                        function (remove) {
+
+                                                            db.findUser(session.userData.usId2)
+                                                                .then(
+                                                                    (account) => {
+                                                                        /*
+                                                                            #менятьТекст
+
+                                                                            ntcard3
+                                                                            Тут удаялет заявку человек, которых хочет купить крипту, 
+                                                                            причём второй человек уже принял заявку.
+                                                                    
+                                                                            (передавать в карточку объект session.userData.swap)
+
+                                                                            session.userData.swap.sum - сумма в крипте
+                                                                        
+                                                                            session.userData.swap.currency - какую валюту покупают
+
+
+                                                                            Пример текста:
+                                                                            Извините, заявка на продажу session.userData.swap.sum session.userData.swap.currency была удалена.
+
+                                                                            Чтобы продать криптовалюту - перейдите в меню RUB 🔄 Crypto.
+
+                                                                            Средства вам были возвращены. (лень писать сколько, там в предыдущем пример есть :)  )
+                                                                        */
+                                                                        let _text = 'Извините, заявка на продажу ' + session.userData.swap.sumCripto + ' ' + session.userData.swap.currency + ' была удалена.\n\0Чтобы продать криптовалюту - перейдите в меню RUB 🔄 Crypto.\n\0Средства были возвращены вам.'
+                                                                        nt.sendNot(session, bot, session.userData.usId2, account[0].name, _text);
+                                                                        /*
+                                                                            #менятьТекст
+                                                                            Вы удалили заявку на покупку session.userData.swap.sum session.userData.swap.currency
+                                                                        */
+                                                                        session.send('Вы удалили заявку на покупку ' + session.userData.swap.sumCripto + " " + session.userData.swap.currency);
+                                                                    }
+                                                                );
+                                                            session.beginDialog('SecondMenu');
+                                                        }
+                                                    );
+                                            })
+                                            .catch(
+                                                function (err) {
+                                                    session.send('Недостаточно средств на балансе');
+                                                    session.beginDialog('SecondMenu');
+                                                    return;
+                                                }
+                                            );
+                                    }
+                                );
+                        } else {
+                            Swap.remove({
+                                    num: num,
+                                    type: type
+                                })
+                                .then(
+                                    function (swap) {
+                                        /*
+                                            swap[0] - основной объектик. Поля его можешь посмотреть в схеме swap
+
+                                            #менятьТекст
+                                            Тут просто удаляется заявка на покупку крипты, которую никто не принял
+                                        */
+                                        session.send('Вы удалили заявку');
+                                        session.beginDialog('SecondMenu');
+                                    }
+                                );
+                        }
+                    }
+                );
+        } else if (session.message.text.match(re1)) {
+            var num = Number(session.message.text.substring(9));
+            var type = Number(session.message.text.substr(0, 1));
+            db.findOrUpdateOrder('find', num, type)
+                .then(
+                    function (swap) {
+
+                        if (swap[0].end == true) {
+                            let date = Data.getTransactionData('no', String(swap[0].exitTime).substring(0, String(swap[0].exitTime).length - 3));
+                            session.send('Извините, эта заявка была завершена ' + date);
+                            session.beginDialog('SecondMenu');
+                            return;
+                        }
+
+                        if (swap[0].currency != 'US Dollar' && swap[0].currency != 'Euro') {
+                            session.userData.stepen = 8;
+                        } else {
+                            session.userData.stepen = 2;
+                        }
+
+                        session.userData.swap = swap[0];
+
+                        var user_id;
+                        if (type == 1) {
+                            user_id = swap[0].user_id1;
+
+                            if (session.message.user.id == swap[0].user_id2) {
+                                db.findOrUpdateOrder('update', num, type, 'no')
+                                    .then(
+                                        function (swap) {
+                                            db.findUser(user_id)
+                                                .then(
+                                                    (account) => {
+                                                        /*
+                                                            #менятьТекст 
+
+                                                            Тут человек, который хочет купить крипту - отказывается от заявки. 
+                                                            Т.е. уведомление приходит челику, который продаёт крипту, что от его заявки отказались.
+
+                                                            swap[0] - объект со всеми свойствами, которые ты можешь посмотреть в swap схеме.
+                                                            
+                                                        */
+                                                        let _text = 'Второй участник отказался от вашей заявки на продажу ' + swap[0].sumCripto + ' ' + swap[0].currency + '\n\0Заявку снова можно принять в меню "RUB 🔄 Crypto"';
+
+                                                        nt.sendNot(session, bot, user_id, account[0].name, _text);
+                                                        session.send('❌ Вы отказались от участия в обмене');
+                                                        session.beginDialog('SecondMenu');
+                                                        return;
+                                                    }
+                                                );
+                                        }
+                                    );
+                            }
+                        } else
+                            user_id = swap[0].user_id2;
+
+                        db.findUser(user_id)
+                            .then(
+                                function (account) {
+                                    sum = Number((swap[0].sumCripto * Math.pow(10, session.userData.stepen)).toFixed(0));
+
+                                    const transferData = {
+                                        recipient: account[0].address,
+                                        assetId: currency[swap[0].currency].assetID,
+                                        amount: sum,
+                                        feeAssetId: 'WAVES',
+                                        fee: 100000,
+                                        attachment: '',
+                                        timestamp: Date.now()
+                                    };
+
+                                    var seed = Waves.returnedWaves.Seed.fromExistingPhrase('bachelor build imitate spy sphere pizza canyon source harsh mushroom gospel bamboo update cabin order');
+
+                                    Waves.transfer(transferData, seed.keyPair)
+                                        .then(function (res) {
+                                            db.findOrUpdateOrder('update', num, type, 'no')
+                                                .then(
+                                                    function (remove) {
+                                                        db.findUser(swap[0].user_id1)
+                                                            .then(
+                                                                (account) => {
+                                                                    /*
+                                                                        #менятьТекст 
+
+                                                                        Тут человек, который хочет продать крипту - отказывается от заявки. 
+                                                                        Т.е. уведомление приходит челику, который покупает крипту, что от его заявки отказались.
+
+                                                                        swap[0] - объект со всеми свойствами, которые ты можешь посмотреть в swap схеме.
+                                                                        
+                                                                        
+                                                                    */
+                                                                    var _text;
+                                                                    if (type == 0)
+                                                                        _text = 'Второй участник отказался от вашей заявки на покупку ' + session.userData.swap.sumCripto + ' ' + session.userData.swap.currency + '.\n\0Заявку снова могут принять в меню "RUB 🔄 Crypto"';
+                                                                    else
+                                                                        _text = 'Второй участник отказался от вашей заявки на продажу ' + session.userData.swap.sumCripto + ' ' + session.userData.swap.currency + '.\n\0Заявку снова могут принять в меню "RUB 🔄 Crypto"';
+                                                                    nt.sendNot(session, bot, session.userData.swap.user_id1, account[0].name, _text);
+                                                                    /*
+                                                                        #менятьТекст 
+
+                                                                        Ниже написать, что средства были возвращены вам.                                                                     
+                                                                        
+                                                                    */
+                                                                    session.send('❌ Вы отказались от участия в обмене');
+                                                                    if (type == 0)
+                                                                        session.send(session.userData.swap.sumCripto + ' ' + session.userData.swap.currency + ' были возвращены на ваш счёт');
+                                                                    session.beginDialog('SecondMenu');
+                                                                }
+                                                            );
+                                                    }
+                                                );
+                                        })
+                                        .catch(
+                                            function (err) {
+                                                session.send('❌ Недостаточно средств на балансе');
+                                                session.beginDialog('SecondMenu');
+                                                return;
+                                            }
+                                        );
+                                }
+                            );
+                    });
+        } else if (session.message.text == 'отмена') {
+            session.beginDialog('SecondMenu');
+        } else {
+            var num = Number(session.message.text.substring(7));
+            var type = Number(session.message.text.substr(6, 1));
+            var whatConfirm = Number(session.message.text.substr(5, 1));
+            db.findOrUpdateOrder('find', num, type)
+                .then(
+                    function (swap) {
+                        // Проверка на завершённость сделки
+                        if (swap[0].end == true) {
+                            let date = Data.getTransactionData('no', String(swap[0].exitTime).substring(0, String(swap[0].exitTime).length - 3));
+                            session.send('Извините, эта заявка была завершена ' + date);
+                            session.beginDialog('SecondMenu');
+                            return;
+                        }
+                        if (whatConfirm == 0) {
+                            Swap.update({
+                                    num: num,
+                                    type: type
+                                }, {
+                                    confirmBuy: 'да'
+                                })
+                                .then(
+                                    function (swap) {
+                                        db.findOrUpdateOrder('find', num, type)
+                                            .then(
+                                                function (swap) {
+                                                    var usId;
+                                                    if (session.message.user.id == swap[0].user_id1)
+                                                        usId = swap[0].user_id2;
+                                                    else
+                                                        usId = swap[0].user_id1;
+
+                                                    db.findUser(usId)
+                                                        .then(function (account) {
+                                                            /*
+                                                                #менятьТекст 
+
+                                                                Тут человек, который хочет купить крипту - подтверждает перевод средств. 
+                                                                Т.е. уведомление приходит челику, который продаёт крипту.
+
+                                                                swap[0] - объект со всеми свойствами, которые ты можешь посмотреть в swap схеме.     
+                                                                
+                                                                1. Передаёшь 0 - как цифреку после "а" и swap
+                                                                2. в карточке:   а0+swap[0].type+swap[0].num
+                                                            */
+                                                            let card = Cards.createNtCard(session, swap[0].type, swap[0].num, '1');
+                                                            let _text = `Вам перевели ${swap[0].sumRub} рублей. Подтвердите получение, чтобы другой человек получил средства`;
+                                                            nt.sendNot(session, bot, usId, account[0].name, _text, true, card);
+
+                                                            session.send('✅ Вы подтвердили перевод средств');
+                                                            session.beginDialog('SecondMenu');
+                                                        });
+                                                }
+                                            );
+                                    }
+                                );
+                        } else {
+                            Swap.update({
+                                    num: num,
+                                    type: type
+                                }, {
+                                    confirmSell: 'да'
+                                })
+                                .then(
+                                    function (swap) {
+                                        session.beginDialog('payOrder', {
+                                            num: num,
+                                            type: type,
+                                            update: 'yes'
+                                        });
+                                    }
+                                );
+                        }
+                    });
+        }
+    }
+]).triggerAction({
+    matches: /^agtyu\d{2,}/
+});
+
+bot.dialog('payOrder', [
+    (session, args, next) => {
+        if (args.num) {
+            session.userData.num = args.num;
+            session.userData.type = args.type;
+            session.userData.update = args.update;
+        }
+
+        Swap.find({
+                num: session.userData.num,
+                type: session.userData.type
+            })
+            .then(
+                function (swap) {
+                    if (swap[0]) {
+                        var id;
+
+                        if (session.userData.type == 1) {
+                            id = swap[0].user_id2;
+                            elseId = swap[0].user_id1;
+                        } else {
+                            id = swap[0].user_id1;
+                            elseId = swap[0].user_id2;
+                        }
+
+
+                        db.findUser(id)
+                            .then(
+                                function (account) {
+                                    session.userData.name = account[0].name;
+                                    session.userData.user_id = account[0].user_id;
+                                    session.userData.swapAddress = account[0].address;
+                                    // session.userData.swapEncrSeed = account[0].encrSeed;
+                                    session.userData.swapCurrency = swap[0].currency;
+                                    session.userData.swapAssetId = currency[swap[0].currency].assetID;
+                                    session.userData.swapSum = swap[0].sumCripto;
+                                    db.findUser(elseId)
+                                        .then((account1) => {
+                                            // session.userData.elseAddress = account1[0].address;
+                                            Waves.getBalance(session, '3PGe5geMhpaRMBWp3AfSbFnaVpvZ8zHL8yd', session.userData.swapAssetId, 'noCourse',
+                                                function (balance) {
+                                                    session.userData.balance = balance;
+                                                    next();
+                                                }
+                                            );
+                                        })
+                                }
+                            );
+                    }
+                }
+            );
+    },
+    (session, results) => {
+        console.log(session.userData.balance);
+        if (session.userData.swapSum <= session.userData.balance) {
+            Waves.checkWavesBalance('3PGe5geMhpaRMBWp3AfSbFnaVpvZ8zHL8yd', function (wavesBalance) {
+                if (
+                    (session.userData.swapCurrency.name == 'Waves' && (session.userData.swapSum + 0.001) <= session.userData.balance) ||
+                    (session.userData.swapCurrency.name != 'Waves' && 0.001 < wavesBalance)
+                ) {
+                    sum = Number((session.userData.swapSum * Math.pow(10, session.userData.stepen)).toFixed(0));
+
+                    const transferData = {
+                        recipient: session.userData.swapAddress,
+                        assetId: session.userData.swapAssetId,
+                        amount: sum,
+                        feeAssetId: 'WAVES',
+                        fee: 100000,
+                        attachment: '',
+                        timestamp: Date.now()
+                    };
+                    var seed = Waves.returnedWaves.Seed.fromExistingPhrase('bachelor build imitate spy sphere pizza canyon source harsh mushroom gospel bamboo update cabin order');
+
+                    Waves.transfer(transferData, seed.keyPair)
+                        .then(
+                            function (response) {
+                                console.log(response);
+                                Swap.update({
+                                        num: Number(session.userData.num),
+                                        type: Number(session.userData.type)
+                                    }, {
+                                        end: true,
+                                        exitTime: Date.now()
+                                    })
+                                    .then(function (swap) {
+
+                                        /*
+                                            #менятьТекст 
+
+                                            Тут человек, который хочет продать крипту - подтверждает получение рублей. 
+                                            Т.е. уведомление приходит челику, который покупает крипту.
+
+                                            Написать что-то в роде:
+                                            Заявка завершилась успешно. Вам начислено N *киптовалюта*.
+
+                                            Опять же объект swap[0] и играешься с его свойствами.
+                                        */
+                                        let _text = `Вам перевели ${session.userData.swapSum} ${session.userData.swapCurrency}. Обмен завершился успешно.`;
+                                        nt.sendNot(session, bot, session.userData.user_id, session.userData.name, _text);
+
+                                        /*
+                                            #менятьТекст
+                                            N *крипта* переведено второму челику, поздравлямба, сделочка зашла на ура.
+                                        */
+                                        session.send('✅ Вы подтвердили получение денег');
+                                        session.send('✅ Перевод прошёл успешно');
+                                        session.beginDialog('SecondMenu');
+                                    });
+                            }
+                        )
+                        .catch(
+                            function (err) {
+                                console.log('В кэтче' + err);
+                                session.send('❗️❗️ Проблемы с переводом. Обратитесь в службу поддержки @StSasha');
+                                session.beginDialog('SecondMenu');
+                            }
+                        );
+                }
+            });
+        } else {
+            console.log('В элсе');
+            session.send('❗️❗️ Проблемы с переводом. Обратитесь в службу поддержки @StSasha');
+            session.beginDialog('SecondMenu');
+        }
+    }
+]);
+// .reloadAction('payOrder', null, {
+//     matches: /![0-9]/i
+// });
+
+
+
+var sellersService = {
+    "Сбербанк": {
+        name: "Сбербанк"
+    },
+    // "Альфа-банк": {
+    //     name: "Альфа-банк"
+    // },
+    // "Тинькофф": {
+    //     name: "Тинькофф"
+    // },
+    // "Яндекс.Деньги": {
+    //     name: "Яндекс.Деньги"
+    // },
+    "QIWI": {
+        name: "QIWI"
+    },
+    "Назад": {
+        name: "Назад"
+    }
+}
+
+
+bot.dialog('sellCryptaToRub', [
+    function (session, results, next) {
+        Course.inRub(session, '3cur', 'RUB', true, currency1)
+            .then((courseCur) => {
+                session.userData.courseCur = courseCur;
+                builder.Prompts.choice(session, '💰 Пожалуйста, выберите валюту, которую вы хотите **продать:**', courseCur, {
+                    listStyle: builder.ListStyle.button
+                });
+            });
+    },
+    function (session, results) {
+        if (results.response.entity == 'Назад') {
+            session.beginDialog('swap');
+            return;
+        }
+
+        if (session.userData.courseError != 1) {
+            session.userData.zayvkaCrypto = currency[session.userData.courseCur[results.response.entity]];
+        } else {
+            session.userData.zayvkaCrypto = currency[results.response.entity];
+        }
+
+        var sellersServiceWithCount = {};
+        db.swapPay(0, session.userData.zayvkaCrypto.name, sellersService, (countObj) => {
+            for (let i in countObj) {
+                if (i != 'Назад') {
+                    sellersServiceWithCount[i + ' (' + countObj[i] + ')'] = i;
+                } else {
+                    sellersServiceWithCount[i] = 'отмена';
+                }
+
+            }
+            session.userData.sellersServiceWithCount = sellersServiceWithCount;
+            builder.Prompts.choice(session, '💳 Выберите **удобный** для вас способ **оплаты:**', sellersServiceWithCount, {
+                listStyle: builder.ListStyle.button
+            });
+        });
+    },
+    (session, results) => {
+        if (results.response.entity == 'Назад') {
+            session.beginDialog('sellCryptaToRub');
+            return;
+        }
+
+        session.userData.sellersService = session.userData.sellersServiceWithCount[results.response.entity];
+        session.beginDialog('sellCrMenu');
+    }
+]);
+
+
+bot.dialog('sellRubToCrypta', [
+    function (session, results, next) {
+        Course.inRub(session, '3cur', 'RUB', true, currency1)
+            .then((courseCur) => {
+                session.userData.courseCur = courseCur;
+                builder.Prompts.choice(session, '💰 Пожалуйста, выберите валюту, которую вы хотите **купить:**', courseCur, {
+                    listStyle: builder.ListStyle.button
+                });
+            });
+        // builder.Prompts.choice(session, "Пожалуйста, выберете валюту, которую хотите купить", currency, {
+        //     listStyle: builder.ListStyle.button
+        // })
+    },
+    function (session, results) {
+        if (results.response.entity == 'Назад') {
+            session.beginDialog('swap');
+            return;
+        }
+
+        if (session.userData.courseError != 1) {
+            session.userData.zayvkaCrypto = currency[session.userData.courseCur[results.response.entity]];
+        } else {
+            session.userData.zayvkaCrypto = currency[results.response.entity];
+        }
+
+        var sellersServiceWithCount = {};
+
+        db.swapPay(1, session.userData.zayvkaCrypto.name, sellersService, (countObj) => {
+            for (let i in countObj) {
+                if (i != 'Назад') {
+                    sellersServiceWithCount[i + ' (' + countObj[i] + ')'] = i;
+                } else {
+                    sellersServiceWithCount[i] = 'отмена';
+                }
+
+            }
+            session.userData.sellersServiceWithCount = sellersServiceWithCount;
+            builder.Prompts.choice(session, '💳 Выберите **удобный** для вас способ **оплаты:**', sellersServiceWithCount, {
+                listStyle: builder.ListStyle.button
+            });
+        });
+    },
+    (session, results) => {
+        if (results.response.entity == 'Назад') {
+            session.beginDialog('sellRubToCrypta');
+            return;
+        }
+
+        session.userData.sellersService = session.userData.sellersServiceWithCount[results.response.entity];
+        session.beginDialog('buyCrMenu');
+    }
+]);
+
+bot.dialog('buyCrMenu', [
+    (session, args) => {
+        // builder.Prompts.choice(session, 'Вы можете создать заявку на покупку или посмотреть заявки остальных пользователей бота', '🗓 Создать заявку|👀 Посмотреть заявки|❌ Назад', {
+        //     listStyle: builder.ListStyle.button
+        // });
+        var type = {
+            type: 1,
+            currency: session.userData.zayvkaCrypto.name
+        }
+        session.beginDialog('findOrder', type);
+    },
+    // (session, results) => {
+    //     switch(results.response.index) {
+    //         case 0:
+    //             session.beginDialog('BuyCrypto');
+    //             break;
+    //         case 1: 
+    //             var type = {
+    //                 type: 0,
+    //                 currency: session.userData.zayvkaCrypto.name
+    //             }
+    //             session.beginDialog('findOrder', type);
+    //             break;
+    //         case 2:
+    //             session.beginDialog('swap');
+    //             break;
+    //     }
+    // }
+]);
+bot.dialog('sellCrMenu', [
+    (session, args) => {
+        // builder.Prompts.choice(session, 'Вы можете создать заявку на продажу или посмотреть заявки остальных пользователей бота', '🗓 Создать заявку|👀 Посмотреть заявки|❌ Назад', {
+        //     listStyle: builder.ListStyle.button
+        // });
+        var type = {
+            type: 0,
+            currency: session.userData.zayvkaCrypto.name
+        }
+        session.beginDialog('findOrder', type);
+    },
+    // (session, results) => {
+    //     switch(results.response.index) {
+    //         case 0:
+    //             session.beginDialog('sellCrypto');
+    //             break;
+    //         case 1: 
+    //             var type = {
+    //                 type: 1,
+    //                 currency: session.userData.zayvkaCrypto.name
+    //             }
+    //             session.beginDialog('findOrder', type);
+    //             break;
+    //         case 2:
+    //             session.beginDialog('swap');
+    //             break;
+    //     }
+    // }
+]);
+
+
+bot.dialog('BuyCrypto', [
+    (session) => {
+        Course.inRub(session, currency[(session.userData.zayvkaCrypto).name].ticker, 'RUB')
+            .then(
+                function (res) {
+                    session.userData.courserub = res;
+                    session.userData.errCheck = 0;
+                    session.send("🔐 Для **гарантии совершения сделки** бот выступает посрдеником между участниками.\n\n **Комиссия** при переводе составляет 0.001 Waves");
+                    builder.Prompts.text(session, `📈 Курс одного ${session.userData.zayvkaCrypto.name} к рублю равен ${session.userData.courserub} RUB. **Сколько ${session.userData.zayvkaCrypto.name} вы  покупаете?**`);
+                }
+            )
+            .catch((err) => {
+                session.userData.errCheck = 1;
+                session.userData.courserub = 0;
+                builder.Prompts.text(session, `Сколько ${session.userData.zayvkaCrypto.name} вы  покупаете?`);
+            })
+    },
+    (session, results) => {
+        var re = new RegExp('.', '');
+
+        var sum;
+
+        // Меняем точку на запятую
+        if (results.response.search(re) != 0) {
+            sum = Number(results.response);
+        } else {
+            sum = Number(results.response.replace(',', "."));
+        }
+        // session.userData.zayvkaDiap = "None";
+        session.userData.type = 0;
+
+        //тут надо диапозон чекать
+        session.userData.cryptoSell = Number(sum);
+
+
+
+        session.userData.cryptoSellrub = session.userData.courserub * session.userData.cryptoSell;
+
+        if (session.userData.errCheck == 0) {
+            session.send(`Вы покупаете ${session.userData.cryptoSell} ${session.userData.zayvkaCrypto.name}. Это **${Number(session.userData.cryptoSellrub).toFixed(2)}** **RUB**`);
+            session.beginDialog('swaporder');
+        } else {
+            session.send(`Вы покупаете ${session.userData.cryptoSell} ${session.userData.zayvkaCrypto.name}`);
+            session.beginDialog('swaporder');
+        }
+
+    }
+]).triggerAction({
+    matches: /buyCrypto/
+});
+
+
+
+bot.dialog('sellCrypto', [
+    (session) => {
+
+        Course.inRub(session, currency[(session.userData.zayvkaCrypto).name].ticker, 'RUB')
+            .then(
+                function (res) {
+                    session.userData.courserub = res;
+                    session.userData.errCheck = 0;
+                    builder.Prompts.text(session, `📈 Курс одного ${session.userData.zayvkaCrypto.name} к рублю равен ${session.userData.courserub} RUB. **Сколько ${session.userData.zayvkaCrypto.name} вы  продаете?**`);
+                }
+            )
+            .catch((err) => {
+                session.userData.errCheck = 1;
+                builder.Prompts.text(session, `Сколько ${session.userData.zayvkaCrypto.name} вы  продаете?`);
+            })
+    },
+    (session, results, next) => {
+        var re = new RegExp('.', '');
+
+        var sum;
+
+        // Меняем точку на запятую
+        if (results.response.search(re) != 0) {
+            sum = Number(results.response);
+        } else {
+            sum = Number(results.response.replace(',', "."));
+        }
+        // session.userData.zayvkaDiap = "None";
+        //тут надо диапозон чекать
+        session.userData.cryptoSell = Number(sum);
+
+
+
+        session.userData.cryptoSellrub = session.userData.courserub * session.userData.cryptoSell;
+
+        if (session.userData.errCheck == 0) {
+            session.send(`Вы продаете ${session.userData.cryptoSell} ${session.userData.zayvkaCrypto.name}, это ${Number(session.userData.cryptoSellrub).toFixed(2)} RUB`);
+            session.beginDialog('enterCard1');
+        } else {
+            session.send(`Вы продаете ${session.userData.cryptoSell} ${session.userData.zayvkaCrypto.name}`);
+            session.beginDialog('enterCard1');
+        }
+
+    }
+]).triggerAction({
+    matches: /sellCrypto/
+});
+bot.dialog('enterCard1', [
+    (session, results, next) => {
+
+        if (session.userData.sellersService != 'QIWI' && session.userData.sellersService != 'Яндекс.Деньги') {
+            builder.Prompts.number(session, `Введите номер вашей карты ${session.userData.sellersService}\n\nНапример: 4568673647833762`);
+        } else if (session.userData.sellersService == 'QIWI') {
+            builder.Prompts.number(session, `Введите адрес вашего кошелька ${session.userData.sellersService}\n\nНапример: 79134564548`);
+        } else {
+            builder.Prompts.number(session, `Введите номер вашего кошелька ${session.userData.sellersService}\n\nНапример: 4568673647833762`);
+        }
+        let card = Cards.cancelButton(session);
+        let msg = new builder.Message(session).addAttachment(card);
+        session.send(msg);
+        if (session.message.text == 'отмена') {
+            session.beginDialog('SecondMenu');
+            return;
+        }
+    },
+    (session, results) => {
+        if (results.response == 'отмена') {
+            session.beginDialog('SecondMenu');
+            return;
+        }
+        if (String(results.response).length != 16 && session.userData.sellersService != 'QIWI') {
+            session.send('Введите **16 цифр** без пробелов');
+            session.beginDialog('enterCard1');
+            return;
+        } else
+        if (String(results.response).length != 11 && session.userData.sellersService == 'QIWI' && session.userData.sellersService != 'Сбербанк' && session.userData.sellersService != 'Яндекс.Деньги') {
+            session.send('Введите **11 цифр** без пробелов');
+            session.beginDialog('enterCard1');
+            return;
+        }
+        session.userData.numberservice = results.response;
+
+        session.userData.type = 1;
+
+        // Номер счета
+
+        // session.userData.sellersService
+        //  платежная система
+
+
+        // session.userData.zayvkaCrypto.name
+        //  название  крипты для продажи
+
+        // session.userData.cryptoSell
+        //  сумма в крипте
+
+        // session.userData.cryptoSellrub
+        // сумма в рублях
+        session.beginDialog('swaporder');
+    }
+]);
+
+bot.dialog('swaporder', [
+    function (session) {
+
+        var cur = session.userData.zayvkaCrypto.name;
+        // Тут хранится то, какую валюту выбрал пользователь
+
+        var delta = session.userData.zayvkaDiap;
+        // А тут диапозон
+
+        var type = session.userData.type;
+        // а тут тип : продажа / покупка крипты ( если 1, то покупает крипту за рубли, 0 = продает)
+
+        var cardService;
+        var cardServicenumber;
+
+        var sumCripto = Number(session.userData.cryptoSell);
+
+        var sumrub = Number(session.userData.cryptoSellrub);
+
+        if (type == 0) {
+            cardService = session.userData.sellersService;
+            cardServicenumber = 0;
+
+            db.createOrder(session.message.user.id, cur, sumCripto, sumrub, cardService, cardServicenumber, type);
+
+            var card = Cards.createOrderCard(session, currency, sumCripto, sumrub, cur, cardService, 'noCardNum', type);
+            var msg = new builder.Message(session).addAttachment(card);
+            session.send(msg);
+
+            session.send("Заявка создана");
+            session.beginDialog('swap');
+
+        } else {
+            cardService = String(session.userData.sellersService);
+            cardServicenumber = Number(session.userData.numberservice);
+
+            if (cur != 'US Dollar' && cur != 'Euro') {
+                session.userData.stepen = 8;
+            } else {
+                session.userData.stepen = 2;
+            }
+
+            sum = Number(((session.userData.cryptoSell) * Math.pow(10, session.userData.stepen)).toFixed(0));
+
+            const transferData = {
+                recipient: '3PGe5geMhpaRMBWp3AfSbFnaVpvZ8zHL8yd',
+                assetId: currency[session.userData.zayvkaCrypto.name].assetID,
+                amount: sum,
+                feeAssetId: 'WAVES',
+                fee: 100000,
+                attachment: '',
+                timestamp: Date.now()
+            };
+
+            // Комиссия
+            const transferData1 = {
+                recipient: '3PGe5geMhpaRMBWp3AfSbFnaVpvZ8zHL8yd',
+                assetId: 'WAVES',
+                amount: 100000,
+                feeAssetId: 'WAVES',
+                fee: 100000,
+                attachment: '',
+                timestamp: Date.now()
+            };
+
+            db.findUser(session.message.user.id)
+                .then(
+                    function (account) {
+                        var seed = Waves.wavesAcc(session, 'decryptSeed', session.message.user.id, account[0].encrSeed)
+                        Waves.transfer(transferData, seed.keyPair)
+                            .then(function (res) {
+                                Waves.transfer(transferData1, seed.keyPair)
+                                    .then(function (res) {
+                                        db.createOrder(session.message.user.id, cur, sumCripto, sumrub, cardService, cardServicenumber, type);
+
+                                        var card = Cards.createOrderCard(session, currency, sumCripto, sumrub, cur, cardService, 'noCardNum', type);
+                                        var msg = new builder.Message(session).addAttachment(card);
+                                        session.send(msg);
+
+                                        session.send("Заявка создана");
+                                        session.beginDialog('swap');
+                                    });
+                            })
+                            .catch(
+                                function (err) {
+                                    session.send('Недостаточно средств на балансе');
+                                    session.beginDialog('SecondMenu');
+                                    return;
+                                }
+                            );
+                    }
+                );
+        }
+    }
+]);
+
+// ОБМЕН КРИПТА-ФИАТ КОНЕЦ
 
 bot.dialog('shapeshift', [
     function (session, results) {

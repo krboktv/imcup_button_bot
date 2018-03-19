@@ -7,6 +7,7 @@ const Transaction = require('./schemes/transactionScheme.js');
 const Recomendations = require('./schemes/recomendationScheme.js');
 const Out = require('./schemes/outScheme.js');
 const Exchange = require('./schemes/exchangeScheme.js');
+const Swap = require('./schemes/swapScheme.js');
 const Disput = require('./schemes/disputSchema.js');
 const Waves = require("./waves.js");
 
@@ -140,6 +141,133 @@ module.exports.updateRecomendattions = function updateRecomendattions(user_id, n
       }
     );
 }
+
+module.exports.createOrder = function createOrder(user_id1, currency, sumCripto, sumRub, cardService, cardServiceNum,type) {
+  Swap.find({type: type}, {
+    num: 1
+  }, {
+    sort: {
+      num: -1
+    }
+  }).limit(1).then(function (lastOrder) {
+    var num;
+    if (lastOrder[0]) {
+      num = lastOrder[0].num + 1;
+    } else {
+      num = 1;
+    }
+
+    Swap.create({
+      num: num,
+      user_id1: user_id1,
+      currency: currency,
+      type: Number(type),
+      sumCripto: Number(sumCripto),
+      sumRub: Number(sumRub),
+      cardService: cardService,
+      cardServiceNum: cardServiceNum
+    }, function (err, doc) {
+      if (err) return console.log(err);
+      console.log('Создан ордер: ' + doc);
+    });
+  });
+}
+
+module.exports.findOrders = function findOrders(cur, typeOrders, skip, cardService, callback) {
+  if (cur!='all') {
+    Swap.find({
+          type: typeOrders,
+          currency: cur,
+          cardService: cardService
+        }, {
+
+        }, {
+          sort: {
+            num: -1
+          }
+        },
+        function (err, doc) {
+
+        }
+      )
+      .skip(skip)
+      .limit(5)
+      .then(
+        function (swaps) {
+          callback(swaps);
+        }
+      );
+    } else {
+      Swap.find({
+        type: typeOrders,
+      }, {
+
+      }, {
+        sort: {
+          num: -1
+        }
+      },
+      function (err, doc) {
+
+      }
+    )
+    .skip(skip)
+    .limit(5)
+    .then(
+      function (swaps) {
+        callback(swaps);
+      }
+    );
+    }
+}
+
+module.exports.findOrUpdateOrder = (whatAction,num,type,user_id2) => {
+    return new Promise((resolve, reject) => {
+      if (whatAction == 'find') {
+        Swap.find({
+          num: Number(num),
+          type: type
+        })
+          .then(function(swap){resolve(swap)}); 
+      } else {
+        Swap.update({
+          num: Number(num),
+          type: type
+      }, {
+          user_id2: user_id2,
+      }, function (err, doc) {
+          resolve(doc);
+      });
+      }
+    });
+}
+
+module.exports.swapPay = (type, currency, sellersService, callback) => {
+    Swap.find({
+      type: type,
+      currency: currency,
+    }, (err,doc) => {
+      
+    })
+    .then(
+      (obj) => {
+        var cardObj = {};
+        var index;
+        for (var j in sellersService) {
+          cardObj[j] = 0;
+          for (var i in obj) {
+            if (j == obj[i].cardService && obj[i].user_id2 == 'no') {
+              index = cardObj[j];
+              delete cardObj[j];
+              cardObj[j] = index+1;
+            }
+          }
+        }
+        callback(cardObj);
+      }
+    );
+}
+
 
 // Трекеринг вывода на другие блокчейны НАЧАЛО
 module.exports.outCurrency = (user_id, _currency, _sum, _address) => {
