@@ -3577,6 +3577,17 @@ bot.dialog('enterDisputPrice', [
             sum = Number(results.response.replace(',', "."));
         }
 
+        session.userData.sum = sum;
+
+        builder.Prompts.choice(session, 'Подтвердить создание спора.\n\nС вас спишется '+session.userData.sum+' '+currency[session.userData.currency].ticker, 'Да|Нет');
+    },
+    (session, results) => {
+        if (results.response.index == 1) {
+            session.send('Вы отменили оздание спора');
+            session.beginDialog('rates');
+            return;
+        }
+
         db.findUser(session.message.user.id)
             .then(
                 (account) => {
@@ -3585,7 +3596,7 @@ bot.dialog('enterDisputPrice', [
                     const transferData = {
                         recipient: '3PM4AZgoddsCrsgGCD9ZQVq2KF4PCTjtK4w',
                         assetId: currency[session.userData.currency].assetID,
-                        amount: Number((Number(sum) * Math.pow(10, 8)).toFixed(0)) + 100000,
+                        amount: Number((Number(session.userData.sum) * Math.pow(10, 8)).toFixed(0)) + 100000,
                         feeAssetId: 'WAVES',
                         fee: 100000,
                         attachment: '',
@@ -3596,7 +3607,7 @@ bot.dialog('enterDisputPrice', [
                         .then(
                             (done) => {
                                 session.send('Вы создали спор');
-                                db.createDisput(session.message.user.id, session.userData.disputType, session.userData.match, session.userData.score, session.userData.currency, sum);
+                                db.createDisput(session.message.user.id, session.userData.disputType, session.userData.match, session.userData.score, session.userData.currency, session.userData.sum);
                                 session.beginDialog('rates');
                             }
                         )
