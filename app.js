@@ -4553,7 +4553,7 @@ bot.dialog('rates', [
         }
     }
 ]).triggerAction({
-    matches: "bets|rates"
+    matches: /^(bets|rates)/
 })
 
 bot.dialog('myDisputs', [
