@@ -4694,7 +4694,7 @@ bot.dialog('takePlaceInDisput', [
                 return;
             }
             for (let i in disputsArr) {
-                let card = Cards.disputCard(session, disputsArr[i].num, disputsArr[i].whatType, disputsArr[i].match, disputsArr[i].score, disputsArr[i].currency, disputsArr[i].price)
+                let card = Cards.disputCard(session, disputsArr[i].num, disputsArr[i].whatType, disputsArr[i].match, disputsArr[i].score1, disputsArr[i].currency, disputsArr[i].price)
                 let msg = new builder.Message(session).addAttachment(card);
                 session.send(msg);
 
