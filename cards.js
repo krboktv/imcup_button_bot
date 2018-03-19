@@ -163,6 +163,14 @@ module.exports.cancelButton = function cancelButton(session) {
         ])
 }
 
+module.exports.cancelButtonToRate = function cancelButton(session) {
+    return new builder.HeroCard(session)
+        .text('Нажмите кнопку, чтобы вернуться в меню споров')
+        .buttons([
+            builder.CardAction.imBack(session, 'rates', 'Назад')
+        ])
+}
+
 // СВОП КРИПТА ФИАТ
 module.exports.createOrderCard = (session,currency,sumCripto, sumRub, cur, cardService, cardServiceNum, type, isFind, num) => {
     var btn;
@@ -271,7 +279,7 @@ module.exports.confirmSendFunds = (session) => {
 
 
 module.exports.disputCard = (session, _num, type, _match, _score, _currency, _price) => {
-    var disput = '**Спор номер** '+_num+': \n\n'+type+'\n\n**Матч**: '+_match+'\n\n**Счёт**: '+_score+'\n\nВалюта: '+_currency+'\n\nСумма спора: '+_price;
+    var disput = '**Спор №** '+_num+': \n\n'+type+'\n\n**Матч**: '+_match+'\n\n**Счёт**: '+_score+'\n\nВалюта: '+_currency+'\n\nСумма спора: '+_price;
     return new builder.HeroCard(session)
     .text(disput)
     .buttons([
@@ -289,7 +297,7 @@ module.exports.myDisputCard = (session, _num, type, _match, _score, isAccept) =>
         buttons.push(builder.CardAction.imBack(session, String('deleteDisput'+_num), 'Удалить'));
     } 
 
-    var disput = '**Спор номер** '+_num+': \n\n'+type+'\n\n**Матч**: '+_match+'\n\n**Счёт**: '+_score+'\n\n**Второй участник**: '+secondPerson;
+    var disput = '**Спор №** '+_num+': \n\n'+type+'\n\n**Матч**: '+_match+'\n\n**Счёт**: '+_score+'\n\n**Второй участник**: '+secondPerson;
     return new builder.HeroCard(session)
     .text(disput)
     .buttons(buttons)

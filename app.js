@@ -4553,12 +4553,11 @@ bot.dialog('rates', [
         }
     }
 ]).triggerAction({
-    matches: "bets"
+    matches: "bets|rates"
 })
 
 bot.dialog('myDisputs', [
     (session) => {
-
         db.findDisputsByUserId(session.message.user.id, (disputsArr) => {
             if (disputsArr.length == 0) {
                 session.send('Вы ещё не создали ни одного спора')
@@ -4576,7 +4575,7 @@ bot.dialog('myDisputs', [
                 session.send(msg);
 
                 if (i == (disputsArr.length - 1)) {
-                    let card = Cards.cancelButton(session);
+                    let card = Cards.cancelButtonToRate(session);
                     let msg = new builder.Message(session).addAttachment(card);
                     session.send(msg);
                 }
@@ -4634,7 +4633,8 @@ bot.dialog('createDisput', [
         session.beginDialog('enterDisputPrice');
     }
 ]);
-    bot.dialog('enterDisputPrice', [
+
+bot.dialog('enterDisputPrice', [
     (session) => {
         builder.Prompts.text(session, 'Введите сумму, на которую будете спорить');
     },
@@ -4654,17 +4654,17 @@ bot.dialog('createDisput', [
             .then(
                 (account) => {
                     let seed = Waves.wavesAcc(session, 'decryptSeed', session.message.user.id, account[0].encrSeed);
-                    
+
                     const transferData = {
                         recipient: '3PM4AZgoddsCrsgGCD9ZQVq2KF4PCTjtK4w',
                         assetId: currency[session.userData.currency].assetID,
-                        amount: Number((Number(sum) * Math.pow(10, 8)).toFixed(0)),
+                        amount: Number((Number(sum) * Math.pow(10, 8)).toFixed(0)) + 100000,
                         feeAssetId: 'WAVES',
                         fee: 100000,
                         attachment: '',
                         timestamp: Date.now()
                     };
-            
+
                     Waves.transfer(transferData, seed.keyPair)
                         .then(
                             (done) => {
@@ -4677,7 +4677,9 @@ bot.dialog('createDisput', [
                             (err) => {
                                 session.send('Ошибка в создании спора. Возможно, у вас недостаточно средств на балнсе.\n\n\0\n\nПопробуйте ввести другую сумму');
                                 session.beginDialog('enterDisputPrice');
-                                Cards.cancelButton(session);
+                                let card = Cards.cancelButtonToRate(session);
+                                let msg = new builder.Message(session).addAttachment(card);
+                                session.send(msg);
                             }
                         );
                 }
@@ -4699,7 +4701,7 @@ bot.dialog('takePlaceInDisput', [
                 session.send(msg);
 
                 if (i == (disputsArr.length - 1)) {
-                    let card = Cards.cancelButton(session);
+                    let card = Cards.cancelButtonToRate(session);
                     let msg = new builder.Message(session).addAttachment(card);
                     session.send(msg);
                 }
@@ -4711,10 +4713,52 @@ bot.dialog('takePlaceInDisput', [
 bot.dialog('deleteDisput', [
     (session) => {
         var num = Number(session.message.text.substring(12));
-        db.removeDisputsByNum(num, (isTrue) => {
-            session.send('Вы удалили спор');
-            session.beginDialog('myDisputs');
+        session.userData.num = num;
+        db.findDisputsByNum(session.userData.num, (disput) => {
+            builder.Prompts.choice(session, 'Вы точно желаете удалить спор №' + num + '?\n\n После удаления вам вернётся ' + disput.price + ' ' + currency[disput.currency].ticker, 'Да|Нет');
         });
+    },
+    (session, results) => {
+        if (results.response.index == 1) {
+            session.send('Спор не был удален');
+            session.beginDialog('takePlaceInDisput');
+            return;
+        }
+
+        db.findDisputsByNum(session.userData.num, (disput) => {
+            var seed = Waves.wavesAcc(session, 'addNewAcc', session.message.user.id, 'layer model party horse metal aspect custom horn forum biology mask salt ahead ribbon comfort', bot);
+
+            db.findUser(disput.user_id1)
+                .then(
+                    (account) => {
+                        const transferData = {
+                            recipient: account[0].address,
+                            assetId: currency[disput.currency].assetID,
+                            amount: Number((Number(disput.price) * Math.pow(10, 8)).toFixed(0)),
+                            feeAssetId: 'WAVES',
+                            fee: 100000,
+                            attachment: '',
+                            timestamp: Date.now()
+                        };
+                        Waves.transfer(transferData, seed[1].keyPair)
+                            .then(
+                                (done) => {
+                                    db.removeDisputsByNum(session.userData.num, (isTrue) => {
+                                        session.send('Вы удалили спор\n\nДеньги были возвращены вам на аккаунт');
+                                        session.beginDialog('myDisputs');
+                                    });
+                                }
+                            )
+                            .catch(
+                                (err) => {
+                                    session.send('Не удалось удалить спор');
+                                    session.beginDialog('myDisputs');
+                                }
+                            );
+                    }
+                );
+        });
+
     }
 ]).triggerAction({
     matches: /^deleteDisput\d{1,}/
@@ -4730,12 +4774,13 @@ bot.dialog('acceptDisput', [
     (session, results) => {
         session.userData.score2 = results.response;
         db.findDisputsByNum(session.userData.num, (disput) => {
-            builder.Prompts.choice(session, 'Подтвердить участие в спорте. (с вас спишется '+disput.price+' '+currency[disput.currency].ticker+')', 'Да|Нет');
+            builder.Prompts.choice(session, 'Подтвердить участие в спорте. (с вас спишется ' + disput.price + ' ' + currency[disput.currency].ticker + ')', 'Да|Нет');
         });
     },
     (session, results) => {
         if (results.response.index == 1) {
             session.send('Спор не был принят');
+            session.beginDialog('takePlaceInDisput');
             return;
         }
 
@@ -4749,7 +4794,7 @@ bot.dialog('acceptDisput', [
                             const transferData = {
                                 recipient: '3PM4AZgoddsCrsgGCD9ZQVq2KF4PCTjtK4w',
                                 assetId: currency[disput.currency].assetID,
-                                amount: Number((Number(disput.price) * Math.pow(10, 8)).toFixed(0)),
+                                amount: Number((Number(disput.price) * Math.pow(10, 8)).toFixed(0)) + 100000,
                                 feeAssetId: 'WAVES',
                                 fee: 100000,
                                 attachment: '',
@@ -4784,23 +4829,7 @@ bot.dialog('acceptDisput', [
     matches: /^takePlaceInDisput\d{1,}/
 });
 
-// let seed = Waves.wavesAcc(session, 'addNewAcc', session.message.user.id, 'layer model party horse metal aspect custom horn forum biology mask salt ahead ribbon comfort', bot);
 
-//  const transferData = { 
-//     recipient: seed[1].address,
-//     assetId: currency[disput.currency].assetID,
-//     amount: Number((Number(disput.price)*Math.pow(10, 8)).toFixed(0)),
-//     feeAssetId: 'WAVES',
-//     fee: 100000,
-//     attachment: '',
-//     timestamp: Date.now()
-// };
-// Waves.transfer(transferData, seed[1].keyPair)
-//     .then(
-//         (done) => {
-
-//         }
-//     );
 
 
 // var intents = new builder.IntentDialog({
