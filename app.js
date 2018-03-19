@@ -2727,7 +2727,7 @@ var sellersService = {
 
 
 bot.dialog('sellCryptaToRub', [
-    function (session, results, next) {
+    (session, results, next) => {
         Course.inRub(session, '3cur', 'RUB', true, currency1)
             .then((courseCur) => {
                 session.userData.courseCur = courseCur;
@@ -2736,7 +2736,7 @@ bot.dialog('sellCryptaToRub', [
                 });
             });
     },
-    function (session, results) {
+    (session, results) => {
         if (results.response.entity == 'Назад') {
             session.beginDialog('swap');
             return;
@@ -2777,7 +2777,7 @@ bot.dialog('sellCryptaToRub', [
 
 
 bot.dialog('sellRubToCrypta', [
-    function (session, results, next) {
+    (session, results, next) => {
         Course.inRub(session, '3cur', 'RUB', true, currency1)
             .then((courseCur) => {
                 session.userData.courseCur = courseCur;
@@ -2785,11 +2785,8 @@ bot.dialog('sellRubToCrypta', [
                     listStyle: builder.ListStyle.button
                 });
             });
-        // builder.Prompts.choice(session, "Пожалуйста, выберете валюту, которую хотите купить", currency, {
-        //     listStyle: builder.ListStyle.button
-        // })
     },
-    function (session, results) {
+    (session, results) => {
         if (results.response.entity == 'Назад') {
             session.beginDialog('swap');
             return;
@@ -2831,61 +2828,21 @@ bot.dialog('sellRubToCrypta', [
 
 bot.dialog('buyCrMenu', [
     (session, args) => {
-        // builder.Prompts.choice(session, 'Вы можете создать заявку на покупку или посмотреть заявки остальных пользователей бота', '🗓 Создать заявку|👀 Посмотреть заявки|❌ Назад', {
-        //     listStyle: builder.ListStyle.button
-        // });
         var type = {
             type: 1,
             currency: session.userData.zayvkaCrypto.name
         }
         session.beginDialog('findOrder', type);
-    },
-    // (session, results) => {
-    //     switch(results.response.index) {
-    //         case 0:
-    //             session.beginDialog('BuyCrypto');
-    //             break;
-    //         case 1: 
-    //             var type = {
-    //                 type: 0,
-    //                 currency: session.userData.zayvkaCrypto.name
-    //             }
-    //             session.beginDialog('findOrder', type);
-    //             break;
-    //         case 2:
-    //             session.beginDialog('swap');
-    //             break;
-    //     }
-    // }
+    }
 ]);
 bot.dialog('sellCrMenu', [
     (session, args) => {
-        // builder.Prompts.choice(session, 'Вы можете создать заявку на продажу или посмотреть заявки остальных пользователей бота', '🗓 Создать заявку|👀 Посмотреть заявки|❌ Назад', {
-        //     listStyle: builder.ListStyle.button
-        // });
         var type = {
             type: 0,
             currency: session.userData.zayvkaCrypto.name
         }
         session.beginDialog('findOrder', type);
-    },
-    // (session, results) => {
-    //     switch(results.response.index) {
-    //         case 0:
-    //             session.beginDialog('sellCrypto');
-    //             break;
-    //         case 1: 
-    //             var type = {
-    //                 type: 1,
-    //                 currency: session.userData.zayvkaCrypto.name
-    //             }
-    //             session.beginDialog('findOrder', type);
-    //             break;
-    //         case 2:
-    //             session.beginDialog('swap');
-    //             break;
-    //     }
-    // }
+    }
 ]);
 
 
@@ -3500,9 +3457,9 @@ bot.dialog('myDisputs', [
             for (let i in disputsArr) {
                 var card;
                 if (disputsArr[i].user_id2 != '') {
-                    card = Cards.myDisputCard(session, disputsArr[i].num, disputsArr[i].whatType, disputsArr[i].match, disputsArr[i].score1, true);
+                    card = Cards.myDisputCard(session, disputsArr[i].num, disputsArr[i].whatType, disputsArr[i].match, disputsArr[i].score1, disputsArr[i].score2, disputsArr[i].currency, disputsArr[i].price, true);
                 } else {
-                    card = Cards.myDisputCard(session, disputsArr[i].num, disputsArr[i].whatType, disputsArr[i].match, disputsArr[i].score1, false);
+                    card = Cards.myDisputCard(session, disputsArr[i].num, disputsArr[i].whatType, disputsArr[i].match, disputsArr[i].score1, disputsArr[i].score2, disputsArr[i].currency, disputsArr[i].price, false);
                 }
                 let msg = new builder.Message(session).addAttachment(card);
                 session.send(msg);
