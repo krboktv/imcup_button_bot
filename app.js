@@ -4558,6 +4558,7 @@ bot.dialog('rates', [
 
 bot.dialog('myDisputs', [
     (session) => {
+
         db.findDisputsByUserId(session.message.user.id, (disputsArr) => {
             if (disputsArr.length == 0) {
                 session.send('Вы ещё не создали ни одного спора')

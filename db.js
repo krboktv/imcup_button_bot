@@ -489,8 +489,11 @@ module.exports.createDisput = (_userid, _whatType, _match, _score, _currency, _p
 }
 
 module.exports.findDisputsByUserId = (_userid, callback) => {
+  var disputs;
   Disput.find({user_id1: _userid}, (err,res) => {
-    callback(res);
+    Disput.find({user_id2: _userid}, (err,doc) => {
+      callback(res.concat(doc));
+    });
   });
 }
 
