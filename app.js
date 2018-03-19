@@ -346,41 +346,6 @@ bot.dialog('start', [
                 ciphertext = session.message.text.substring(7);
             }
 
-            if (ciphertext.substring(0, 5) == 'bonus') {
-                db.findRefUser(session.message.user.id, (referal) => {
-
-                    if (referal == undefined) {
-                        db.findUser(session.message.user.id)
-                            .then(
-                                (account) => {
-                                    if (account.length == 0) {
-                                        var user_id = session.message.user.id;
-
-                                        var seed1 = Waves.wavesAcc(session, 'createNewAcc', user_id, 'прост', bot);
-
-                                        db.createAndUpdateUser(user_id, seed1[1].address, seed1[0], session.message.user.name)
-                                            .then(
-                                                () => {
-                                                    session.send(`🛑 **Обязательно запишите Seed!** \n\nВаш Seed: `);
-                                                    session.send(seed1[1].phrase);
-                                                    session.send("📬 **Ваш Address:** ");
-                                                    session.send(seed1[1].address);
-                                                });
-                                    } else {
-                                        session.send('Нельзя воспользоваться реферальной ссылкой. У вас уже есть аккаунт.');
-                                        return;
-                                    }
-
-                                }
-                            );
-                    } else {
-                        session.send('Вы уже активировали реферальную ссылку.');
-                        return;
-                    }
-                });
-                return;
-            }
-
             Gift.find({
                     encrMessage: ciphertext
                 }, function (err, doc) {
@@ -388,40 +353,6 @@ bot.dialog('start', [
                 })
                 .then(function (res) {
                     if (res.length == 0) {
-                        var p = 0;
-                        for (let i in placeObj) {
-                            if (ciphertext == placeObj[i]) {
-                                p = p + 1;
-                            }
-                        }
-                        if (p != 0) {
-                            // Трекинг маркетинговых площадок начало
-
-                            var d = 0;
-                            var p = 0;
-                            for (let i in placeObj) {
-                                if (session.message.text.substring(7) == placeObj[i]) {
-                                    db.findUser(session.message.user.id)
-                                        .then(
-                                            (account) => {
-                                                if (account.length == 0) {
-                                                    db.whatPlace(session.message.user.id, session.message.text.substring(7), session.message.user.name, Data.getTransactionData('no', String(Date.now()).substring(0, String(Date.now()).length - 3)), () => {
-                                                        session.beginDialog('createWallet');
-                                                        console.log('Перешли по ссылке');
-                                                        d = d + 1;
-                                                        return;
-                                                    })
-                                                } else {
-                                                    session.beginDialog('SecondMenu');
-                                                    return;
-                                                }
-                                            }
-                                        );
-                                }
-                            }
-                            // Трекинг маркетинговых площадок конец
-                            return;
-                        }
                         session.send('Ссылки не существует');
                         return;
                     } else {
@@ -438,10 +369,10 @@ bot.dialog('start', [
                                     console.log(seed);
                                     db.createAndUpdateUser(user_id, seed[1].address, seed[0], session.message.user.name)
                                         .then(
-                                            function willBe() {
-                                                session.send(`Обязательно запишите Seed! \nВаш Seed: `);
+                                            () => {
+                                                session.send(`🛑 **Обязательно запишите Seed!** \n\nВаш Seed: `);
                                                 session.send(seed[1].phrase);
-                                                session.send("Ваш Address: ");
+                                                session.send("📬 **Ваш Address:** ");
                                                 session.send(seed[1].address);
                                             }
                                         );
@@ -558,7 +489,7 @@ bot.dialog('SecondMenu', [
             user_id: session.message.user.id
         }, function (err, doc) {
             if (doc.length != 0) {
-                builder.Prompts.choice(session, "## Главное меню", '💳 Кошелёк|💹 Криптобиржа|Ставки', {
+                builder.Prompts.choice(session, "## Главное меню", '💳 Кошелёк|💹 Криптобиржа|Ставки|About', {
                     listStyle: builder.ListStyle.button
                 });
             } else {
@@ -578,6 +509,9 @@ bot.dialog('SecondMenu', [
                 break;
             case 2:
                 session.beginDialog('rates');
+                break;
+            case 3:
+                session.beginDialog('about');
                 break;
             default:
                 session.endDialog();
@@ -740,10 +674,10 @@ bot.dialog('addWallet', [
             }, (err, doc) => {
                 db.createAndUpdateUser(user_id, seed[1].address, seed[0], session.message.user.name)
                     .then(
-                        function willBe() {
-                            session.send(`Обязательно запишите Seed! \nВаш Seed: `);
+                        () => {
+                            session.send(`🛑 **Обязательно запишите Seed!** \n\nВаш Seed: `);
                             session.send(seed[1].phrase);
-                            session.send("Ваш Address: ");
+                            session.send("📬 **Ваш Address:** ");
                             session.send(seed[1].address);
                             session.replaceDialog('SecondMenu');
                         }
@@ -2009,6 +1943,12 @@ bot.dialog('shapeshiftAmount', [
             session.beginDialog('shapeshiftAmount');
             return;
         }
+    }
+]);
+
+bot.dialog('about', [
+    (session) => {
+        session.send('**Team:**\n\n@EnormousRage\n\n@kirbej\n\n\0\n\n**BUTTON | FOOD:** @button_food_bot\n\n**BUTTON | COURSE:** @button_course_bot');
     }
 ]);
 
