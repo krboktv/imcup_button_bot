@@ -1,3 +1,5 @@
+import { result } from "ts-utils";
+
 // import { result } from "ts-utils";
 // import { findDisputsByUserId } from "./db.js";
 
@@ -3487,7 +3489,10 @@ const teams = {
 
 bot.dialog('createDisput', [
     (session) => {
-        db.findUser(session.message.user.id)
+        getBal(session, (balances) => {
+            session.send(balances);
+
+            db.findUser(session.message.user.id)
             .then(
                 (account) => {
                     Waves.checkWavesBalance(account[0].address, (
@@ -3497,7 +3502,7 @@ bot.dialog('createDisput', [
                                 session.beginDialog('rates');
                                 return;
                             } else {
-                                builder.Prompts.choice(session, 'Выберите на что ставить', 'ЧМ по Футболу|Ещё что-то|И ещё что-то|И ещё немного|Назад', {
+                                builder.Prompts.choice(session, 'Выберите на что ставить', 'ЧМ по Футболу|Курс валют|Coming soon|Назад', {
                                     listStyle: builder.ListStyle.button
                                 });
                             }
@@ -3505,9 +3510,37 @@ bot.dialog('createDisput', [
                     ));
                 }
             );
+        })
     },
     (session, results) => {
         session.userData.disputType = results.response.entity;
+        switch(results.response.index) {
+            case 0:
+                session.beginDialog('football');
+                break;
+            case 1:
+                session.beginDialog('course');
+                break;
+            case 2:
+                session.send('В скором появится возможность создавать споры с другой тематикой!');
+                session.beginDialog('createDisput');
+                break;
+            case 3:
+                session.beginDialog('rates');
+                break;
+        }
+    }
+]);
+
+bot.dialog('course', [
+    (session) => {
+        session.send('В процессе:)');
+        session.beginDialog('createDisput');
+    }
+]);
+
+bot.dialog('football', [
+    (session, results) => {
         builder.Prompts.choice(session, 'Выберите матч', teams, {
             listStyle: builder.ListStyle.button
         });
