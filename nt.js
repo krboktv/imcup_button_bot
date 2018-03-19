@@ -18,8 +18,7 @@ function sendNot(session, bot, _userid, _userName, _text, isButton, card) {
     rp(options, (err,res,req) => {
         console.log(req);
     });
-
-    // Это костыль, который нужно переписать на нативном методе
+    
     if (isButton == true) {
         savedAddress = {
             channelId: 'telegram',

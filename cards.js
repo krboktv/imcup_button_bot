@@ -53,22 +53,6 @@ module.exports.createReceiptCard = function createReceiptCard(session, telegramN
         ]);
 };
 
-module.exports.createCancelCard = function createCancelCard(session) {
-    builder.Prompts.text(session, " ")
-    return new builder.HeroCard(session)
-        .title('Введите сумму перевода на телефон:')
-        .buttons([
-            builder.CardAction.imBack(session, "отмена", "Отмена")
-        ]);
-}
-
-module.exports.createPhoneCard = function createPhoneCard(session) {
-    return new builder.HeroCard(session)
-        .title("Введите номер телефона: ")
-        .subtitle('Пример: 89161773789')
-        .buttons([builder.CardAction.imBack(session, 'отмена', 'Отмена')]);
-}
-
 module.exports.createSumCard = function createSumCard(session) {
     builder.Prompts.text(session, " ")
     return new builder.HeroCard(session)
@@ -135,26 +119,6 @@ module.exports.createConfirmOrderCard = function createConfirmOrderCard(session,
         ]);
 };
 
-module.exports.createButtonCard = function createButtonCard(session, type,isNextFind) {
-    var buttons = [];
-
-    if (isNextFind != false) {
-        buttons.push(builder.CardAction.imBack(session, "other", 'ещё 5 заявок'));
-    }
-    
-    if (type == 1) {
-        buttons.push(builder.CardAction.imBack(session, "buyCrypto", 'Создать заявку'));
-    } else {
-        buttons.push(builder.CardAction.imBack(session, "sellCrypto", 'Создать заявку'));
-    }
-
-    buttons.push(builder.CardAction.imBack(session, 'отмена', 'Главное меню'));
-
-    return new builder.HeroCard(session)
-        .text('📒 Вы также можете **создать свою заявку**')
-        .buttons(buttons)
-}
-
 module.exports.cancelButton = function cancelButton(session) {
     return new builder.HeroCard(session)
         .text('Чтобы перейти в главное меню - нажмите кнопку:')
@@ -170,113 +134,6 @@ module.exports.cancelButtonToRate = function cancelButton(session) {
             builder.CardAction.imBack(session, 'rates', 'Назад')
         ])
 }
-
-// СВОП КРИПТА ФИАТ
-module.exports.createOrderCard = (session,currency,sumCripto, sumRub, cur, cardService, cardServiceNum, type, isFind, num) => {
-    var btn;
-    var title;
-    var facts = [
-        builder.Fact.create(session, String(sumCripto)+' '+currency[cur].ticker, '**Cумма**'),
-        builder.Fact.create(session, String(Number(sumRub).toFixed(2))+' '+'RUB', '**Примерно**')
-    ];
-
-    if (type == 1) {
-        title = "**Заявка на продажу**"+cur;
-    } else {
-        title = "**Заявка на покупку**"+cur;
-    }
-
-    if (cardServiceNum != 'noCardNum') {
-        facts.push(builder.Fact.create(session, String(cardService), 'Тип сервиса'));
-        facts.push(builder.Fact.create(session, String(cardServiceNum), 'Номер счёта'));
-    }
-
-    if (isFind == 'yes' && type == 1) {
-        facts.push(builder.Fact.create(session, String(cardService), 'Тип сервиса'));
-        btn = [builder.CardAction.imBack(session, 'pls'+num.toString(), 'Принять ордер #'+num)];
-    }
-    else if (isFind == 'yes') {
-        btn = [builder.CardAction.imBack(session, 'pls'+num.toString(), 'Принять ордер #'+num)];
-    } else {
-        btn = [];
-    }
-    
-    return new builder.ReceiptCard(session)
-        .title(title)
-        .facts(facts)
-        .items([])
-        .buttons(btn); 
-}
-
-module.exports.endExButton = (session, cur) => {
-    return new builder.HeroCard(session)
-    .text(`Введите количество ${cur}, которое хотите купить`)
-    .buttons([
-        builder.CardAction.imBack(session, 'отмена', 'Отмена')
-    ])
-}
-
-
-// swap crypto fiat 
-
-module.exports.createNtCard = function createNtCard(session, type, num, buyOrSell) {
-    // duyOrSell - это параметр, который отображает Тип: ПОКУПАЕТ ПОЛЬЗОВАТЕЛЬ, КОТОРОМУ ПРИДЁТ КНОПКА или ПРОДАЁТ
-    var apl = 'agtyu'+buyOrSell+type+num;
-    console.log(String(apl));
-    var whatConfirm;
-    if (buyOrSell == '0') {
-        whatConfirm = 'Вам необходимо **перевести деньги по адресу**\n\n\ Как только вы переведёте деньги на адрес продавца нажмите:';
-    } else {
-        whatConfirm = 'Подтвердить получение средств';
-    }
-    return new builder.HeroCard(session)
-    .text(
-        whatConfirm
-    )
-    .buttons([
-        builder.CardAction.imBack(session, String(apl), 'Подтвердить')
-    ])
-};
-
-module.exports.createNtCard3 = function createNtCard(session, cardService, cardServiceNum, sum, sumRub, currency, type, num) {
-    var apl = 'а0'+type+num;
-    return new builder.HeroCard(session)
-    .text(`Извините, заявка на продажу ${sum} ${currency} была удалена.`+ "\n\n\0\n\n" + 
-    `Чтобы продать криптовалюту - перейдите в меню RUB 🔄 Crypto.`)
-    .buttons([
-        builder.CardAction.imBack(session, apl, 'RUB 🔄 Crypto')
-    ])
-};
-
-// swap crypto fiat 
-
-module.exports.confirmSashaPay = (session, num) => {
-    var apl = 'sasha0'+num;
-    return new builder.HeroCard(session)
-    .title('Как только отправите средства - нажмите кнопку')
-    .buttons([
-        builder.CardAction.imBack(session, apl, 'Подтвердить отправку средств')
-    ])
-}
-
-module.exports.endOrder = (session, type, num) => {
-    var value = 'rOfd2r9dHww24f'+type+num;
-    return new builder.HeroCard(session)
-    .text(`Подтвердите:`)
-    .buttons([
-        builder.CardAction.imBack(session, value, 'Подтвердить')
-    ])
-}
-
-module.exports.confirmSendFunds = (session) => {
-    return new builder.HeroCard(session)
-    .text(`Как только отправите деньги - подтвердите действие:`)
-    .buttons([
-        builder.CardAction.imBack(session, 'ok', 'Подтвердить'),
-        builder.CardAction.imBack(session, 'отмена', 'Отменить заявку')
-    ])
-}
-
 
 module.exports.disputCard = (session, _num, type, _match, _score, _currency, _price) => {
     var disput = '**Спор №** '+_num+': \n\n'+type+'\n\n**Матч**: '+_match+'\n\n**Счёт**: '+_score+'\n\nВалюта: '+_currency+'\n\nСумма спора: '+_price;
