@@ -19,7 +19,11 @@ var disput = new Schema({
         type: String,
         default: ''
     },
-    score: {
+    score1: {
+        type: String,
+        default: ''
+    },
+    score2: {
         type: String,
         default: ''
     },

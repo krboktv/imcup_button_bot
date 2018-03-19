@@ -4568,9 +4568,9 @@ bot.dialog('myDisputs', [
             for (let i in disputsArr) {
                 var card;
                 if (disputsArr[i].user_id2 != '') {
-                    card = Cards.myDisputCard(session, disputsArr[i].num, disputsArr[i].whatType, disputsArr[i].match, disputsArr[i].score, true);
+                    card = Cards.myDisputCard(session, disputsArr[i].num, disputsArr[i].whatType, disputsArr[i].match, disputsArr[i].score1, true);
                 } else {
-                    card = Cards.myDisputCard(session, disputsArr[i].num, disputsArr[i].whatType, disputsArr[i].match, disputsArr[i].score, false);
+                    card = Cards.myDisputCard(session, disputsArr[i].num, disputsArr[i].whatType, disputsArr[i].match, disputsArr[i].score1, false);
                 }
                 let msg = new builder.Message(session).addAttachment(card);
                 session.send(msg);
@@ -4723,8 +4723,23 @@ bot.dialog('deleteDisput', [
 bot.dialog('acceptDisput', [
     (session) => {
         var num = Number(session.message.text.substring(17));
+        session.userData.num = num;
 
-        db.findDisputsByNum(num, (disput) => {
+        builder.Prompts.text(session, 'Введите предполагаемый счёт. \n\n\0\n\nПример: 0-0');
+    },
+    (session, results) => {
+        session.userData.score2 = results.response;
+        db.findDisputsByNum(session.userData.num, (disput) => {
+            builder.Prompts.choice(session, 'Подтвердить участие в спорте. (с вас спишется '+disput.price+' '+currency[disput.currency].ticker+')', 'Да|Нет');
+        });
+    },
+    (session, results) => {
+        if (results.response.index == 1) {
+            session.send('Спор не был принят');
+            return;
+        }
+
+        db.findDisputsByNum(session.userData.num, (disput) => {
             if (disput.user_id1 != session.message.user.id) {
                 db.findUser(session.message.user.id)
                     .then(
@@ -4744,7 +4759,8 @@ bot.dialog('acceptDisput', [
                             Waves.transfer(transferData, seed.keyPair)
                                 .then(
                                     (done) => {
-                                        db.acceptDisput(num, session.message.user.id);
+                                        db.updateDisput(session.userData.num, session.userData.score2);
+                                        db.acceptDisput(session.userData.num, session.message.user.id);
                                         nt.sendNot(session, bot, disput.user_id1, '', 'Ваш спор номер ' + num + ' приняли');
                                         session.send('Вы приняли заявку на спор');
                                         session.beginDialog('rates');
