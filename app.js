@@ -3545,11 +3545,22 @@ bot.dialog('football', [
             listStyle: builder.ListStyle.button
         });
     },
-    (session, results, next) => {
+    (session, results) => {
         session.userData.match = results.response.entity;
+        session.beginDialog('enterScore');
+    }
+]);
+
+bot.dialog('enterScore', [
+    (session) => {
         builder.Prompts.text(session, 'Введите предполагаемый счёт. \n\n\0\n\nПример: 0-0');
     },
     (session, results) => {
+        if((results.response).indexOf('-') == -1) {
+            session.send('Счёт матча должен быть в формате: 0-0');
+            session.beginDialog('enterScore');
+            return;
+        }
         session.userData.score = results.response;
         builder.Prompts.choice(session, 'Выберите валюту', 'Waves|Bitcoin|Ethereum', {
             listStyle: builder.ListStyle.button
@@ -3583,7 +3594,7 @@ bot.dialog('enterDisputPrice', [
     },
     (session, results) => {
         if (results.response.index == 1) {
-            session.send('Вы отменили оздание спора');
+            session.send('Вы отменили создание спора');
             session.beginDialog('rates');
             return;
         }
@@ -3609,6 +3620,7 @@ bot.dialog('enterDisputPrice', [
                                 session.send('Вы создали спор');
                                 db.createDisput(session.message.user.id, session.userData.disputType, session.userData.match, session.userData.score, session.userData.currency, session.userData.sum);
                                 session.beginDialog('rates');
+                                //тут надо сделать таймаут, через который будут браться данные из бд
                             }
                         )
                         .catch(
