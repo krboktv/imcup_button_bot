@@ -1,0 +1,61 @@
+import { IHash } from '../../interfaces';
+import { IAsset } from './Asset';
+import BigNumber from '../libs/bignumber';
+export interface IMoney {
+    asset: IAsset;
+    getCoins(): BigNumber;
+    getTokens(): BigNumber;
+    toCoins(): string;
+    toTokens(): string;
+    toFormat(): string;
+    add(money: IMoney): IMoney;
+    plus(money: IMoney): IMoney;
+    sub(money: IMoney): IMoney;
+    minus(money: IMoney): IMoney;
+    eq(money: IMoney): boolean;
+    lt(money: IMoney): boolean;
+    lte(money: IMoney): boolean;
+    gt(money: IMoney): boolean;
+    gte(money: IMoney): boolean;
+    cloneWithCoins(coins: BigNumber | string): IMoney;
+    cloneWithTokens(tokens: BigNumber | string): IMoney;
+    convertTo(asset: IAsset, exchangeRate: BigNumber | string): IMoney;
+    toJSON(): IHash<any>;
+    toString(): string;
+}
+export default class Money implements IMoney {
+    readonly asset: IAsset;
+    private _coins;
+    private _tokens;
+    private constructor();
+    getCoins(): BigNumber;
+    getTokens(): BigNumber;
+    toCoins(): string;
+    toTokens(): string;
+    toFormat(): string;
+    add(money: any): Money;
+    plus(money: any): Money;
+    sub(money: any): Money;
+    minus(money: any): Money;
+    eq(money: any): boolean;
+    lt(money: any): boolean;
+    lte(money: any): boolean;
+    gt(money: any): boolean;
+    gte(money: any): boolean;
+    cloneWithCoins(coins: any): Money;
+    cloneWithTokens(tokens: any): Money;
+    convertTo(asset: any, exchangeRate: any): any;
+    toJSON(): {
+        assetId: string;
+        tokens: string;
+    };
+    toString(): string;
+    private _matchAssets(money);
+    static fromCoins(coins: any, supposedAsset: any): Promise<IMoney>;
+    static fromTokens(tokens: any, supposedAsset: any): Promise<IMoney>;
+    static convert(money: IMoney, asset: IAsset, exchangeRate: BigNumber | string): IMoney;
+    static isMoney(object: any): boolean;
+    private static _checkAmount(amount);
+    private static _tokensToCoins(tokens, precision);
+    private static _getDivider(precision);
+}

@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "alwaysStrict": true,
+    "baseUrl": "",
+    "lib": [
+      "es2015.promise",
+      "es5",
+      "dom"
+    ],
+    "module": "commonjs",
+    "sourceMap": true,
+    "target": "es5",
+    "paths": {
+      "ts-api-validator": [
+        "node_modules/ts-api-validator/index"
+      ],
+      "ts-utils": [
+        "node_modules/ts-utils/index"
+      ]
+    }
+  },
+  "include": [
+    "src"
+  ]
+}
