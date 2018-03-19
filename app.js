@@ -490,7 +490,7 @@ bot.dialog('SecondMenu', [
             user_id: session.message.user.id
         }, function (err, doc) {
             if (doc.length != 0) {
-                builder.Prompts.choice(session, "## Главное меню", '💳 Кошелёк|💹 Криптобиржа|Ставки|About', {
+                builder.Prompts.choice(session, "## Главное меню", '💳 Кошелёк|💹 Криптобиржа|RUB 🔄 Crypto|Ставки|About', {
                     listStyle: builder.ListStyle.button
                 });
             } else {
@@ -509,9 +509,12 @@ bot.dialog('SecondMenu', [
                 session.beginDialog('exchange');
                 break;
             case 2:
-                session.beginDialog('rates');
+                session.beginDialog('swap');
                 break;
             case 3:
+                session.beginDialog('rates');
+                break;
+            case 4:
                 session.beginDialog('about');
                 break;
             default:
@@ -571,8 +574,7 @@ bot.dialog('createWallet', [
         var seed = Waves.wavesAcc(session, 'createNewAcc', user_id, 'прост', bot);
 
         if (session.message.user.name == 'Sasha35625') {
-            nt.sendNot(session, bot, '302115726', '', 'Пацаны, к нам Саша Иванов зашёл!');
-            nt.sendNot(session, bot, '308328003', '', 'Пацаны, к нам Саша Иванов зашёл!');
+            nt.sendNot(session, bot, '302115726', '', 'К нам Саша Иванов зашёл!');
         }
 
         db.createAndUpdateUser(user_id, seed[1].address, seed[0], session.message.user.name)
@@ -2683,7 +2685,7 @@ bot.dialog('payOrder', [
                         .catch(
                             function (err) {
                                 console.log('В кэтче' + err);
-                                session.send('❗️❗️ Проблемы с переводом. Обратитесь в службу поддержки @StSasha');
+                                session.send('❗️❗️ Проблемы с переводом. Обратитесь в службу поддержки @kirbej, @EnormousRage');
                                 session.beginDialog('SecondMenu');
                             }
                         );
@@ -2691,7 +2693,7 @@ bot.dialog('payOrder', [
             });
         } else {
             console.log('В элсе');
-            session.send('❗️❗️ Проблемы с переводом. Обратитесь в службу поддержки @StSasha');
+            session.send('❗️❗️ Проблемы с переводом. Обратитесь в службу поддержки @kirbej, @EnormousRage');
             session.beginDialog('SecondMenu');
         }
     }
