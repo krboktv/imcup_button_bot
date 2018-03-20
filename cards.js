@@ -231,26 +231,60 @@ module.exports.cancelButtonToRate = function cancelButton(session) {
         ])
 }
 
-module.exports.disputCard = (session, _num, type, _match, _score, _currency, _price) => {
-    var disput = '**Спор №** '+_num+': \n\n'+type+'\n\n**Матч**: '+_match+'\n\n**Счёт**: '+_score+'\n\nВалюта: '+_currency+'\n\nСумма спора: '+_price;
+module.exports.disputCard = (session, _num, _type, _match, _val1, _currency, _price, _endTime) => { 
+    var type;
+    var matchOrCurrency;
+    var countOrPrice1;
+
+    if (_type == 0) {
+        type = 'ЧМ по Футболу';
+        matchOrCurrency = '**Матч**: '+_match;
+        countOrPrice1 = 'счёт';
+    } else if (_type == 1) {
+        type = 'Курс валют';
+        matchOrCurrency = '**Валюта спора**: '+_match;
+        countOrPrice1 = 'курс';
+    }
+
+    var disput = '**Спор №** '+_num+': \n\n'+type+'\n\n'+matchOrCurrency+'\n\n**Cтавка ('+countOrPrice1+')**: '+_val1+'\n\nВалюта: '+_currency+'\n\nСумма спора: '+_price+'\n\nЗавершение спора: '+_endTime;
+    
+    
     return new builder.HeroCard(session)
     .text(disput)
     .buttons([
-        builder.CardAction.imBack(session, String('takePlaceInDisput'+_num), 'Принять участие в споре'),
+        builder.CardAction.imBack(session, String('takePlaceInDisput'+_type+_num), 'Принять участие в споре'),
     ])
 }
 
-module.exports.myDisputCard = (session, _num, type, _match, _score, _score2, _currency, _price, isAccept) => {
+module.exports.myDisputCard = (session, _num, _type, _match, _val1, _val2, _currency, _price, _endTime, isAccept) => {
     var buttons = [];
     var secondPerson;
+    var type;
+    var matchOrCurrency;
+    var countOrPrice1;
+    var countOrPrice2;
+
+    if (_type == 0) {
+        type = 'ЧМ по Футболу';
+        matchOrCurrency = '**Матч**: '+_match;
+        countOrPrice2 = 'Ставка оппонента (счёт): '+_val2;
+        countOrPrice1 = 'счёт';
+    } else if (_type == 1) {
+        type = 'Курс валют';
+        matchOrCurrency = '**Валюта спора**: '+_match;
+        countOrPrice2 = 'Ставка оппонента (курс в $): '+_val2;
+        countOrPrice1 = 'курс  в $';
+    }
+
     if (isAccept == true) {
-        secondPerson = 'Да'+'\n\nСтавка оппонента (счёт): ';
+        secondPerson = 'Да\n\n'+countOrPrice2;
     } else {
         secondPerson = 'Нет';
         buttons.push(builder.CardAction.imBack(session, String('deleteDisput'+_num), 'Удалить'));
     } 
 
-    var disput = '**Спор №** '+_num+': \n\n'+type+'\n\n**Матч**: '+_match+'\n\n**Ваша ставка (счёт)**: '+_score+'\n\n**Второй участник**: '+secondPerson+'\n\nВалюта: '+_currency+'\n\nСумма спора: '+_price;
+    var disput = '**Спор №** '+_num+': \n\n'+type+'\n\n'+matchOrCurrency+'\n\n**Ваша ставка ('+countOrPrice1+')**: '+_val1+'\n\n**Второй участник**: '+secondPerson+'\n\nВалюта: '+_currency+'\n\nСумма спора: '+_price+'\n\nЗавершение спора: '+_endTime;
+    
     return new builder.HeroCard(session)
     .text(disput)
     .buttons(buttons)

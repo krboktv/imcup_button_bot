@@ -3460,12 +3460,12 @@ bot.dialog('myDisputs', [
                 var card;
                 if (disputsArr[i].user_id2 != '') {
                     if (disputsArr[i].user_id2 == session.message.user.id) {
-                        card = Cards.myDisputCard(session, disputsArr[i].num, disputsArr[i].whatType, disputsArr[i].match, disputsArr[i].score2, disputsArr[i].score1, disputsArr[i].currency, disputsArr[i].price, true);
+                        card = Cards.myDisputCard(session, disputsArr[i].num, disputsArr[i].type, disputsArr[i].matchOrCurrency, disputsArr[i].val2, disputsArr[i].val1, disputsArr[i].currency, disputsArr[i].price, disputsArr[i].endTime, true);
                     } else {
-                        card = Cards.myDisputCard(session, disputsArr[i].num, disputsArr[i].whatType, disputsArr[i].match, disputsArr[i].score1, disputsArr[i].score2, disputsArr[i].currency, disputsArr[i].price, true);
+                        card = Cards.myDisputCard(session, disputsArr[i].num, disputsArr[i].type, disputsArr[i].matchOrCurrency, disputsArr[i].val1, disputsArr[i].val2, disputsArr[i].currency, disputsArr[i].price, disputsArr[i].endTime, true);
                     }
                 } else {
-                    card = Cards.myDisputCard(session, disputsArr[i].num, disputsArr[i].whatType, disputsArr[i].match, disputsArr[i].score1, disputsArr[i].score2, disputsArr[i].currency, disputsArr[i].price, false);
+                    card = Cards.myDisputCard(session, disputsArr[i].num, disputsArr[i].type, disputsArr[i].matchOrCurrency, disputsArr[i].val1, disputsArr[i].val2, disputsArr[i].currency, disputsArr[i].price, disputsArr[i].endTime, false);
                 }
                 let msg = new builder.Message(session).addAttachment(card);
                 session.send(msg);
@@ -3489,10 +3489,7 @@ const teams = {
 
 bot.dialog('createDisput', [
     (session) => {
-        getBal(session, (balances) => {
-            session.send(balances);
-
-            db.findUser(session.message.user.id)
+        db.findUser(session.message.user.id)
             .then(
                 (account) => {
                     Waves.checkWavesBalance(account[0].address, (
@@ -3510,15 +3507,17 @@ bot.dialog('createDisput', [
                     ));
                 }
             );
-        })
+
     },
     (session, results) => {
         session.userData.disputType = results.response.entity;
-        switch(results.response.index) {
+        switch (results.response.index) {
             case 0:
+                session.userData.type = 0;
                 session.beginDialog('football');
                 break;
             case 1:
+                session.userData.type = 1;
                 session.beginDialog('course');
                 break;
             case 2:
@@ -3534,8 +3533,29 @@ bot.dialog('createDisput', [
 
 bot.dialog('course', [
     (session) => {
-        session.send('В процессе:)');
-        session.beginDialog('createDisput');
+        builder.Prompts.choice(session, 'Выберите валюту, на курс которой вы будете спорить', currency, {
+            listStyle: builder.ListStyle.button
+        });
+    },
+    (session, results) => {
+        if (results.response.entity == 'Назад') {
+            session.beginDialog('rates');
+            return;
+        }
+
+        session.userData.matchOrCurrency = results.response.entity;
+
+        builder.Prompts.time(session, 'Какого числа проверять итог спора?');
+    },
+    (session, results) => {
+        console.log(results);
+        console.log(builder.EntityRecognizer.resolveTime([results.response]));
+        session.userData.date = results.response.entity;
+        builder.Prompts.text(session, 'Введите предположительную стоимость (в долларах США)' + session.userData.matchOrCurrency + ' к ' + session.userData.date);
+    },
+    (session, results) => {
+        session.userData.val1 = results.response;
+        session.beginDialog('chooseCurrency');
     }
 ]);
 
@@ -3546,7 +3566,7 @@ bot.dialog('football', [
         });
     },
     (session, results) => {
-        session.userData.match = results.response.entity;
+        session.userData.matchOrCurrency = results.response.entity;
         session.beginDialog('enterScore');
     }
 ]);
@@ -3556,17 +3576,29 @@ bot.dialog('enterScore', [
         builder.Prompts.text(session, 'Введите предполагаемый счёт. \n\n\0\n\nПример: 0-0');
     },
     (session, results) => {
-        if((results.response).indexOf('-') == -1) {
+        if ((results.response).indexOf('-') == -1) {
             session.send('Счёт матча должен быть в формате: 0-0');
             session.beginDialog('enterScore');
             return;
         }
-        session.userData.score = results.response;
-        builder.Prompts.choice(session, 'Выберите валюту', 'Waves|Bitcoin|Ethereum', {
+        session.userData.date = '09.08.2018 19:00';
+        session.userData.val1 = results.response;
+        session.beginDialog('chooseCurrency');
+    }
+]);
+
+bot.dialog('chooseCurrency', [
+    (session) => {
+        builder.Prompts.choice(session, 'Выберите валюту на которую будете спорить', currency, {
             listStyle: builder.ListStyle.button
         });
     },
     (session, results) => {
+        if (results.response.entity == 'Назад') {
+            session.beginDialog('rates');
+            return;
+        }
+
         session.userData.currency = results.response.entity;
         session.beginDialog('enterDisputPrice');
     }
@@ -3574,7 +3606,11 @@ bot.dialog('enterScore', [
 
 bot.dialog('enterDisputPrice', [
     (session) => {
-        builder.Prompts.text(session, 'Введите сумму, на которую будете спорить');
+        getBal(session, (balances) => {
+            session.send(balances);
+
+            builder.Prompts.text(session, 'Введите сумму, на которую будете спорить');
+        });
     },
     (session, results) => {
         var re = new RegExp('.', '');
@@ -3590,7 +3626,9 @@ bot.dialog('enterDisputPrice', [
 
         session.userData.sum = sum;
 
-        builder.Prompts.choice(session, 'Подтвердить создание спора.\n\nС вас спишется '+session.userData.sum+' '+currency[session.userData.currency].ticker, 'Да|Нет');
+        builder.Prompts.choice(session, 'Подтвердить создание спора.\n\nС вас спишется ' + session.userData.sum + ' ' + currency[session.userData.currency].ticker, 'Да|Нет', {
+            listStyle: builder.ListStyle.button
+        });
     },
     (session, results) => {
         if (results.response.index == 1) {
@@ -3618,9 +3656,8 @@ bot.dialog('enterDisputPrice', [
                         .then(
                             (done) => {
                                 session.send('Вы создали спор');
-                                db.createDisput(session.message.user.id, session.userData.disputType, session.userData.match, session.userData.score, session.userData.currency, session.userData.sum);
+                                db.createDisput(session.message.user.id, session.userData.type, session.userData.matchOrCurrency, session.userData.val1, session.userData.currency, session.userData.sum, session.userData.date);
                                 session.beginDialog('rates');
-                                //тут надо сделать таймаут, через который будут браться данные из бд
                             }
                         )
                         .catch(
@@ -3646,7 +3683,7 @@ bot.dialog('takePlaceInDisput', [
                 return;
             }
             for (let i in disputsArr) {
-                let card = Cards.disputCard(session, disputsArr[i].num, disputsArr[i].whatType, disputsArr[i].match, disputsArr[i].score1, disputsArr[i].currency, disputsArr[i].price)
+                let card = Cards.disputCard(session, disputsArr[i].num, disputsArr[i].type, disputsArr[i].matchOrCurrency, disputsArr[i].val1, disputsArr[i].currency, disputsArr[i].price, disputsArr[i].endTime);
                 let msg = new builder.Message(session).addAttachment(card);
                 session.send(msg);
 
@@ -3716,15 +3753,24 @@ bot.dialog('deleteDisput', [
 
 bot.dialog('acceptDisput', [
     (session) => {
-        var num = Number(session.message.text.substring(17));
-        session.userData.num = num;
+        var num = Number(session.message.text.substring(18));
+        var type = Number(session.message.text.substr(17, 1));
 
-        builder.Prompts.text(session, 'Введите предполагаемый счёт. \n\n\0\n\nПример: 0-0');
+        session.userData.num = num;
+        if (type == 0) {
+            builder.Prompts.text(session, 'Введите предполагаемый счёт. \n\n\0\n\nПример: 0-0');
+        } else if (type == 1) {
+            db.findDisputsByNum(session.userData.num, (disput) => {
+                builder.Prompts.text(session, 'Сколько будет стоить (в долларах США) '+disput.matchOrCurrency+' к '+disput.endTime+'?');
+            });
+        }
     },
     (session, results) => {
-        session.userData.score2 = results.response;
+        session.userData.val2 = results.response;
         db.findDisputsByNum(session.userData.num, (disput) => {
-            builder.Prompts.choice(session, 'Подтвердить участие в спорте. (с вас спишется ' + disput.price + ' ' + currency[disput.currency].ticker + ')', 'Да|Нет');
+            builder.Prompts.choice(session, 'Подтвердить участие в спорте. (с вас спишется ' + disput.price + ' ' + currency[disput.currency].ticker + ')', 'Да|Нет', {
+                listStyle: builder.ListStyle.button
+            });
         });
     },
     (session, results) => {
@@ -3754,7 +3800,7 @@ bot.dialog('acceptDisput', [
                             Waves.transfer(transferData, seed.keyPair)
                                 .then(
                                     (done) => {
-                                        db.updateDisput(session.userData.num, session.userData.score2);
+                                        db.updateDisput(session.userData.num, session.userData.val2);
                                         db.acceptDisput(session.userData.num, session.message.user.id);
                                         nt.sendNot(session, bot, disput.user_id1, '', 'Ваш спор номер ' + num + ' приняли');
                                         session.send('Вы приняли заявку на спор');
@@ -3776,7 +3822,7 @@ bot.dialog('acceptDisput', [
         });
     }
 ]).triggerAction({
-    matches: /^takePlaceInDisput\d{1,}/
+    matches: /^takePlaceInDisput\d{2,}/
 });
 
 // СПОРЫ КОНЕЦ

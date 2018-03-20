@@ -279,15 +279,15 @@ module.exports.exchangeTx = (_userid, _type, _currency1, _currency2, _amount, _p
   Exchange.create({user_id: _userid, type: Number(_type), currency1: _currency1, currency2: _currency2, amount: Number(_amount), price: Number(_price)}, (err, res) => {});
 }
 
-module.exports.createDisput = (_userid, _whatType, _match, _score, _currency, _price) => {
+module.exports.createDisput = (_userid, _type, _matchOrCurrency, _val1, _currency, _price, _endTime) => {
   Disput.find({}, (err,doc) => {
     if(doc.length != 0) {
-      var _num = Number(doc[doc.length-1].num)+1;
-      Disput.create({user_id1: _userid, num: Number(_num), whatType: _whatType, match: _match, score1: _score, currency: _currency, price: Number(_price)}, (err,res) => {
+      var _num = Number(doc[doc.length-1].num)+1
+      Disput.create({user_id1: _userid, num: Number(_num), type: Number(_type), matchOrCurrency: _matchOrCurrency, val1: _val1, currency: _currency, price: Number(_price), endTime: _endTime}, (err,res) => {
     
       });
     } else {
-      Disput.create({user_id1: _userid, num: 1, whatType: _whatType, match: _match, score1: _score, currency: _currency, price: _price}, (err,res) => {
+      Disput.create({user_id1: _userid, num: 1, type: Number(_type), matchOrCurrency: _matchOrCurrency, val1: _val1, currency: _currency, price: Number(_price), endTime: _endTime}, (err,res) => {
     
       });
     }
@@ -321,8 +321,8 @@ module.exports.acceptDisput = (_num, _userid) => {
   });
 }
 
-module.exports.updateDisput = (_num, _score2) => {
-  Disput.update({num: Number(_num)}, {score2: _score2}, (err, doc) => {
+module.exports.updateDisput = (_num, _val2) => {
+  Disput.update({num: Number(_num)}, {val2: _val2}, (err, doc) => {
     
   })
 }

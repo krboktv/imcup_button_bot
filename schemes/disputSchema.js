@@ -11,19 +11,19 @@ var disput = new Schema({
     num: {
         type: Number,
     },
-    whatType: {
+    // type == 1 - курс, type == 0 - футбол
+    type: {
+        type: Number
+    },
+    matchOrCurrency: {
         type: String,
         default: ''
     },
-    match: {
+    val1: {
         type: String,
         default: ''
     },
-    score1: {
-        type: String,
-        default: ''
-    },
-    score2: {
+    val2: {
         type: String,
         default: ''
     },
@@ -34,9 +34,17 @@ var disput = new Schema({
         type: String,
         default: ''
     },
-    date: {
+    endTime: {
+        type: String,
+        default: ''
+    },
+    createTime: {
         type: Number,
         default: Date.now()
+    },
+    end: {
+        type: Boolean,
+        default: false
     }
 }, {
     versionKey: false
