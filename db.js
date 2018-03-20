@@ -375,65 +375,7 @@ module.exports.updateDisput = (session, _type, _currency, _num, _val2) => {
   }, {
     val2: _val2
   }, (err, doc) => {
-    if (type == 1) {
-      var actualDate = (Number(Date.now()) / 1000 + (3600 * 3)).toFixed(0);
-      findDisputsByNum(_num, (disput) => {
-        setTimeout(() => {
-          Course.inRub(session, _currency[disput.matchOrCurrency].ticker, 'USD')
-            .then(
-              (course) => {
-                var winner;
-                var looser;
-                if (Math.abs(Number(course) - Number(disput.val1)) < Math.abs(Number(course) - Number(disput.val2))) {
-                  console.log('The first is win');
-                  winner = disput.user_id1;
-                  looser = disput.user_id2;
-                } else if (Math.abs(Number(course) - Number(disput.val1)) > Math.abs(Number(course) - Number(disput.val2))) {
-                  console.log('The second is win');
-                  winner = disput.user_id2;
-                  looser = disput.user_id1;
-                } else {
-                  console.log('Ничья');
-
-                }
-
-                findUser(winner)
-                  .then(
-                    (account) => {
-                      var seed = Waves.wavesAcc(session, 'addNewAcc', winner, 'layer model party horse metal aspect custom horn forum biology mask salt ahead ribbon comfort');
-
-                      const transferData = {
-                        recipient: account[0].address,
-                        assetId: currency[disput.currency].assetID,
-                        amount: Number((Number(disput.price * 2) * Math.pow(10, 8)).toFixed(0)),
-                        feeAssetId: 'WAVES',
-                        fee: 100000,
-                        attachment: '',
-                        timestamp: Date.now()
-                      };
-
-                      Waves.transfer(transferData, seed.keyPair)
-                        .then(
-                          (done) => {
-                            nt.sendNot(session, '', winner, '', 'Вы победили в споре № '+disput.num+'!');
-                            nt.sendNot(session, '', looser, '', 'Вы проиграли в споре № '+disput.num+'!');
-                            Disput.update({num: Number(_num)}, {end: true}, (err,doc) => {
-
-                            });
-                          }
-                        )
-                    }
-                  )
-              })
-            .catch(
-              (err) => {
-
-              }
-            );
-        }, (Number(disput.endTime) - Number(actualDate)) * 1000);
-
-      });
-    }
+   
   })
 }
 

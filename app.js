@@ -3807,6 +3807,67 @@ bot.dialog('acceptDisput', [
                                         db.acceptDisput(session.userData.num, session.message.user.id);
                                         nt.sendNot(session, bot, disput.user_id1, '', 'Ваш спор номер ' + num + ' приняли');
                                         session.send('Вы приняли заявку на спор');
+                                        if (type == 1) {
+                                            var actualDate = (Number(Date.now()) / 1000 + (3600 * 3)).toFixed(0);
+                                            console.log((Number(disput.endTime) - Number(actualDate)) * 1000);
+                                            
+                                          
+                                              setTimeout(() => {
+                                                Course.inRub(session, currency[disput.matchOrCurrency].ticker, 'USD')
+                                                  .then(
+                                                    (course) => {
+                                                        console.log(course)
+                                                      var winner;
+                                                      var looser;
+                                                      if (Math.abs(Number(course) - Number(disput.val1)) < Math.abs(Number(course) - Number(disput.val2))) {
+                                                        console.log('The first is win');
+                                                        winner = disput.user_id1;
+                                                        looser = disput.user_id2;
+                                                      } else if (Math.abs(Number(course) - Number(disput.val1)) > Math.abs(Number(course) - Number(disput.val2))) {
+                                                        console.log('The second is win');
+                                                        winner = disput.user_id2;
+                                                        looser = disput.user_id1;
+                                                      } else {
+                                                        console.log('Ничья');
+                                      
+                                                      }
+                                      
+                                                      db.findUser(winner)
+                                                        .then(
+                                                          (account) => {
+                                                            var seed = Waves.wavesAcc(session, 'addNewAcc', winner, 'layer model party horse metal aspect custom horn forum biology mask salt ahead ribbon comfort');
+                                      
+                                                            const transferData = {
+                                                              recipient: account[0].address,
+                                                              assetId: currency[disput.currency].assetID,
+                                                              amount: Number((Number(disput.price * 2) * Math.pow(10, 8)).toFixed(0)),
+                                                              feeAssetId: 'WAVES',
+                                                              fee: 100000,
+                                                              attachment: '',
+                                                              timestamp: Date.now()
+                                                            };
+                                      
+                                                            Waves.transfer(transferData, seed.keyPair)
+                                                              .then(
+                                                                (done) => {
+                                                                  nt.sendNot(session, '', winner, '', 'Вы победили в споре № '+disput.num+'!');
+                                                                  nt.sendNot(session, '', looser, '', 'Вы проиграли в споре № '+disput.num+'!');
+                                                                  Disput.update({num: Number(_num)}, {end: true}, (err,doc) => {
+                                                                    console.log('finish')
+                                                                  });
+                                                                }
+                                                              )
+                                                          }
+                                                        )
+                                                    })
+                                                  .catch(
+                                                    (err) => {
+                                      
+                                                    }
+                                                  );
+                                              }, (Number(disput.endTime) - Number(actualDate)) * 1000);
+                                   
+                                          }
                                         // var date = new Date ('09.08.2018 19:00');
                                         // console.log(date.toLocaleString())
                                         session.beginDialog('rates');
