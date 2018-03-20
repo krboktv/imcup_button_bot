@@ -16,7 +16,7 @@ const Gift = require('./schemes/giftScheme.js');
 const Swap = require('./schemes/swapScheme.js');
 const Hex = require('./hex.js');
 const Cards = require('./cards.js');
-const Course = require('./course.js')
+const Course = require('./course.js');
 const request = require('request');
 const CryptoJS = require("crypto-js");
 const rp = require('request-promise');
@@ -3457,19 +3457,20 @@ bot.dialog('myDisputs', [
                 return;
             }
             for (let i in disputsArr) {
-                var card;
-                if (disputsArr[i].user_id2 != '') {
-                    if (disputsArr[i].user_id2 == session.message.user.id) {
-                        card = Cards.myDisputCard(session, disputsArr[i].num, disputsArr[i].type, disputsArr[i].matchOrCurrency, disputsArr[i].val2, disputsArr[i].val1, disputsArr[i].currency, disputsArr[i].price, disputsArr[i].endTime, true);
+                if (disputsArr[i].end != true) {
+                    var card;
+                    if (disputsArr[i].user_id2 != '') {
+                        if (disputsArr[i].user_id2 == session.message.user.id) {
+                            card = Cards.myDisputCard(session, disputsArr[i].num, disputsArr[i].type, disputsArr[i].matchOrCurrency, disputsArr[i].val2, disputsArr[i].val1, disputsArr[i].currency, disputsArr[i].price, disputsArr[i].endTime, true);
+                        } else {
+                            card = Cards.myDisputCard(session, disputsArr[i].num, disputsArr[i].type, disputsArr[i].matchOrCurrency, disputsArr[i].val1, disputsArr[i].val2, disputsArr[i].currency, disputsArr[i].price, disputsArr[i].endTime, true);
+                        }
                     } else {
-                        card = Cards.myDisputCard(session, disputsArr[i].num, disputsArr[i].type, disputsArr[i].matchOrCurrency, disputsArr[i].val1, disputsArr[i].val2, disputsArr[i].currency, disputsArr[i].price, disputsArr[i].endTime, true);
+                        card = Cards.myDisputCard(session, disputsArr[i].num, disputsArr[i].type, disputsArr[i].matchOrCurrency, disputsArr[i].val1, disputsArr[i].val2, disputsArr[i].currency, disputsArr[i].price, disputsArr[i].endTime, false);
                     }
-                } else {
-                    card = Cards.myDisputCard(session, disputsArr[i].num, disputsArr[i].type, disputsArr[i].matchOrCurrency, disputsArr[i].val1, disputsArr[i].val2, disputsArr[i].currency, disputsArr[i].price, disputsArr[i].endTime, false);
+                    let msg = new builder.Message(session).addAttachment(card);
+                    session.send(msg);
                 }
-                let msg = new builder.Message(session).addAttachment(card);
-                session.send(msg);
-
                 if (i == (disputsArr.length - 1)) {
                     let card = Cards.cancelButtonToRate(session);
                     let msg = new builder.Message(session).addAttachment(card);
@@ -3545,7 +3546,7 @@ bot.dialog('course', [
 
         session.userData.matchOrCurrency = results.response.entity;
 
-        builder.Prompts.time(session, 'Какого числа проверять итог спора?');
+        builder.Prompts.time(session, 'Какого числа проверять итог спора (в формате MM/ДД/ГГГГ ЧЧ:MM:СС)?');
     },
     (session, results) => {
         console.log(results);
@@ -3683,9 +3684,11 @@ bot.dialog('takePlaceInDisput', [
                 return;
             }
             for (let i in disputsArr) {
-                let card = Cards.disputCard(session, disputsArr[i].num, disputsArr[i].type, disputsArr[i].matchOrCurrency, disputsArr[i].val1, disputsArr[i].currency, disputsArr[i].price, disputsArr[i].endTime);
-                let msg = new builder.Message(session).addAttachment(card);
-                session.send(msg);
+                if (disputsArr[i].end != true) {
+                    let card = Cards.disputCard(session, disputsArr[i].num, disputsArr[i].type, disputsArr[i].matchOrCurrency, disputsArr[i].val1, disputsArr[i].currency, disputsArr[i].price, disputsArr[i].endTime);
+                    let msg = new builder.Message(session).addAttachment(card);
+                    session.send(msg);
+                }
 
                 if (i == (disputsArr.length - 1)) {
                     let card = Cards.cancelButtonToRate(session);
@@ -3761,7 +3764,7 @@ bot.dialog('acceptDisput', [
             builder.Prompts.text(session, 'Введите предполагаемый счёт. \n\n\0\n\nПример: 0-0');
         } else if (type == 1) {
             db.findDisputsByNum(session.userData.num, (disput) => {
-                builder.Prompts.text(session, 'Сколько будет стоить (в долларах США) '+disput.matchOrCurrency+' к '+disput.endTime+'?');
+                builder.Prompts.text(session, 'Сколько будет стоить (в долларах США) ' + disput.matchOrCurrency + ' к ' + disput.endTime + '?');
             });
         }
     },
@@ -3800,10 +3803,12 @@ bot.dialog('acceptDisput', [
                             Waves.transfer(transferData, seed.keyPair)
                                 .then(
                                     (done) => {
-                                        db.updateDisput(session.userData.num, session.userData.val2);
+                                        db.updateDisput(session, disputs.type, currency, session.userData.num, session.userData.val2);
                                         db.acceptDisput(session.userData.num, session.message.user.id);
                                         nt.sendNot(session, bot, disput.user_id1, '', 'Ваш спор номер ' + num + ' приняли');
                                         session.send('Вы приняли заявку на спор');
+                                        // var date = new Date ('09.08.2018 19:00');
+                                        // console.log(date.toLocaleString())
                                         session.beginDialog('rates');
                                     }
                                 )
@@ -3828,7 +3833,8 @@ bot.dialog('acceptDisput', [
 // СПОРЫ КОНЕЦ
 
 
-
+// var date = new Date ('09.08.2018 19:00');
+// console.log(date.toLocaleString())
 
 // var intents = new builder.IntentDialog({
 //     recognizers: [Server.recognizer]
