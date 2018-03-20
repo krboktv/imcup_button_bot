@@ -492,7 +492,7 @@ bot.dialog('SecondMenu', [
             user_id: session.message.user.id
         }, function (err, doc) {
             if (doc.length != 0) {
-                builder.Prompts.choice(session, "## Главное меню", '💳 Кошелёк|💹 Криптобиржа|RUB 🔄 Crypto|🆚 Споры|💬 About', {
+                builder.Prompts.choice(session, "## Главное меню", '💳 Кошелёк|💹 Криптобиржа|RUB 🔄 Crypto|🆚 Споры|💬 О Нас', {
                     listStyle: builder.ListStyle.button
                 });
             } else {
