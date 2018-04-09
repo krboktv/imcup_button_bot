@@ -11,8 +11,8 @@ var inMemoryStorage = new builder.MemoryBotStorage();
 
 // Create chat connector for communicating with the Bot Framework Service
 var connector = new builder.ChatConnector({
-    appId: "13fb48e8-1652-4d5e-9163-fbbe18f90979",
-    appPassword: "bripZ644@($-vqsJIIENH23"
+    appId: "4a57e0cc-6647-42b0-9298-d4d0476b97a1",
+    appPassword: "cvuvkGCCU7?+ruAER0277-?"
 });
 
 server.post('/api/messages', connector.listen());
