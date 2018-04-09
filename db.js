@@ -5,7 +5,7 @@ const Products = require('./schemes/addProductScheme.js');
 
 mongoose.Promise = global.Promise;
 
-var uri = 'mongodb://52.174.19.192:27017/db';
+var uri = 'mongodb://erage:doBH8993nnjdoBH8993nnj@51.144.89.99:27017/ImCupFood?authSource=admin';
 
 const options = {
     autoIndex: false,
