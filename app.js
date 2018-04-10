@@ -9,7 +9,7 @@ const DateTime = require('./date.js');
 const Cards = require('./cards.js');
 const Link = require('./schemes/linkScheme.js');
 const rp = require('request-promise');
-const LuisModelUrl = "https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/a75a45b7-c84d-4567-8eb6-fc637c9744d0?subscription-key=fa895b902ea44a41a1f1d347e0ff6600&verbose=true&timezoneOffset=0&q=";
+const LuisModelUrl = "https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/a75a45b7-c84d-4567-8eb6-fc637c9744d0?subscription-key=1f4de1c996b34ea680458fa126f63ebf&verbose=true&timezoneOffset=0&q=";
 
 var recognizer = new builder.LuisRecognizer(LuisModelUrl);
 // const Ajax = require('ajax-request');
@@ -770,10 +770,10 @@ bot.dialog('getAtach', [
         console.log(results.response[0].contentUrl);
         var options = {
             method: 'POST',
-            uri: 'https://westus.api.cognitive.microsoft.com/face/v1.0/detect?returnFaceId=true&returnFaceLandmarks=false&returnFaceAttributes=emotion,age,gender',
+            uri: 'https://westeurope.api.cognitive.microsoft.com/face/v1.0/detect?returnFaceId=true&returnFaceLandmarks=false&returnFaceAttributes=emotion,age,gender',
             headers: {
                 'Content-Type': 'application/json',
-                'Ocp-Apim-Subscription-Key': 'dad667b4ce8945a68818b171cb0988cb'
+                'Ocp-Apim-Subscription-Key': '874b706e7b034f779bf447165c8ac96a'
             },
             body: {
                 'url': String(results.response[0].contentUrl)
