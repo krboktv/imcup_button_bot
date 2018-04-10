@@ -1,14 +1,19 @@
-FROM golang:latest 
-RUN mkdir /app 
-ADD . /app/ 
-WORKDIR /app 
-RUN go get gopkg.in/tucnak/telebot.v2
-RUN go get gopkg.in/mgo.v2/bson
-RUN go get gopkg.in/mgo.v2
-RUN go get github.com/tidwall/gjson  
-RUN go build -o main . 
+FROM node:carbon
+
+# Create app directory
+WORKDIR /usr/src/app
+
+# Install app dependencies
+# A wildcard is used to ensure both package.json AND package-lock.json are copied
+# where available (npm@5+)
+COPY package*.json ./
+
+RUN npm install
+# If you are building your code for production
+# RUN npm install --only=production
+
+# Bundle app source
+COPY . .
 
 EXPOSE 3000
-
-CMD ["/app/main"]
-
+CMD [ "npm", "start" ]
