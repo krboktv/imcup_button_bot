@@ -20,8 +20,7 @@ type Foundations struct {
 }
 
 type investInFoundation struct {
-	ID               bson.ObjectId `bson:"_id,omitempty"`
-	FoundationID     string        `bson:"foundationID"`
+	FoundationID     bson.ObjectId `bson:"foundationsID"`
 	Currency         string        `bson:"currency"`
 	InvestInCurrency float64       `bson:"investInCurrency"`
 	InvestInRub      float64       `bson:"investInRub"`
@@ -118,8 +117,32 @@ func CreateVote(openSession *mgo.Session, foundationsID string, description stri
 	}
 }
 
+// FindVoteByFoundationID Поиск голосвания по ID фонда
+func FindVoteByFoundationID(openSession *mgo.Session, foundationsID bson.ObjectId) (Votes, bool) {
+	session := openSession.Copy()
+	defer CloseMongoConnection(session)
+
+	c := session.DB("ImCup").C("votes")
+
+	currentTimeUts := int(time.Now().Unix())
+
+	var results Votes
+	err := c.Find(bson.M{"foundationsID": foundationsID}).One(&results)
+	endTimeUts, _ := strconv.Atoi(results.EndTime)
+	if err != nil {
+		// log.Fatal(err)
+	}
+
+	if currentTimeUts <= endTimeUts {
+		return results, true
+	} else {
+		return results, false
+	}
+
+}
+
 // AddVoter Добавление голоса
-func AddVoter(openSession *mgo.Session, votesID string, vote bool, endDate string) {
+func AddVoter(openSession *mgo.Session, votesID bson.ObjectId, vote bool, endDate string) {
 	session := openSession.Copy()
 	defer CloseMongoConnection(session)
 
@@ -128,7 +151,7 @@ func AddVoter(openSession *mgo.Session, votesID string, vote bool, endDate strin
 	currenctTimeInUTS := time.Now().Unix()
 	currenctTimeInUtsString := strconv.Itoa(int(currenctTimeInUTS))
 
-	err := c.Insert(&Voters{VotesID: bson.ObjectIdHex(votesID), Vote: vote, Time: currenctTimeInUtsString})
+	err := c.Insert(&Voters{VotesID: votesID, Vote: vote, Time: currenctTimeInUtsString})
 
 	if err != nil {
 		// log.Fatal(err)
@@ -136,14 +159,13 @@ func AddVoter(openSession *mgo.Session, votesID string, vote bool, endDate strin
 }
 
 // AddFoundationToUser Добавление благотворительной организации в БД
-func AddFoundationToUser(openSession *mgo.Session, userID string, foundationID string, currency string, investInCurrency float64, investSumRub float64) {
+func AddFoundationToUser(openSession *mgo.Session, userID string, foundationID bson.ObjectId, currency string, investInCurrency float64, investSumRub float64) {
 	session := openSession.Copy()
 	defer CloseMongoConnection(session)
 
-	c := session.DB("ImCup").C("foundations")
-	results := Users{}
-	c.Find(bson.M{"UserID": userID}).One(&results)
-
+	c := session.DB("ImCup").C("users")
+	var results Users
+	c.Find(bson.M{"userID": userID}).One(&results)
 	// Массив с фондами человека
 	arr1 := results.Foundations
 
@@ -153,7 +175,7 @@ func AddFoundationToUser(openSession *mgo.Session, userID string, foundationID s
 	// Добавление структуры для фонда
 	arr2 := append(arr1, arr3)
 
-	err := c.Update(bson.M{"UserID": userID}, bson.M{"$set": bson.M{"foundations": arr2}})
+	err := c.Update(bson.M{"userID": userID}, bson.M{"$set": bson.M{"foundations": arr2}})
 
 	if err != nil {
 		// log.Fatal(err)
@@ -195,7 +217,7 @@ func FindFoundationByName(openSession *mgo.Session, foundationName string) Found
 }
 
 // FindFoundationByID Поиск всех фондов
-func FindFoundationByID(openSession *mgo.Session, foundationID string) Foundations {
+func FindFoundationByID(openSession *mgo.Session, foundationID bson.ObjectId) Foundations {
 	session := openSession.Copy()
 	defer CloseMongoConnection(session)
 

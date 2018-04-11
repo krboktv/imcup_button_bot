@@ -1,11 +1,12 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"math"
 	"strconv"
 	"time"
+
+	"gopkg.in/mgo.v2/bson"
 
 	"gopkg.in/mgo.v2"
 
@@ -223,7 +224,6 @@ func main() {
 		// user := mongo.FindUser()
 		var msg = ""
 		user := mongo.FindUser(session, strconv.Itoa(c.Sender.ID))
-		fmt.Println(user.Foundations)
 		len := len(user.Foundations)
 		//
 
@@ -234,7 +234,8 @@ func main() {
 		} else {
 			msg += "Список организаций, в которые вы пожертвовали: \n"
 			for index := range user.Foundations {
-				fond := mongo.FindFoundationByID(session, user.Foundations[index].ID.String())
+				// fmt.Print(user.Foundations[index].ID)
+				fond := mongo.FindFoundationByID(session, user.Foundations[index].FoundationID)
 				msg += "*" + fond.Name + "*" + ". Сумма пожертвования " + strconv.FormatFloat(user.Foundations[index].InvestInCurrency, 'g', 8, 64) + " ETH.\n\n"
 			}
 
@@ -244,26 +245,43 @@ func main() {
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 
+	var voteID bson.ObjectId
 	b.Handle(&inlineVote, func(c *tb.Callback) {
-		var chosenorg = ""
-		var msg = "Организация: "
+		var msg = ""
 		user := mongo.FindUser(session, strconv.Itoa(c.Sender.ID))
-		fond := mongo.FindFoundationByID(session, user.Foundations[0].ID.String())
-		msg += fond.Name
+		if len(user.Foundations) != 0 {
+			for key := range user.Foundations {
+				fond := mongo.FindFoundationByID(session, (user.Foundations[key].FoundationID))
 
-		msg += chosenorg
-		msg += " собирается вывести 0.4 ETH на покупку новой версии Windows сотруднику"
-		msg += "\n\nКак вы относитесь к этому решению?"
-
-		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"}, &tb.ReplyMarkup{InlineKeyboard: inlineKbrdyesno})
-		b.Respond(c, &tb.CallbackResponse{})
+				fondsVote, isActive := mongo.FindVoteByFoundationID(session, user.Foundations[key].FoundationID)
+				voteID = fondsVote.ID
+				if isActive == true {
+					var msg1 = ""
+					msg1 += "Организация: "
+					msg1 += "*" + fond.Name + "*\n"
+					msg1 += "\n*" + fondsVote.Description + "*\n"
+					msg1 += "\nКак вы относитесь к этому решению?"
+					msg1 += " "
+					b.Send(c.Sender, msg1, &tb.SendOptions{ParseMode: "Markdown"}, &tb.ReplyMarkup{InlineKeyboard: inlineKbrdyesno})
+					b.Respond(c, &tb.CallbackResponse{})
+				} else {
+					msg += "Активных голсоований больше не найдено"
+					b.Send(c.Sender, msg, &tb.SendOptions{ParseMode: "Markdown"})
+				}
+			}
+		} else {
+			msg += "Вы ещё не пожертвовали ETH какой-либо организации"
+			b.Send(c.Sender, msg, &tb.SendOptions{ParseMode: "Markdown"})
+		}
 	})
 	b.Handle(&inlineYes, func(c *tb.Callback) {
+		mongo.AddVoter(session, voteID, true, "999999")
 		var msg = "Вы проголосовали За, ваш голос учтен!"
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 	b.Handle(&inlineNo, func(c *tb.Callback) {
+		mongo.AddVoter(session, voteID, false, "999999")
 		var msg = "Вы проголосовали Против, ваш голос учтен!"
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
@@ -530,7 +548,7 @@ func main() {
 		if status != "400" {
 			fondObj := mongo.FindFoundationByName(session, fond)
 
-			mongo.AddFoundationToUser(session, userid, fondObj.ID.String(), concurrency, sum1, torub3)
+			mongo.AddFoundationToUser(session, userid, fondObj.ID, concurrency, sum1, torub3)
 			var msg = "Перевод совершен успешно, подробности в личном кабинете"
 			concurrency = ""
 			sum = ""
