@@ -84,6 +84,7 @@ contract VoteMain is VotingFunctions {
     
     function setOrgAddress(address _orgAddress) public onlyAdmin returns(bool) {
         orgAddress = _orgAddress;
+        return(false);
     } 
 
     function makeProposal(string _propWhy, uint256 _propSum, address _propAddress, 
