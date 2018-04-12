@@ -59,8 +59,7 @@ contract VotingFunctions is VotingModificators {
     // если время пришло - то перевод пройдет в случае голосования за
     // и вернет тру 
 
-    function makeProposal(string _propWhy, uint256 _propSum, address _propAddress,
-            uint256 _propDur) public onlyOrg returns(bool); 
+    function makeProposal(string _propWhy, uint256 _propSum, address _propAddress, uint256 _propDur) public onlyOrg returns(bool); 
     // создание предложения(), почему(стринг), сумма (ETH/ 10^18), адрес перевода
     
     function setInvestor(address _invsetor) internal;
@@ -87,8 +86,7 @@ contract VoteMain is VotingFunctions {
         return(false);
     } 
 
-    function makeProposal(string _propWhy, uint256 _propSum, address _propAddress, 
-            uint256 _propDur) public onlyOrg returns(bool) {
+    function makeProposal(string _propWhy, uint256 _propSum, address _propAddress, uint256 _propDur) public onlyOrg returns(bool) {
         proposalId += 1;  
         proposalsWhy[proposalId] = keccak256(_propWhy);
         proposalsSum[proposalId] = _propSum;
