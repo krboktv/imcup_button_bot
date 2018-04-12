@@ -10,6 +10,17 @@ import (
 	Все взимодействия с блокчейном Ethereum происходят через post request к nodeJS серверу
 */
 
+// VoteForProposal Отправление данных голоса на смарт контракт
+func VoteForProposal(prvtKey string, proposalID string, vote string) string {
+	postData := url.Values{
+		"prvtKey":    {prvtKey},
+		"proposalID": {proposalID},
+		"vote":       {proposalID},
+	}
+	data := post.Send("http://localhost:3000/voteForProposal", postData)
+	return data
+}
+
 // CreatePrvtKey Создание секретного ключа эфира
 func CreatePrvtKey() string {
 	postData := url.Values{

@@ -34,6 +34,25 @@ var currencyBalanceResult gjson.Result
 
 var session *mgo.Session
 
+// Функция, котрая посылает данные в смарт контракт
+func vote(prvtKey string, proposalID string, vote string) string {
+	data := ethereum.VoteForProposal(prvtKey, proposalID, vote)
+	msg := ""
+	if data != "false" {
+		if vote == "true" {
+			msg += "Вы проголосовали *За*, ваш голос учтен!\n\n"
+		} else {
+			msg += "Вы проголосовали *Против*, ваш голос учтен!\n\n"
+		}
+
+		msg += "Вы можете *посмотреть вашу транзакцию* по адресу: " + data
+		return msg
+	} else {
+		msg += "Не удалось проголосвать. Возможно, у вас недостаточно средств для голоса."
+		return msg
+	}
+}
+
 func main() {
 	b, err := tb.NewBot(tb.Settings{
 		// Token: "576497547:AAFqeiPb5j5fVktRPqtzpTvaIp8ExKlZZAY", //продакшн @bf_charity_bot
@@ -74,12 +93,12 @@ func main() {
 	// for i := 0; i < 25; i++ {
 	// 	fmt.Print(`
 	// 	b.Handle(&voteButtonYes` + strconv.Itoa(i) + `, func(c *tb.Callback) {
-	// 		var msg = "Вы проголосовали За, ваш голос учтен!"
+	//
 	// 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 	// 		b.Respond(c, &tb.CallbackResponse{})
 	// 	})
 	// 	b.Handle(&voteButtonNo` + strconv.Itoa(i) + `, func(c *tb.Callback) {
-	// 		var msg = "Вы проголосовали За, ваш голос учтен!"
+	//
 	// 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 	// 		b.Respond(c, &tb.CallbackResponse{})
 	// 	})
@@ -338,7 +357,7 @@ func main() {
 		// 	b.Respond(c, &tb.CallbackResponse{})
 		// })
 		// b.Handle(&inlineNo, func(c *tb.Callback) {
-		// 	var msg = "Вы проголосовали Против, ваш голос учтен!"
+		//
 		// 	b.Edit(c.Message, , &tb.SendOptions{ParseMode: "Markdown"})
 		// 	b.Respond(c, &tb.CallbackResponse{})
 		// })
@@ -727,326 +746,358 @@ func main() {
 
 	// Обработчики голосов
 	b.Handle(&voteButtonYes0, func(c *tb.Callback) {
-		var msg = "Вы проголосовали За, ваш голос учтен!"
+		user := mongo.FindUserByID(session, userID)
+		var msg = vote(user.EthPrvKey, "1", "true")
 		mongo.AddVoter(session, voteID[0], userID, true)
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 	b.Handle(&voteButtonNo0, func(c *tb.Callback) {
+		user := mongo.FindUserByID(session, userID)
+		var msg = vote(user.EthPrvKey, "1", "false")
 		mongo.AddVoter(session, voteID[0], userID, false)
-		var msg = "Вы проголосовали Против, ваш голос учтен!"
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 
 	b.Handle(&voteButtonYes1, func(c *tb.Callback) {
+		user := mongo.FindUserByID(session, userID)
+		var msg = vote(user.EthPrvKey, "2", "true")
 		mongo.AddVoter(session, voteID[1], userID, true)
-		var msg = "Вы проголосовали За, ваш голос учтен!"
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 	b.Handle(&voteButtonNo1, func(c *tb.Callback) {
+		user := mongo.FindUserByID(session, userID)
+		var msg = vote(user.EthPrvKey, "2", "false")
 		mongo.AddVoter(session, voteID[1], userID, false)
-		var msg = "Вы проголосовали Против, ваш голос учтен!"
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 
 	b.Handle(&voteButtonYes2, func(c *tb.Callback) {
+		user := mongo.FindUserByID(session, userID)
+		var msg = vote(user.EthPrvKey, "3", "true")
 		mongo.AddVoter(session, voteID[2], userID, true)
-		var msg = "Вы проголосовали За, ваш голос учтен!"
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 	b.Handle(&voteButtonNo2, func(c *tb.Callback) {
+		user := mongo.FindUserByID(session, userID)
+		var msg = vote(user.EthPrvKey, "3", "false")
 		mongo.AddVoter(session, voteID[2], userID, false)
-		var msg = "Вы проголосовали Против, ваш голос учтен!"
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 
 	b.Handle(&voteButtonYes3, func(c *tb.Callback) {
+		user := mongo.FindUserByID(session, userID)
+		var msg = vote(user.EthPrvKey, "4", "true")
 		mongo.AddVoter(session, voteID[3], userID, true)
-		var msg = "Вы проголосовали За, ваш голос учтен!"
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 	b.Handle(&voteButtonNo3, func(c *tb.Callback) {
+		user := mongo.FindUserByID(session, userID)
+		var msg = vote(user.EthPrvKey, "4", "false")
 		mongo.AddVoter(session, voteID[3], userID, false)
-		var msg = "Вы проголосовали Против, ваш голос учтен!"
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 
 	b.Handle(&voteButtonYes4, func(c *tb.Callback) {
+		user := mongo.FindUserByID(session, userID)
+		var msg = vote(user.EthPrvKey, "5", "true")
 		mongo.AddVoter(session, voteID[4], userID, true)
-		var msg = "Вы проголосовали За, ваш голос учтен!"
+
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 	b.Handle(&voteButtonNo4, func(c *tb.Callback) {
+		user := mongo.FindUserByID(session, userID)
+		var msg = vote(user.EthPrvKey, "5", "false")
 		mongo.AddVoter(session, voteID[4], userID, false)
-		var msg = "Вы проголосовали Против, ваш голос учтен!"
+
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 
 	b.Handle(&voteButtonYes5, func(c *tb.Callback) {
+		user := mongo.FindUserByID(session, userID)
+		var msg = vote(user.EthPrvKey, "6", "true")
 		mongo.AddVoter(session, voteID[5], userID, true)
-		var msg = "Вы проголосовали За, ваш голос учтен!"
+
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 	b.Handle(&voteButtonNo5, func(c *tb.Callback) {
+		user := mongo.FindUserByID(session, userID)
+		var msg = vote(user.EthPrvKey, "6", "false")
 		mongo.AddVoter(session, voteID[5], userID, false)
-		var msg = "Вы проголосовали Против, ваш голос учтен!"
+
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 
 	b.Handle(&voteButtonYes6, func(c *tb.Callback) {
+		user := mongo.FindUserByID(session, userID)
+		var msg = vote(user.EthPrvKey, "7", "true")
 		mongo.AddVoter(session, voteID[6], userID, true)
-		var msg = "Вы проголосовали За, ваш голос учтен!"
+
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 	b.Handle(&voteButtonNo6, func(c *tb.Callback) {
+		user := mongo.FindUserByID(session, userID)
+		var msg = vote(user.EthPrvKey, "7", "false")
 		mongo.AddVoter(session, voteID[6], userID, false)
-		var msg = "Вы проголосовали Против, ваш голос учтен!"
+
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 
 	b.Handle(&voteButtonYes7, func(c *tb.Callback) {
+		user := mongo.FindUserByID(session, userID)
+		var msg = vote(user.EthPrvKey, "8", "true")
 		mongo.AddVoter(session, voteID[7], userID, true)
-		var msg = "Вы проголосовали За, ваш голос учтен!"
+
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 	b.Handle(&voteButtonNo7, func(c *tb.Callback) {
+		user := mongo.FindUserByID(session, userID)
+		var msg = vote(user.EthPrvKey, "8", "false")
 		mongo.AddVoter(session, voteID[7], userID, false)
-		var msg = "Вы проголосовали Против, ваш голос учтен!"
+
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 
 	b.Handle(&voteButtonYes8, func(c *tb.Callback) {
+		user := mongo.FindUserByID(session, userID)
+		var msg = vote(user.EthPrvKey, "9", "true")
 		mongo.AddVoter(session, voteID[8], userID, true)
-		var msg = "Вы проголосовали За, ваш голос учтен!"
+
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 	b.Handle(&voteButtonNo8, func(c *tb.Callback) {
+		user := mongo.FindUserByID(session, userID)
+		var msg = vote(user.EthPrvKey, "9", "false")
 		mongo.AddVoter(session, voteID[8], userID, false)
-		var msg = "Вы проголосовали Против, ваш голос учтен!"
+
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 
 	b.Handle(&voteButtonYes9, func(c *tb.Callback) {
+		user := mongo.FindUserByID(session, userID)
+		var msg = vote(user.EthPrvKey, "10", "true")
 		mongo.AddVoter(session, voteID[9], userID, true)
-		var msg = "Вы проголосовали За, ваш голос учтен!"
+
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 	b.Handle(&voteButtonNo9, func(c *tb.Callback) {
+		user := mongo.FindUserByID(session, userID)
+		var msg = vote(user.EthPrvKey, "10", "true")
 		mongo.AddVoter(session, voteID[9], userID, false)
-		var msg = "Вы проголосовали Против, ваш голос учтен!"
+
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 
 	b.Handle(&voteButtonYes10, func(c *tb.Callback) {
 		mongo.AddVoter(session, voteID[10], userID, true)
-		var msg = "Вы проголосовали За, ваш голос учтен!"
+
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 	b.Handle(&voteButtonNo10, func(c *tb.Callback) {
 		mongo.AddVoter(session, voteID[10], userID, false)
-		var msg = "Вы проголосовали Против, ваш голос учтен!"
+
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 
 	b.Handle(&voteButtonYes11, func(c *tb.Callback) {
 		mongo.AddVoter(session, voteID[11], userID, true)
-		var msg = "Вы проголосовали За, ваш голос учтен!"
+
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 	b.Handle(&voteButtonNo11, func(c *tb.Callback) {
 		mongo.AddVoter(session, voteID[11], userID, false)
-		var msg = "Вы проголосовали Против, ваш голос учтен!"
+
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 
 	b.Handle(&voteButtonYes12, func(c *tb.Callback) {
 		mongo.AddVoter(session, voteID[12], userID, true)
-		var msg = "Вы проголосовали За, ваш голос учтен!"
+
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 	b.Handle(&voteButtonNo12, func(c *tb.Callback) {
 		mongo.AddVoter(session, voteID[12], userID, false)
-		var msg = "Вы проголосовали Против, ваш голос учтен!"
+
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 
 	b.Handle(&voteButtonYes13, func(c *tb.Callback) {
 		mongo.AddVoter(session, voteID[13], userID, true)
-		var msg = "Вы проголосовали За, ваш голос учтен!"
+
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 	b.Handle(&voteButtonNo13, func(c *tb.Callback) {
 		mongo.AddVoter(session, voteID[13], userID, false)
-		var msg = "Вы проголосовали Против, ваш голос учтен!"
+
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 
 	b.Handle(&voteButtonYes14, func(c *tb.Callback) {
 		mongo.AddVoter(session, voteID[14], userID, true)
-		var msg = "Вы проголосовали За, ваш голос учтен!"
+
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 	b.Handle(&voteButtonNo14, func(c *tb.Callback) {
 		mongo.AddVoter(session, voteID[14], userID, false)
-		var msg = "Вы проголосовали Против, ваш голос учтен!"
+
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 
 	b.Handle(&voteButtonYes15, func(c *tb.Callback) {
 		mongo.AddVoter(session, voteID[15], userID, true)
-		var msg = "Вы проголосовали За, ваш голос учтен!"
+
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 	b.Handle(&voteButtonNo15, func(c *tb.Callback) {
 		mongo.AddVoter(session, voteID[15], userID, false)
-		var msg = "Вы проголосовали Против, ваш голос учтен!"
+
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 
 	b.Handle(&voteButtonYes16, func(c *tb.Callback) {
 		mongo.AddVoter(session, voteID[16], userID, true)
-		var msg = "Вы проголосовали За, ваш голос учтен!"
+
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 	b.Handle(&voteButtonNo16, func(c *tb.Callback) {
 		mongo.AddVoter(session, voteID[16], userID, false)
-		var msg = "Вы проголосовали Против, ваш голос учтен!"
+
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 
 	b.Handle(&voteButtonYes17, func(c *tb.Callback) {
 		mongo.AddVoter(session, voteID[17], userID, true)
-		var msg = "Вы проголосовали За, ваш голос учтен!"
+
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 	b.Handle(&voteButtonNo17, func(c *tb.Callback) {
 		mongo.AddVoter(session, voteID[17], userID, false)
-		var msg = "Вы проголосовали Против, ваш голос учтен!"
+
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 
 	b.Handle(&voteButtonYes18, func(c *tb.Callback) {
 		mongo.AddVoter(session, voteID[18], userID, true)
-		var msg = "Вы проголосовали За, ваш голос учтен!"
+
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 	b.Handle(&voteButtonNo18, func(c *tb.Callback) {
 		mongo.AddVoter(session, voteID[18], userID, false)
-		var msg = "Вы проголосовали Против, ваш голос учтен!"
+
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 
 	b.Handle(&voteButtonYes19, func(c *tb.Callback) {
 		mongo.AddVoter(session, voteID[19], userID, true)
-		var msg = "Вы проголосовали За, ваш голос учтен!"
+
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 	b.Handle(&voteButtonNo19, func(c *tb.Callback) {
 		mongo.AddVoter(session, voteID[19], userID, false)
-		var msg = "Вы проголосовали Против, ваш голос учтен!"
+
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 
 	b.Handle(&voteButtonYes20, func(c *tb.Callback) {
 		mongo.AddVoter(session, voteID[20], userID, true)
-		var msg = "Вы проголосовали За, ваш голос учтен!"
+
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 	b.Handle(&voteButtonNo20, func(c *tb.Callback) {
 		mongo.AddVoter(session, voteID[20], userID, false)
-		var msg = "Вы проголосовали Против, ваш голос учтен!"
+
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 
 	b.Handle(&voteButtonYes21, func(c *tb.Callback) {
 		mongo.AddVoter(session, voteID[21], userID, true)
-		var msg = "Вы проголосовали За, ваш голос учтен!"
+
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 	b.Handle(&voteButtonNo21, func(c *tb.Callback) {
 		mongo.AddVoter(session, voteID[21], userID, false)
-		var msg = "Вы проголосовали Против, ваш голос учтен!"
+
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 
 	b.Handle(&voteButtonYes22, func(c *tb.Callback) {
 		mongo.AddVoter(session, voteID[22], userID, true)
-		var msg = "Вы проголосовали За, ваш голос учтен!"
+
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 	b.Handle(&voteButtonNo22, func(c *tb.Callback) {
 		mongo.AddVoter(session, voteID[22], userID, false)
-		var msg = "Вы проголосовали Против, ваш голос учтен!"
+
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 
 	b.Handle(&voteButtonYes23, func(c *tb.Callback) {
 		mongo.AddVoter(session, voteID[23], userID, true)
-		var msg = "Вы проголосовали За, ваш голос учтен!"
+
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 	b.Handle(&voteButtonNo23, func(c *tb.Callback) {
 		mongo.AddVoter(session, voteID[23], userID, false)
-		var msg = "Вы проголосовали Против, ваш голос учтен!"
+
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 
 	b.Handle(&voteButtonYes24, func(c *tb.Callback) {
 		mongo.AddVoter(session, voteID[24], userID, true)
-		var msg = "Вы проголосовали За, ваш голос учтен!"
+
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 	b.Handle(&voteButtonNo24, func(c *tb.Callback) {
 		mongo.AddVoter(session, voteID[24], userID, false)
-		var msg = "Вы проголосовали Против, ваш голос учтен!"
+
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})

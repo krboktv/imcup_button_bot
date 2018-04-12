@@ -40,6 +40,7 @@ type Users struct {
 // Votes Структура голосования
 type Votes struct {
 	ID            bson.ObjectId `bson:"_id,omitempty"`
+	Num           int           `bson:"num"`
 	FoundationsID bson.ObjectId `bson:"foundationsID"`
 	Description   string        `bson:"description"`
 	StartTime     string        `bson:"startTime"`
@@ -101,7 +102,7 @@ func AddUser(openSession *mgo.Session, userID string, name string, ethPrvKey str
 }
 
 // CreateVote Создание голосования
-func CreateVote(openSession *mgo.Session, foundationsID string, description string, endDate string) {
+func CreateVote(openSession *mgo.Session, num int, foundationsID string, description string, endDate string) {
 	session := openSession.Copy()
 	defer CloseMongoConnection(session)
 
@@ -112,7 +113,7 @@ func CreateVote(openSession *mgo.Session, foundationsID string, description stri
 	endTime, _ := strconv.Atoi(endDate)
 	endTimeString := strconv.Itoa(int(time.Now().Unix() + int64(endTime)))
 
-	err := c.Insert(&Votes{FoundationsID: bson.ObjectIdHex(foundationsID), Description: description, StartTime: currentTimeUts, EndTime: endTimeString, End: false})
+	err := c.Insert(&Votes{Num: num, FoundationsID: bson.ObjectIdHex(foundationsID), Description: description, StartTime: currentTimeUts, EndTime: endTimeString, End: false})
 
 	if err != nil {
 		log.Fatal(err)
@@ -282,6 +283,23 @@ func FindUser(openSession *mgo.Session, userid string) Users {
 
 	var results Users
 	err := c.Find(bson.M{"userID": userid}).One(&results)
+
+	if err != nil {
+		// log.Fatal(err)
+	}
+
+	return results
+}
+
+// FindUserByID Поиск конкретного пользователя по записи в бд
+func FindUserByID(openSession *mgo.Session, userid bson.ObjectId) Users {
+	session := openSession.Copy()
+	defer CloseMongoConnection(session)
+
+	c := session.DB("ImCup").C("users")
+
+	var results Users
+	err := c.Find(bson.M{"_id": userid}).One(&results)
 
 	if err != nil {
 		// log.Fatal(err)
