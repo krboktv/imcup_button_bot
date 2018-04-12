@@ -308,16 +308,18 @@ CONTRACT.methods.orgAddress().call()
 //     data: contract.methods.balanceOf(address).encodeABI()
 // }).then(balance => {}
 
+// web3.eth.accounts.privateKeyToAccount('0x2e0a3351bc4f1d619ba654a861ec40a1f307ddc66473ff4cb93717980551b944');
 
+var account = web3.eth.accounts.wallet.add('0x2e0a3351bc4f1d619ba654a861ec40a1f307ddc66473ff4cb93717980551b944');
 // разблокировать добавленный в geth аккаунт
-web3.eth.personal.unlockAccount("0x6d377de54bde59c6a4b0fa15cb2efb84bb32d433", "123").
-then(() => {
-  console.log('Account unlocked.');
+// web3.eth.personal.unlockAccount("0x03b825db4af2A61eaFdeCe3A2AA3039743996df2", "123").
+// then(() => {
+//   console.log('Account unlocked.');
   // Отправить какие-то данные на смарт контракт с этого аккаунта
-  // CONTRACT.methods.setOrgAddress("0x6d377de54bde59c6a4b0fa15cb2efb84bb32d433").send({from: web3.eth.accounts[1]}, (err,res) => {
-  //   console.log(err)
-  //   console.log(res)
-  // })
+  CONTRACT.methods.setOrgAddress("0x6d377de54bde59c6a4b0fa15cb2efb84bb32d433").send({from: "0x03b825db4af2A61eaFdeCe3A2AA3039743996df2", gas: "1234422"}, (err,res) => {
+    console.log(err)
+    console.log(res)
+  })
 
 
 // ДЕПЛОЙ СМАРТ КОНТРАКТА В БЛОКЧЕЙН
@@ -350,5 +352,5 @@ then(() => {
 //     console.log('Адрес контракта.')
 //     console.log(newContractInstance.options.address) // instance with the new contract address
 //   });
-})
-.catch(console.error);
+// })
+// .catch(console.error);
