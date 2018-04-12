@@ -900,7 +900,7 @@ func main() {
 	})
 	b.Handle(&voteButtonNo9, func(c *tb.Callback) {
 		user := mongo.FindUserByID(session, userID)
-		var msg = vote(user.EthPrvKey, "10", "true")
+		var msg = vote(user.EthPrvKey, "10", "false")
 		mongo.AddVoter(session, voteID[9], userID, false)
 
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
@@ -908,196 +908,226 @@ func main() {
 	})
 
 	b.Handle(&voteButtonYes10, func(c *tb.Callback) {
+		user := mongo.FindUserByID(session, userID)
+		var msg = vote(user.EthPrvKey, "11", "true")
 		mongo.AddVoter(session, voteID[10], userID, true)
-
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 	b.Handle(&voteButtonNo10, func(c *tb.Callback) {
+		user := mongo.FindUserByID(session, userID)
+		var msg = vote(user.EthPrvKey, "11", "false")
 		mongo.AddVoter(session, voteID[10], userID, false)
-
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 
 	b.Handle(&voteButtonYes11, func(c *tb.Callback) {
+		user := mongo.FindUserByID(session, userID)
+		var msg = vote(user.EthPrvKey, "12", "true")
 		mongo.AddVoter(session, voteID[11], userID, true)
-
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 	b.Handle(&voteButtonNo11, func(c *tb.Callback) {
+		user := mongo.FindUserByID(session, userID)
+		var msg = vote(user.EthPrvKey, "12", "false")
 		mongo.AddVoter(session, voteID[11], userID, false)
-
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 
 	b.Handle(&voteButtonYes12, func(c *tb.Callback) {
+		user := mongo.FindUserByID(session, userID)
+		var msg = vote(user.EthPrvKey, "13", "true")
 		mongo.AddVoter(session, voteID[12], userID, true)
-
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 	b.Handle(&voteButtonNo12, func(c *tb.Callback) {
+		user := mongo.FindUserByID(session, userID)
+		var msg = vote(user.EthPrvKey, "13", "false")
 		mongo.AddVoter(session, voteID[12], userID, false)
-
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 
 	b.Handle(&voteButtonYes13, func(c *tb.Callback) {
+		user := mongo.FindUserByID(session, userID)
+		var msg = vote(user.EthPrvKey, "14", "true")
 		mongo.AddVoter(session, voteID[13], userID, true)
-
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 	b.Handle(&voteButtonNo13, func(c *tb.Callback) {
+		user := mongo.FindUserByID(session, userID)
+		var msg = vote(user.EthPrvKey, "14", "false")
 		mongo.AddVoter(session, voteID[13], userID, false)
-
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 
 	b.Handle(&voteButtonYes14, func(c *tb.Callback) {
+		user := mongo.FindUserByID(session, userID)
+		var msg = vote(user.EthPrvKey, "15", "true")
 		mongo.AddVoter(session, voteID[14], userID, true)
-
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 	b.Handle(&voteButtonNo14, func(c *tb.Callback) {
+		user := mongo.FindUserByID(session, userID)
+		var msg = vote(user.EthPrvKey, "15", "false")
 		mongo.AddVoter(session, voteID[14], userID, false)
-
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 
 	b.Handle(&voteButtonYes15, func(c *tb.Callback) {
+		user := mongo.FindUserByID(session, userID)
+		var msg = vote(user.EthPrvKey, "16", "true")
 		mongo.AddVoter(session, voteID[15], userID, true)
-
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 	b.Handle(&voteButtonNo15, func(c *tb.Callback) {
+		user := mongo.FindUserByID(session, userID)
+		var msg = vote(user.EthPrvKey, "16", "false")
 		mongo.AddVoter(session, voteID[15], userID, false)
-
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 
 	b.Handle(&voteButtonYes16, func(c *tb.Callback) {
+		user := mongo.FindUserByID(session, userID)
+		var msg = vote(user.EthPrvKey, "17", "true")
 		mongo.AddVoter(session, voteID[16], userID, true)
-
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 	b.Handle(&voteButtonNo16, func(c *tb.Callback) {
+		user := mongo.FindUserByID(session, userID)
+		var msg = vote(user.EthPrvKey, "17", "false")
 		mongo.AddVoter(session, voteID[16], userID, false)
-
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 
 	b.Handle(&voteButtonYes17, func(c *tb.Callback) {
+		user := mongo.FindUserByID(session, userID)
+		var msg = vote(user.EthPrvKey, "18", "true")
 		mongo.AddVoter(session, voteID[17], userID, true)
-
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 	b.Handle(&voteButtonNo17, func(c *tb.Callback) {
+		user := mongo.FindUserByID(session, userID)
+		var msg = vote(user.EthPrvKey, "18", "false")
 		mongo.AddVoter(session, voteID[17], userID, false)
-
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 
 	b.Handle(&voteButtonYes18, func(c *tb.Callback) {
+		user := mongo.FindUserByID(session, userID)
+		var msg = vote(user.EthPrvKey, "19", "true")
 		mongo.AddVoter(session, voteID[18], userID, true)
-
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 	b.Handle(&voteButtonNo18, func(c *tb.Callback) {
+		user := mongo.FindUserByID(session, userID)
+		var msg = vote(user.EthPrvKey, "19", "false")
 		mongo.AddVoter(session, voteID[18], userID, false)
-
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 
 	b.Handle(&voteButtonYes19, func(c *tb.Callback) {
+		user := mongo.FindUserByID(session, userID)
+		var msg = vote(user.EthPrvKey, "20", "true")
 		mongo.AddVoter(session, voteID[19], userID, true)
-
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 	b.Handle(&voteButtonNo19, func(c *tb.Callback) {
+		user := mongo.FindUserByID(session, userID)
+		var msg = vote(user.EthPrvKey, "20", "false")
 		mongo.AddVoter(session, voteID[19], userID, false)
-
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 
 	b.Handle(&voteButtonYes20, func(c *tb.Callback) {
+		user := mongo.FindUserByID(session, userID)
+		var msg = vote(user.EthPrvKey, "21", "true")
 		mongo.AddVoter(session, voteID[20], userID, true)
-
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 	b.Handle(&voteButtonNo20, func(c *tb.Callback) {
+		user := mongo.FindUserByID(session, userID)
+		var msg = vote(user.EthPrvKey, "21", "false")
 		mongo.AddVoter(session, voteID[20], userID, false)
-
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 
 	b.Handle(&voteButtonYes21, func(c *tb.Callback) {
+		user := mongo.FindUserByID(session, userID)
+		var msg = vote(user.EthPrvKey, "22", "true")
 		mongo.AddVoter(session, voteID[21], userID, true)
-
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 	b.Handle(&voteButtonNo21, func(c *tb.Callback) {
+		user := mongo.FindUserByID(session, userID)
+		var msg = vote(user.EthPrvKey, "22", "false")
 		mongo.AddVoter(session, voteID[21], userID, false)
-
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 
 	b.Handle(&voteButtonYes22, func(c *tb.Callback) {
+		user := mongo.FindUserByID(session, userID)
+		var msg = vote(user.EthPrvKey, "23", "true")
 		mongo.AddVoter(session, voteID[22], userID, true)
-
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 	b.Handle(&voteButtonNo22, func(c *tb.Callback) {
+		user := mongo.FindUserByID(session, userID)
+		var msg = vote(user.EthPrvKey, "23", "false")
 		mongo.AddVoter(session, voteID[22], userID, false)
-
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 
 	b.Handle(&voteButtonYes23, func(c *tb.Callback) {
+		user := mongo.FindUserByID(session, userID)
+		var msg = vote(user.EthPrvKey, "24", "true")
 		mongo.AddVoter(session, voteID[23], userID, true)
-
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 	b.Handle(&voteButtonNo23, func(c *tb.Callback) {
+		user := mongo.FindUserByID(session, userID)
+		var msg = vote(user.EthPrvKey, "24", "false")
 		mongo.AddVoter(session, voteID[23], userID, false)
-
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 
 	b.Handle(&voteButtonYes24, func(c *tb.Callback) {
+		user := mongo.FindUserByID(session, userID)
+		var msg = vote(user.EthPrvKey, "25", "true")
 		mongo.AddVoter(session, voteID[24], userID, true)
-
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 	b.Handle(&voteButtonNo24, func(c *tb.Callback) {
+		user := mongo.FindUserByID(session, userID)
+		var msg = vote(user.EthPrvKey, "25", "false")
 		mongo.AddVoter(session, voteID[24], userID, false)
-
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
