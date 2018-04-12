@@ -1,0 +1,26 @@
+{
+    "abi": "[{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"address\"}],\"name\":\"investrosBal\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"proposalId\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"proposalsSum\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"investors\",\"outputs\":[{\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"_propWhy\",\"type\":\"string\"},{\"name\":\"_propSum\",\"type\":\"uint256\"},{\"name\":\"_propAddress\",\"type\":\"address\"},{\"name\":\"_propDur\",\"type\":\"uint256\"}],\"name\":\"makeProposal\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"_idProp\",\"type\":\"uint256\"}],\"name\":\"askForFinanlTransaction\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"_idProp\",\"type\":\"uint256\"},{\"name\":\"_vote\",\"type\":\"bool\"}],\"name\":\"voteForProposal\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"proposalStatus\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"proposalsWhy\",\"outputs\":[{\"name\":\"\",\"type\":\"bytes32\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"orgAddress\",\"outputs\":[{\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"proposalAddress\",\"outputs\":[{\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"_orgAddress\",\"type\":\"address\"}],\"name\":\"setOrgAddress\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"_idProp\",\"type\":\"uint256\"}],\"name\":\"showFinalResultofProposal\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"admin\",\"outputs\":[{\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"}]",
+    "bytecode": "",
+    "functionHashes": {
+        "admin()": "f851a440",
+        "askForFinanlTransaction(uint256)": "62252b7b",
+        "investors(uint256)": "3feb5f2b",
+        "investrosBal(address)": "08410967",
+        "makeProposal(string,uint256,address,uint256)": "560495ec",
+        "orgAddress()": "797ea25d",
+        "proposalAddress(uint256)": "89107dc8",
+        "proposalId()": "2dfca445",
+        "proposalStatus(uint256)": "74c260cf",
+        "proposalsSum(uint256)": "30a00975",
+        "proposalsWhy(uint256)": "785cbf5b",
+        "setOrgAddress(address)": "b21d0190",
+        "showFinalResultofProposal(uint256)": "bb26549d",
+        "voteForProposal(uint256,bool)": "6505e8e8"
+    },
+    "gasEstimates": {
+        "creation": {},
+        "external": {},
+        "internal": {}
+    },
+    "runtimeBytecode": ""
+}
