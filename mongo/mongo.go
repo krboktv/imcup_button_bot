@@ -1,6 +1,7 @@
 package mongo
 
 import (
+	"fmt"
 	"log"
 	"strconv"
 	"time"
@@ -50,6 +51,7 @@ type Votes struct {
 type Voters struct {
 	ID      bson.ObjectId `bson:"_id,omitempty"`
 	VotesID bson.ObjectId `bson:"votesID"`
+	UserID  bson.ObjectId `bson:"userID"`
 	Vote    bool          `bson:"vote"`
 	Time    string        `bson:"startTime"`
 }
@@ -142,7 +144,7 @@ func FindVoteByFoundationID(openSession *mgo.Session, foundationsID bson.ObjectI
 }
 
 // AddVoter Добавление голоса
-func AddVoter(openSession *mgo.Session, votesID bson.ObjectId, vote bool, endDate string) {
+func AddVoter(openSession *mgo.Session, votesID bson.ObjectId, userID bson.ObjectId, vote bool) {
 	session := openSession.Copy()
 	defer CloseMongoConnection(session)
 
@@ -151,10 +153,31 @@ func AddVoter(openSession *mgo.Session, votesID bson.ObjectId, vote bool, endDat
 	currenctTimeInUTS := time.Now().Unix()
 	currenctTimeInUtsString := strconv.Itoa(int(currenctTimeInUTS))
 
-	err := c.Insert(&Voters{VotesID: votesID, Vote: vote, Time: currenctTimeInUtsString})
+	err := c.Insert(&Voters{VotesID: votesID, UserID: userID, Vote: vote, Time: currenctTimeInUtsString})
 
 	if err != nil {
 		// log.Fatal(err)
+	}
+}
+
+// IsVote Проверка на то, голосовал ли пользователь
+func IsVote(openSession *mgo.Session, votesID bson.ObjectId, userID bson.ObjectId) bool {
+	session := openSession.Copy()
+	defer CloseMongoConnection(session)
+
+	c := session.DB("ImCup").C("voters")
+	fmt.Print(userID)
+	var result Voters
+	err := c.Find(bson.M{"userID": userID, "votesID": votesID}).One(&result)
+
+	if err != nil {
+		// log.Fatal(err)
+	}
+
+	if result.Time != "" {
+		return false
+	} else {
+		return true
 	}
 }
 
