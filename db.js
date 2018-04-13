@@ -14,7 +14,7 @@ const Course = require('./course.js');
 
 mongoose.Promise = global.Promise;
 
-const uri = 'mongodb://erage:doBH8993nnjdoBH8993nnj@51.144.89.99:27017/ImCupWallet?authSource=admin'; // Мейн нет ПОМЕНЯТЬ
+var uri = 'mongodb://erage:doBH8993nnjdoBH8993nnj@51.144.89.99:27017/ImCupMain?authSource=admin';
 
 const options = { 
   autoIndex: false,
