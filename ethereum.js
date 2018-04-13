@@ -44,6 +44,25 @@ function voteForProposal(_prvtKey, _proposalID, vote, callback) {
 		});
 }
 
+function askForFinanlTransaction(_num, _prvtKey) {
+	var account = web3.eth.accounts.wallet.add(_prvtKey);
+	CONTRACT.methods.askForFinanlTransaction(Number(_num)).send({
+			from: account.address,
+			gas: "1234422"
+		})
+		.on('transactionHash', function(hash){
+			console.log('Хэш транзакции');
+			console.log(hash)
+		
+		})
+		.on('error', (err) => {
+			console.log(err)
+			
+		});
+}
+
+// askForFinanlTransaction(0, "0x61d94d1c3335c6c30c1336da9e4d54a586f1ffa882338a8bb9f8268296434bc9")
+
 // Получаем результаты голосования
 function getResults(_voteNum, callback) {
 	var account = web3.eth.accounts.wallet.add(_prvtKey);
