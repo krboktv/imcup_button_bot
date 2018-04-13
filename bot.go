@@ -55,23 +55,23 @@ func vote(prvtKey string, proposalID string, vote string) string {
 
 func main() {
 	b, err := tb.NewBot(tb.Settings{
-		Token: "597931763:AAFOGZ7zBhCtse-6FPRyp9-WH5BkusSapzo", //продакшн @button_charity_bot
-		// Token: "525513661:AAEdYAbizNP8SiT2fhjweHRZULFL84KsUYk", //Никита @botGoTestBot.
+		Token: "597931763:AAFOGZ7zBhCtse-6FPRyp9-WH5BkusSapzo", //продакшн @test_kirbej_bot.
+		//Token: "564415681:AAGukCm3RiY_clEKy_SJmR48dbjmif6__GQ", //Никита @botGoTestBot.
 		// Token:  "539909670:AAFk7Lxz73lTbtfjf8xIReCwSoEZZpjAlqI", //Кирилл @kirillBotGo_bot
 		Poller: &tb.LongPoller{Timeout: 10 * time.Second},
 	})
 
 	session = mongo.ConnectToMongo()
 
-	foundation := mongo.FindFoundationByID(session, bson.ObjectIdHex("5abfaa468173e1b2e81fb2b2"))
+	//foundation := mongo.FindFoundationByID(session, bson.ObjectIdHex("5abfaa468173e1b2e81fb2b2"))
 	// voteByFoundation, isTrue := mongo.FindVoteByFoundationID(session, foundation.ID)
 	// fmt.Print(voteByFoundation)
 	// fmt.Print(isTrue)
 
 	// users := mongo.FindAllVotersAddrByVoteID(session, voteByFoundation.ID)
-	users := mongo.FindAllUsers(session)
-	var usersID string
-	for key := range users {
+	//users := mongo.FindAllUsers(session)
+	//var usersID string
+	/*for key := range users {
 
 		for n := range users[key].Foundations {
 			if users[key].Foundations[n].FoundationID == foundation.ID {
@@ -88,7 +88,7 @@ func main() {
 		// mongo.CreateVoteAndSendNot(session, usersID, "0x03b825db4af2A61eaFdeCe3A2AA3039743996df2", foundation.Name, "200000000000000000", "1", foundationID, foundation.Mission, "Купить детям билеты в театр", "1624959999")
 	} else {
 
-	}
+	}*/
 	// fmt.Print(usersID)
 
 	// Создать голосвание для организации
