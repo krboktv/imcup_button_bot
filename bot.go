@@ -62,18 +62,22 @@ func main() {
 	})
 
 	session = mongo.ConnectToMongo()
+
 	foundation := mongo.FindFoundationByID(session, bson.ObjectIdHex("5abfaa468173e1b2e81fb2b2"))
-	voteByFoundation, isTrue := mongo.FindVoteByFoundationID(session, foundation.ID)
-	fmt.Print(isTrue)
-	users := mongo.FindAllVotersAddrByVoteID(session, voteByFoundation.ID)
+	// voteByFoundation, isTrue := mongo.FindVoteByFoundationID(session, foundation.ID)
+	// fmt.Print(voteByFoundation)
+	// fmt.Print(isTrue)
+
+	// users := mongo.FindAllVotersAddrByVoteID(session, voteByFoundation.ID)
+	users := mongo.FindAllUsers(session)
 	var usersID string
 	for key := range users {
-		user := mongo.FindUserByID(session, users[key].UserID)
-		usersID += user.UserID
-		if key != len(users)-1 {
-			usersID += ","
-		} else {
 
+		for n := range users[key].Foundations {
+			if users[key].Foundations[n].FoundationID == foundation.ID {
+				usersID += users[key].UserID
+				usersID += ","
+			}
 		}
 	}
 
@@ -81,7 +85,7 @@ func main() {
 	fmt.Print(foundationID)
 
 	if usersID != "" {
-		mongo.CreateVoteAndSendNot(session, usersID, "0x6D377De54Bde59c6a4B0fa15Cb2EFB84BB32D433", foundation.Name, "200000000000000000", "4", foundationID, foundation.Mission, "Купить детям билеты в театр", "1524959999")
+		// mongo.CreateVoteAndSendNot(session, usersID, "0x6D377De54Bde59c6a4B0fa15Cb2EFB84BB32D433", foundation.Name, "200000000000000000", "4", foundationID, foundation.Mission, "Купить детям билеты в театр", "1624959999")
 	} else {
 
 	}
