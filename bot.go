@@ -62,6 +62,26 @@ func main() {
 	})
 
 	session = mongo.ConnectToMongo()
+	foundation := mongo.FindFoundationByID(session, bson.ObjectIdHex("5abfaa468173e1b2e81fb2b2"))
+	voteByFoundation, isTrue := mongo.FindVoteByFoundationID(session, foundation.ID)
+	fmt.Print(isTrue)
+	users := mongo.FindAllVotersAddrByVoteID(session, voteByFoundation.ID)
+	var usersID string
+	for key := range users {
+		user := mongo.FindUserByID(session, users[key].UserID)
+		usersID += user.UserID
+		if key != len(users)-1 {
+			usersID += ","
+		} else {
+
+		}
+	}
+	// fmt.Print(usersID)
+	var foundationID = bson.ObjectId(foundation.ID).Hex()
+	fmt.Print(foundationID)
+
+	// Создать голосвание для организации
+	// mongo.CreateVoteAndSendNot(session, usersID, "0x6D377De54Bde59c6a4B0fa15Cb2EFB84BB32D433", foundation.Name, "200000", "1", foundationID, foundation.Mission, "Купить детям билеты в театр", "1524959999")
 
 	replyBtn1 := tb.ReplyButton{Text: "💳 Мой кабинет"}
 	replyBtn2 := tb.ReplyButton{Text: "💸 Список благотворительных организаций"}
@@ -471,37 +491,55 @@ func main() {
 		var msg = ""
 		user := mongo.FindUser(session, strconv.Itoa(c.Sender.ID))
 		userID = user.ID
+		var usersFoundations []bson.ObjectId
+		var isPovtoriajetsia bool
 		if len(user.Foundations) != 0 {
 			for key := range user.Foundations {
+				for b := range usersFoundations {
+					if usersFoundations[b] == user.Foundations[key].FoundationID {
+						isPovtoriajetsia = true
+					}
+				}
+
+				if isPovtoriajetsia == true {
+					continue
+				}
+				usersFoundations = append(usersFoundations, user.Foundations[key].FoundationID)
 				fond := mongo.FindFoundationByID(session, (user.Foundations[key].FoundationID))
 
-				fondsVote, isActive := mongo.FindVoteByFoundationID(session, user.Foundations[key].FoundationID)
-				isVote := mongo.IsVote(session, fondsVote.ID, userID)
-				fmt.Print(isVote)
-				// Если голосвание не закончено
-				if isActive == true {
+				fondsVotes := mongo.FindVotesByFoundationID(session, user.Foundations[key].FoundationID)
 
-					// Если пользователь ещё не головал
-					if isVote {
-						voteID = append(voteID, fondsVote.ID)
-						var msg1 = ""
-						msg1 += "Организация: "
-						msg1 += "*" + fond.Name + "*\n"
-						msg1 += "\n*" + fondsVote.Description + "*\n"
-						msg1 += "\nКак вы относитесь к этому решению?"
-						msg1 += " "
-						b.Send(c.Sender, msg1, &tb.SendOptions{ParseMode: "Markdown"}, &tb.ReplyMarkup{InlineKeyboard: buttonYesNoArr[key]})
-						b.Respond(c, &tb.CallbackResponse{})
+				for i := range fondsVotes {
+					currentTimeUts := int(time.Now().Unix())
+					endTimeUts, _ := strconv.Atoi(fondsVotes[i].EndTime)
+
+					isVote := mongo.IsVote(session, fondsVotes[i].ID, userID)
+					fmt.Print(isVote)
+					// Если голосвание не закончено
+					if currentTimeUts <= endTimeUts == true {
+
+						// Если пользователь ещё не головал
+						if isVote {
+							voteID = append(voteID, fondsVotes[i].ID)
+							var msg1 = ""
+							msg1 += "Организация: "
+							msg1 += "*" + fond.Name + "*\n"
+							msg1 += "\n*" + fondsVotes[i].Description + "*\n"
+							msg1 += "\nКак вы относитесь к этому решению?"
+							msg1 += " "
+							b.Send(c.Sender, msg1, &tb.SendOptions{ParseMode: "Markdown"}, &tb.ReplyMarkup{InlineKeyboard: buttonYesNoArr[key]})
+							b.Respond(c, &tb.CallbackResponse{})
+						} else {
+
+							msg2 := "Вы уже принял участие в голосовании  "
+							msg2 += "*" + fond.Name + "*. Ожидайте *результаты*\n"
+							b.Send(c.Sender, msg2, &tb.SendOptions{ParseMode: "Markdown"})
+						}
+
 					} else {
-
-						msg2 := "Вы уже принял участие в голосовании  "
-						msg2 += "*" + fond.Name + "*. Ожидайте *результаты*\n"
-						b.Send(c.Sender, msg2, &tb.SendOptions{ParseMode: "Markdown"})
+						msg += "Активных голсоований больше не найдено"
+						b.Send(c.Sender, msg, &tb.SendOptions{ParseMode: "Markdown"})
 					}
-
-				} else {
-					msg += "Активных голсоований больше не найдено"
-					b.Send(c.Sender, msg, &tb.SendOptions{ParseMode: "Markdown"})
 				}
 			}
 		} else {
@@ -1155,7 +1193,7 @@ func main() {
 		var sum23 = sum1 * math.Pow(10, 18)
 		var sumString = strconv.FormatFloat(sum23, 'g', 18, 64)
 
-		status := ethereum.SendTransaction(prvtKey, address, "0x6c1773936cbae3c0b7814e118b10b84a272a3bd4", sumString)
+		status := ethereum.SendTransaction(prvtKey, address, "0xD641ee9833f11Cd40C7Dd7b777C8e80bD8d842A8", sumString)
 
 		if status != "400" {
 			fondObj := mongo.FindFoundationByName(session, fond)

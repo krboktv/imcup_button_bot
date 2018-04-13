@@ -3,9 +3,11 @@ package mongo
 import (
 	"fmt"
 	"log"
+	"net/url"
 	"strconv"
 	"time"
 
+	"../post"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
@@ -144,6 +146,23 @@ func FindVoteByFoundationID(openSession *mgo.Session, foundationsID bson.ObjectI
 
 }
 
+// FindVotesByFoundationID Поиск голосваний по ID фонда
+func FindVotesByFoundationID(openSession *mgo.Session, foundationsID bson.ObjectId) []Votes {
+	session := openSession.Copy()
+	defer CloseMongoConnection(session)
+
+	c := session.DB("ImCup").C("votes")
+
+	var results []Votes
+	err := c.Find(bson.M{"foundationsID": foundationsID}).All(&results)
+
+	if err != nil {
+		// log.Fatal(err)
+	}
+
+	return results
+}
+
 // AddVoter Добавление голоса
 func AddVoter(openSession *mgo.Session, votesID bson.ObjectId, userID bson.ObjectId, vote bool) {
 	session := openSession.Copy()
@@ -180,6 +199,22 @@ func IsVote(openSession *mgo.Session, votesID bson.ObjectId, userID bson.ObjectI
 	} else {
 		return true
 	}
+}
+
+// FindAllVotersAddrByVoteID Поиск всех адресов, которые проголосовали
+func FindAllVotersAddrByVoteID(openSession *mgo.Session, votesID bson.ObjectId) []Voters {
+	session := openSession.Copy()
+	defer CloseMongoConnection(session)
+
+	c := session.DB("ImCup").C("voters")
+	var result []Voters
+	err := c.Find(bson.M{"votesID": votesID}).All(&result)
+
+	if err != nil {
+		// log.Fatal(err)
+	}
+
+	return result
 }
 
 // AddFoundationToUser Добавление благотворительной организации в БД
@@ -240,7 +275,7 @@ func FindFoundationByName(openSession *mgo.Session, foundationName string) Found
 	return results
 }
 
-// FindFoundationByID Поиск всех фондов
+// FindFoundationByID Поиск конкретного фонда по ID
 func FindFoundationByID(openSession *mgo.Session, foundationID bson.ObjectId) Foundations {
 	session := openSession.Copy()
 	defer CloseMongoConnection(session)
@@ -306,4 +341,20 @@ func FindUserByID(openSession *mgo.Session, userid bson.ObjectId) Users {
 	}
 
 	return results
+}
+
+// CreateVoteAndSendNot Созадём голосание и рассылаем всем уведомления
+func CreateVoteAndSendNot(session *mgo.Session, approvalUsers string, address string, orgName string, sum string, num string, foundationID string, description string, why string, endDate string) string {
+	_num, _ := strconv.Atoi(num)
+	CreateVote(session, _num, foundationID, why, endDate)
+
+	postData := url.Values{
+		"approvalUsers": {approvalUsers},
+		"name":          {orgName},
+		"sum":           {sum},
+		"address":       {address},
+		"why":           {why},
+	}
+	data := post.Send("http://localhost:3000/createVoteAndSendNot", postData)
+	return data
 }
