@@ -14,6 +14,30 @@ app.use(bodyParser.urlencoded({
     extended: false
 }))
 
+// Голосуем
+app.post('/voteForProposal', (req, res) => {
+    var data = req.body;
+    var vote;
+    if (data.proposalID == "true") {
+        vote = true;
+    } else {
+        vote = false;
+    }
+
+    Ethereum.voteForProposal(data.prvtKey, data.proposalID, vote, (data) => {
+        res.send(data);
+    })
+});
+
+// Отправляем уведомление, когда создаётся голосование
+app.post('/createVoteAndSendNot', (req, res) => {
+    var data = req.body;
+    nt.sendNtWhenCreateProposal(data.approvalUsers, data.name, data.sum, data.address, data.why);
+    Ethereum.addVote(data.why, data.sum, (data) => {
+        res.send(data);
+    })
+});
+
 // Создаём секретный ключ эфира
 app.post('/createEthAccount', (req, res) => {
     var account = Ethereum.createNewAccount();

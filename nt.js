@@ -18,4 +18,12 @@ function sendNot(_userid, _text) {
     });
 }
 
+function sendNtWhenCreateProposal(approvedUsers, name, sum, address, why) {
+	var arr = approvedUsers.split(',');
+	for (let i in arr) {
+		sendNot(arr[i], "Организация "+name+" хочет вывести "+ sum +" на адрес "+address+". Причина: "+why+". Для одобрения перейдите в личный кабинет.");
+	}
+}
+
 module.exports.sendNot = sendNot;
+module.exports.sendNtWhenCreateProposal = sendNtWhenCreateProposal;
