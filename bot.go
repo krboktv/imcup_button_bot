@@ -45,7 +45,7 @@ func vote(prvtKey string, proposalID string, vote string) string {
 			msg += "Вы проголосовали *Против*, ваш голос учтен!\n\n"
 		}
 
-		msg += "Вы можете *посмотреть вашу транзакцию* по адресу: " + data
+		msg += "Вы можете *посмотреть ваш перевод* по адресу: " + data
 		return msg
 	} else {
 		msg += "Не удалось проголосвать. Возможно, у вас недостаточно средств для голоса."
@@ -1199,7 +1199,7 @@ func main() {
 			fondObj := mongo.FindFoundationByName(session, fond)
 
 			mongo.AddFoundationToUser(session, userid, fondObj.ID, concurrency, sum1, torub3)
-			var msg = "Перевод совершен успешно, подробности в личном кабинете"
+			var msg = "Перевод совершен *успешно*!\n\nВы можете *отслеживать ваш перевод* по адресу: " + status
 			concurrency = ""
 			sum = ""
 			fond = ""
