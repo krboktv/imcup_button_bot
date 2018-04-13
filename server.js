@@ -67,8 +67,8 @@ app.post('/sendTx', (req, res) => {
     var data = req.body;
     console.log(data);
     var status = Ethereum.sendTx(data.prvtKey, data.sender, data.receiver, data.amount, (status) => {
-        if (status == true) {
-            res.send("200");
+        if (status != false) {
+            res.send(status);
         } else {
             res.send("400");
         }

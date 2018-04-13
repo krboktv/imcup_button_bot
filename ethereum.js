@@ -129,21 +129,26 @@ function sendTx(_prvtKey, _sender, _receiver, _amount, callback) {
 							uri: 'https://' + Network + '.etherscan.io/api?module=proxy&action=eth_sendRawTransaction&hex=0x' + serializedTx.toString('hex') + '&apikey=' + apiKeyToken,
 							json: true
 						}
-						rp(options)
-							.then((tx) => {
+						web3.eth.sendSignedTransaction('0x' + serializedTx.toString('hex'))
+							// .then((tx) => {
 
-								if (tx.error) {
-									console.log('Транзакция не произведена');
-									console.log(tx);
-									callback(false);
-								} else {
-									console.log(tx);
-									callback(true);
-								}
+							// 	if (tx.error) {
+							// 		console.log('Транзакция не произведена');
+							// 		console.log(tx);
+							// 		callback(false);
+							// 	} else {
+							// 		console.log(tx);
+							// 		callback(true);
+							// 	}
+							// })
+							.on('transactionHash', function(hash){
+								console.log('Хэш транзакции');
+								console.log(hash)
+								callback('https://rinkeby.etherscan.io/tx/'+hash)
 							})
-							.catch((err) => {
+							.on('error', (err) => {
 								console.log('Транзакция не произведена')
-								callback(true);
+								callback(false);
 							});
 					});
 			}
