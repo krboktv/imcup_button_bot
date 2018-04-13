@@ -14,9 +14,9 @@ const Course = require('./course.js');
 
 mongoose.Promise = global.Promise;
 
-var uri = 'mongodb://52.174.19.192:27017/db';
+const uri = 'mongodb://erage:doBH8993nnjdoBH8993nnj@51.144.89.99:27017/ImCupWallet?authSource=admin'; // Мейн нет ПОМЕНЯТЬ
 
-const options = {
+const options = { 
   autoIndex: false,
   reconnectTries: Number.MAX_VALUE, // Never stop trying to reconnect
   reconnectInterval: 500, // Reconnect every 500ms

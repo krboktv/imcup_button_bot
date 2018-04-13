@@ -3416,7 +3416,7 @@ bot.dialog('shapeshiftAmount', [
 
 bot.dialog('about', [
     (session) => {
-        session.send('**Команда:**\n\n@EnormousRage\n\n@kirbej\n\n\0\n\n**BUTTON | FOOD:** @button_food_bot\n\n**BUTTON | COURSE:** @button_course_bot');
+        session.send('**Команда:**\n\n@EnormousRage\n\n@kirbej\n\n\0\n\n**BUTTON | CHARITY:** @button_charity_bot\n\n**BUTTON | FOOD:** @button_food_bot\n\n**BUTTON | COURSE:** @button_course_bot');
         session.beginDialog('SecondMenu');
     }
 ]);
