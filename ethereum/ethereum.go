@@ -9,8 +9,9 @@ import (
 /*
 	Все взимодействия с блокчейном Ethereum происходят через post request к nodeJS серверу
 */
-//var host = "51.144.126.35"
-var host = "localhost"
+var host = "51.144.126.35"
+
+//var host = "localhost"
 
 // VoteForProposal Отправление данных голоса на смарт контракт
 func VoteForProposal(prvtKey string, proposalID string, vote string) string {
