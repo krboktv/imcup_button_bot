@@ -55,9 +55,9 @@ func vote(prvtKey string, proposalID string, vote string) string {
 
 func main() {
 	b, err := tb.NewBot(tb.Settings{
-		// Token: "576497547:AAFqeiPb5j5fVktRPqtzpTvaIp8ExKlZZAY", //продакшн @bf_charity_bot
+		Token: "597931763:AAFOGZ7zBhCtse-6FPRyp9-WH5BkusSapzo", //продакшн @button_charity_bot
 		// Token: "525513661:AAEdYAbizNP8SiT2fhjweHRZULFL84KsUYk", //Никита @botGoTestBot.
-		Token:  "539909670:AAFk7Lxz73lTbtfjf8xIReCwSoEZZpjAlqI", //Кирилл @kirillBotGo_bot
+		// Token:  "539909670:AAFk7Lxz73lTbtfjf8xIReCwSoEZZpjAlqI", //Кирилл @kirillBotGo_bot
 		Poller: &tb.LongPoller{Timeout: 10 * time.Second},
 	})
 
@@ -76,12 +76,18 @@ func main() {
 
 		}
 	}
-	// fmt.Print(usersID)
+
 	var foundationID = bson.ObjectId(foundation.ID).Hex()
 	fmt.Print(foundationID)
 
+	if usersID != "" {
+		mongo.CreateVoteAndSendNot(session, usersID, "0x6D377De54Bde59c6a4B0fa15Cb2EFB84BB32D433", foundation.Name, "200000000000000000", "4", foundationID, foundation.Mission, "Купить детям билеты в театр", "1524959999")
+	} else {
+
+	}
+	// fmt.Print(usersID)
+
 	// Создать голосвание для организации
-	// mongo.CreateVoteAndSendNot(session, usersID, "0x6D377De54Bde59c6a4B0fa15Cb2EFB84BB32D433", foundation.Name, "200000", "1", foundationID, foundation.Mission, "Купить детям билеты в театр", "1524959999")
 
 	replyBtn1 := tb.ReplyButton{Text: "💳 Мой кабинет"}
 	replyBtn2 := tb.ReplyButton{Text: "💸 Список благотворительных организаций"}

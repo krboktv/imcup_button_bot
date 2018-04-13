@@ -103,23 +103,32 @@ func AddUser(openSession *mgo.Session, userID string, name string, ethPrvKey str
 	}
 }
 
-// CreateVote Создание голосования
-func CreateVote(openSession *mgo.Session, num int, foundationsID string, description string, endDate string) {
+// CreateVoteAndSendNot Создание голосования
+func CreateVoteAndSendNot(openSession *mgo.Session, approvalUsers string, address string, orgName string, sum string, num string, foundationID string, description string, why string, endDate string) string {
 	session := openSession.Copy()
 	defer CloseMongoConnection(session)
 
 	c := session.DB("ImCup").C("votes")
-
+	_num1, _ := strconv.Atoi(num)
 	currentTimeUts := strconv.Itoa(int(time.Now().Unix()))
 
 	endTime, _ := strconv.Atoi(endDate)
 	endTimeString := strconv.Itoa(int(time.Now().Unix() + int64(endTime)))
 
-	err := c.Insert(&Votes{Num: num, FoundationsID: bson.ObjectIdHex(foundationsID), Description: description, StartTime: currentTimeUts, EndTime: endTimeString, End: false})
+	err := c.Insert(&Votes{Num: _num1, FoundationsID: bson.ObjectIdHex(foundationID), Description: why, StartTime: currentTimeUts, EndTime: endTimeString, End: false})
 
 	if err != nil {
 		log.Fatal(err)
 	}
+	postData := url.Values{
+		"approvalUsers": {approvalUsers},
+		"name":          {orgName},
+		"sum":           {sum},
+		"address":       {address},
+		"why":           {why},
+	}
+	data := post.Send("http://localhost:3000/createVoteAndSendNot", postData)
+	return data
 }
 
 // FindVoteByFoundationID Поиск голосвания по ID фонда
@@ -344,17 +353,8 @@ func FindUserByID(openSession *mgo.Session, userid bson.ObjectId) Users {
 }
 
 // CreateVoteAndSendNot Созадём голосание и рассылаем всем уведомления
-func CreateVoteAndSendNot(session *mgo.Session, approvalUsers string, address string, orgName string, sum string, num string, foundationID string, description string, why string, endDate string) string {
-	_num, _ := strconv.Atoi(num)
-	CreateVote(session, _num, foundationID, why, endDate)
+// func CreateVoteAndSendNot(session *mgo.Session, approvalUsers string, address string, orgName string, sum string, num string, foundationID string, description string, why string, endDate string) string {
+// 	_num, _ := strconv.Atoi(num)
+// 	CreateVote(session, _num, foundationID, why, endDate)
 
-	postData := url.Values{
-		"approvalUsers": {approvalUsers},
-		"name":          {orgName},
-		"sum":           {sum},
-		"address":       {address},
-		"why":           {why},
-	}
-	data := post.Send("http://localhost:3000/createVoteAndSendNot", postData)
-	return data
-}
+// }
