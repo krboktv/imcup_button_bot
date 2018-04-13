@@ -17,7 +17,7 @@ func VoteForProposal(prvtKey string, proposalID string, vote string) string {
 		"proposalID": {proposalID},
 		"vote":       {proposalID},
 	}
-	data := post.Send("http://51.144.126.35:3000/voteForProposal", postData)
+	data := post.Send("http://localhost:3000/voteForProposal", postData)
 	return data
 }
 
@@ -26,7 +26,7 @@ func CreatePrvtKey() string {
 	postData := url.Values{
 		"nil": {},
 	}
-	prvtKey := post.Send("http://51.144.126.35:3000/createEthAccount", postData)
+	prvtKey := post.Send("http://localhost:3000/createEthAccount", postData)
 	return prvtKey
 }
 
@@ -35,7 +35,7 @@ func GetAddress(prvtKey string) string {
 	postData := url.Values{
 		"prvtKey": {prvtKey},
 	}
-	address := post.Send("http://51.144.126.35:3000/getAddress", postData)
+	address := post.Send("http://localhost:3000/getAddress", postData)
 	return address
 }
 
@@ -44,7 +44,7 @@ func GetBalance(address string) string {
 	postData := url.Values{
 		"address": {address},
 	}
-	balance := post.Send("http://51.144.126.35:3000/getBalance", postData)
+	balance := post.Send("http://localhost:3000/getBalance", postData)
 	return balance
 }
 
@@ -56,7 +56,7 @@ func SendTransaction(prvtKey string, sender string, receiver string, amount stri
 		"receiver": {receiver},
 		"amount":   {amount},
 	}
-	status := post.Send("http://51.144.126.35:3000/sendTx", postData)
+	status := post.Send("http://localhost:3000/sendTx", postData)
 	println(status)
 	return status
 }
