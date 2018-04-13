@@ -1,10 +1,13 @@
 const rp = require('request-promise'),
     safeMath = require('./safeMath.js');
 
+const TOKEN_ID = "597931763:AAFOGZ7zBhCtse-6FPRyp9-WH5BkusSapzo";
+//const TOKEN_ID = "564415681:AAGukCm3RiY_clEKy_SJmR48dbjmif6__GQ";
+
 function sendNot(_userid, _text) {
     var options = {
         method: 'POST',
-        uri: 'https://api.telegram.org/bot597931763:AAFOGZ7zBhCtse-6FPRyp9-WH5BkusSapzo/sendMessage',
+        uri: 'https://api.telegram.org/bot'+TOKEN_ID+'/sendMessage',
         body: {
             'chat_id': _userid,
             'text': _text,
