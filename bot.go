@@ -85,7 +85,7 @@ func main() {
 	fmt.Print(foundationID)
 
 	if usersID != "" {
-		// mongo.CreateVoteAndSendNot(session, usersID, "0x6D377De54Bde59c6a4B0fa15Cb2EFB84BB32D433", foundation.Name, "200000000000000000", "4", foundationID, foundation.Mission, "Купить детям билеты в театр", "1624959999")
+		// mongo.CreateVoteAndSendNot(session, usersID, "0x03b825db4af2A61eaFdeCe3A2AA3039743996df2", foundation.Name, "200000000000000000", "1", foundationID, foundation.Mission, "Купить детям билеты в театр", "1624959999")
 	} else {
 
 	}
