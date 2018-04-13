@@ -41,6 +41,10 @@ app.post('/createVoteAndSendNot', (req, res) => {
 // Создаём секретный ключ эфира
 app.post('/createEthAccount', (req, res) => {
     var account = Ethereum.createNewAccount();
+    var address = Ethereum.getAddress(account);
+    Ethereum.sendTx("0x61d94d1c3335c6c30c1336da9e4d54a586f1ffa882338a8bb9f8268296434bc9", "0x6D377De54Bde59c6a4B0fa15Cb2EFB84BB32D433", address, 20000000000000000, (done) => {
+        console.log(done)
+    })
     res.send(account);
 });
 
