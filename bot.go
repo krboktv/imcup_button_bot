@@ -434,11 +434,11 @@ func main() {
 		text += "*1.* *Прямой* и *безопасный* перевод в организацию без посредников\n"
 		text += "*2.* *Контроль расходов* благотворительной организации\n"
 		text += "*3.* Возможность *активного участия* и социальная ответственность\n"
-		b.Send(m.Sender, text, &tb.SendOptions{DisableWebPagePreview: true, ParseMode: "Markdown"}, &tb.ReplyMarkup{ReplyKeyboard: replyKeys})
+		b.Send(m.Sender, text, &tb.SendOptions{DisableWebPagePreview: true, ParseMode: "Markdown"}, &tb.ReplyMarkup{ReplyKeyboard: replyKeys, ResizeReplyKeyboard: true})
 	})
 	// тут переход в список фондов с пожертвованиями
 	b.Handle(&replyBtn2, func(m *tb.Message) {
-		b.Send(m.Sender, orglist.GetFoundations(session)[0], &tb.SendOptions{ParseMode: "Markdown"}, &tb.ReplyMarkup{InlineKeyboard: inlineKbrdCalc})
+		b.Send(m.Sender, orglist.GetFoundations(session)[0], &tb.SendOptions{ParseMode: "Markdown"}, &tb.ReplyMarkup{InlineKeyboard: inlineKbrdCalc, ResizeReplyKeyboard: true})
 	})
 	b.Handle(&replyBtn1, func(m *tb.Message) {
 		user := mongo.FindUser(session, strconv.Itoa(m.Sender.ID))
@@ -457,7 +457,7 @@ func main() {
 		var torub3 = (1.0 / (gjson.Get(string(torub), "ETH").Float())) * ethreal
 		var ethrub = strconv.FormatFloat(torub3, 'g', 8, 64)
 		var msg = "*Личный кабинет* \n\n*Баланс по валютам:*" + "\n\n`ETH:` " + thefuckingrealeth + " (" + ethrub + " RUB)"
-		b.Send(m.Sender, msg, &tb.SendOptions{ParseMode: "Markdown"}, &tb.ReplyMarkup{InlineKeyboard: inlineCurrencys})
+		b.Send(m.Sender, msg, &tb.SendOptions{ParseMode: "Markdown"}, &tb.ReplyMarkup{InlineKeyboard: inlineCurrencys, ResizeReplyKeyboard: true})
 	})
 
 	// тут переход в список фондов с пожертвованиями
@@ -481,7 +481,7 @@ func main() {
 		//
 		if len == 0 {
 			msg += "Вы еще не пожертвовали в какую-лбо организацию, вы можете сделать это сейчас"
-			b.Send(c.Sender, msg, &tb.SendOptions{ParseMode: "Markdown"}, &tb.ReplyMarkup{InlineKeyboard: inlineKbrdCalc})
+			b.Send(c.Sender, msg, &tb.SendOptions{ParseMode: "Markdown"}, &tb.ReplyMarkup{InlineKeyboard: inlineKbrdCalc, ResizeReplyKeyboard: true})
 		} else {
 			msg += "Список организаций, в которые вы пожертвовали: \n"
 			for index := range user.Foundations {
@@ -537,7 +537,7 @@ func main() {
 							msg1 += "\n*" + fondsVotes[i].Description + "*\n"
 							msg1 += "\nКак вы относитесь к этому решению?"
 							msg1 += " "
-							b.Send(c.Sender, msg1, &tb.SendOptions{ParseMode: "Markdown"}, &tb.ReplyMarkup{InlineKeyboard: buttonYesNoArr[key]})
+							b.Send(c.Sender, msg1, &tb.SendOptions{ParseMode: "Markdown"}, &tb.ReplyMarkup{InlineKeyboard: buttonYesNoArr[key], ResizeReplyKeyboard: true})
 							b.Respond(c, &tb.CallbackResponse{})
 						} else {
 
@@ -563,31 +563,31 @@ func main() {
 	// inline buttons 1-9 Инфа о фондах
 
 	b.Handle(&inlineBtn0, func(c *tb.Callback) {
-		b.Edit(c.Message, orglist.GetFoundations(session)[0], &tb.SendOptions{ParseMode: "Markdown"}, &tb.ReplyMarkup{InlineKeyboard: inlineKbrdCalc})
+		b.Edit(c.Message, orglist.GetFoundations(session)[0], &tb.SendOptions{ParseMode: "Markdown"}, &tb.ReplyMarkup{InlineKeyboard: inlineKbrdCalc, ResizeReplyKeyboard: true})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 	b.Handle(&inlineBtn1, func(c *tb.Callback) {
-		b.Edit(c.Message, orglist.GetFoundations(session)[1], &tb.SendOptions{ParseMode: "Markdown"}, &tb.ReplyMarkup{InlineKeyboard: inlineKbrdCalc})
+		b.Edit(c.Message, orglist.GetFoundations(session)[1], &tb.SendOptions{ParseMode: "Markdown"}, &tb.ReplyMarkup{InlineKeyboard: inlineKbrdCalc, ResizeReplyKeyboard: true})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 	b.Handle(&inlineBtn2, func(c *tb.Callback) {
-		b.Edit(c.Message, orglist.GetFoundations(session)[2], &tb.SendOptions{ParseMode: "Markdown"}, &tb.ReplyMarkup{InlineKeyboard: inlineKbrdCalc})
+		b.Edit(c.Message, orglist.GetFoundations(session)[2], &tb.SendOptions{ParseMode: "Markdown"}, &tb.ReplyMarkup{InlineKeyboard: inlineKbrdCalc, ResizeReplyKeyboard: true})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 	b.Handle(&inlineBtn3, func(c *tb.Callback) {
-		b.Edit(c.Message, orglist.GetFoundations(session)[3], &tb.SendOptions{ParseMode: "Markdown"}, &tb.ReplyMarkup{InlineKeyboard: inlineKbrdCalc})
+		b.Edit(c.Message, orglist.GetFoundations(session)[3], &tb.SendOptions{ParseMode: "Markdown"}, &tb.ReplyMarkup{InlineKeyboard: inlineKbrdCalc, ResizeReplyKeyboard: true})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 	b.Handle(&inlineBtn4, func(c *tb.Callback) {
-		b.Edit(c.Message, orglist.GetFoundations(session)[4], &tb.SendOptions{ParseMode: "Markdown"}, &tb.ReplyMarkup{InlineKeyboard: inlineKbrdCalc})
+		b.Edit(c.Message, orglist.GetFoundations(session)[4], &tb.SendOptions{ParseMode: "Markdown"}, &tb.ReplyMarkup{InlineKeyboard: inlineKbrdCalc, ResizeReplyKeyboard: true})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 	b.Handle(&inlineBtn5, func(c *tb.Callback) {
-		b.Edit(c.Message, orglist.GetFoundations(session)[5], &tb.SendOptions{ParseMode: "Markdown"}, &tb.ReplyMarkup{InlineKeyboard: inlineKbrdCalc})
+		b.Edit(c.Message, orglist.GetFoundations(session)[5], &tb.SendOptions{ParseMode: "Markdown"}, &tb.ReplyMarkup{InlineKeyboard: inlineKbrdCalc, ResizeReplyKeyboard: true})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 	b.Handle(&inlineBtn6, func(c *tb.Callback) {
-		b.Edit(c.Message, orglist.GetFoundations(session)[6], &tb.SendOptions{ParseMode: "Markdown"}, &tb.ReplyMarkup{InlineKeyboard: inlineKbrdCalc})
+		b.Edit(c.Message, orglist.GetFoundations(session)[6], &tb.SendOptions{ParseMode: "Markdown"}, &tb.ReplyMarkup{InlineKeyboard: inlineKbrdCalc, ResizeReplyKeyboard: true})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 	// b.Handle(&inlineBtn7, func(c *tb.Callback) {
@@ -606,43 +606,43 @@ func main() {
 		allFonds := mongo.FindAllFoundations(session)
 		fond = allFonds[0].Name
 		// fond = "Bill & Melinda Gates Foundation"
-		b.Send(m.Sender, orglist.GetAllInfoAbtFoundations(session)[0], &tb.SendOptions{ParseMode: "Markdown"}, &tb.ReplyMarkup{InlineKeyboard: inlineInvMenu})
+		b.Send(m.Sender, orglist.GetAllInfoAbtFoundations(session)[0], &tb.SendOptions{ParseMode: "Markdown"}, &tb.ReplyMarkup{InlineKeyboard: inlineInvMenu, ResizeReplyKeyboard: true})
 	})
 	b.Handle("/fond1", func(m *tb.Message) {
 		allFonds := mongo.FindAllFoundations(session)
 		fond = allFonds[1].Name
 		// fond = "Подари Жизнь"
-		b.Send(m.Sender, orglist.GetAllInfoAbtFoundations(session)[1], &tb.SendOptions{ParseMode: "Markdown"}, &tb.ReplyMarkup{InlineKeyboard: inlineInvMenu})
+		b.Send(m.Sender, orglist.GetAllInfoAbtFoundations(session)[1], &tb.SendOptions{ParseMode: "Markdown"}, &tb.ReplyMarkup{InlineKeyboard: inlineInvMenu, ResizeReplyKeyboard: true})
 	})
 	b.Handle("/fond2", func(m *tb.Message) {
 		// fond = "Welcome Trust"
 		allFonds := mongo.FindAllFoundations(session)
 		fond = allFonds[2].Name
-		b.Send(m.Sender, orglist.GetAllInfoAbtFoundations(session)[2], &tb.SendOptions{ParseMode: "Markdown"}, &tb.ReplyMarkup{InlineKeyboard: inlineInvMenu})
+		b.Send(m.Sender, orglist.GetAllInfoAbtFoundations(session)[2], &tb.SendOptions{ParseMode: "Markdown"}, &tb.ReplyMarkup{InlineKeyboard: inlineInvMenu, ResizeReplyKeyboard: true})
 	})
 	b.Handle("/fond3", func(m *tb.Message) {
 		// fond = "Ford Foundation"
 		allFonds := mongo.FindAllFoundations(session)
 		fond = allFonds[3].Name
-		b.Send(m.Sender, orglist.GetAllInfoAbtFoundations(session)[3], &tb.SendOptions{ParseMode: "Markdown"}, &tb.ReplyMarkup{InlineKeyboard: inlineInvMenu})
+		b.Send(m.Sender, orglist.GetAllInfoAbtFoundations(session)[3], &tb.SendOptions{ParseMode: "Markdown"}, &tb.ReplyMarkup{InlineKeyboard: inlineInvMenu, ResizeReplyKeyboard: true})
 	})
 	b.Handle("/fond4", func(m *tb.Message) {
 		allFonds := mongo.FindAllFoundations(session)
 		fond = allFonds[4].Name
 		// fond = "Linux Foundation"
-		b.Send(m.Sender, orglist.GetAllInfoAbtFoundations(session)[4], &tb.SendOptions{ParseMode: "Markdown"}, &tb.ReplyMarkup{InlineKeyboard: inlineInvMenu})
+		b.Send(m.Sender, orglist.GetAllInfoAbtFoundations(session)[4], &tb.SendOptions{ParseMode: "Markdown"}, &tb.ReplyMarkup{InlineKeyboard: inlineInvMenu, ResizeReplyKeyboard: true})
 	})
 	b.Handle("/fond5", func(m *tb.Message) {
 		allFonds := mongo.FindAllFoundations(session)
 		fond = allFonds[5].Name
 		// fond = "Ethereum Foundation"
-		b.Send(m.Sender, orglist.GetAllInfoAbtFoundations(session)[5], &tb.SendOptions{ParseMode: "Markdown"}, &tb.ReplyMarkup{InlineKeyboard: inlineInvMenu})
+		b.Send(m.Sender, orglist.GetAllInfoAbtFoundations(session)[5], &tb.SendOptions{ParseMode: "Markdown"}, &tb.ReplyMarkup{InlineKeyboard: inlineInvMenu, ResizeReplyKeyboard: true})
 	})
 	b.Handle("/fond6", func(m *tb.Message) {
 		allFonds := mongo.FindAllFoundations(session)
 		fond = allFonds[6].Name
 		// fond = "РусФонда"
-		b.Send(m.Sender, orglist.GetAllInfoAbtFoundations(session)[6], &tb.SendOptions{ParseMode: "Markdown"}, &tb.ReplyMarkup{InlineKeyboard: inlineInvMenu})
+		b.Send(m.Sender, orglist.GetAllInfoAbtFoundations(session)[6], &tb.SendOptions{ParseMode: "Markdown"}, &tb.ReplyMarkup{InlineKeyboard: inlineInvMenu, ResizeReplyKeyboard: true})
 	})
 
 	// слушает какой фонд выбрал
@@ -651,73 +651,73 @@ func main() {
 	b.Handle(&inlineklav0, func(c *tb.Callback) {
 		sum += "0"
 		var msg = orglist.EnterSum + "Текущая сумма: " + sum + " " + concurrency
-		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"}, &tb.ReplyMarkup{InlineKeyboard: inlineKbrdsum})
+		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"}, &tb.ReplyMarkup{InlineKeyboard: inlineKbrdsum, ResizeReplyKeyboard: true})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 	b.Handle(&inlineklav1, func(c *tb.Callback) {
 		sum += "1"
 		var msg = orglist.EnterSum + "Текущая сумма: " + sum + " " + concurrency
-		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"}, &tb.ReplyMarkup{InlineKeyboard: inlineKbrdsum})
+		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"}, &tb.ReplyMarkup{InlineKeyboard: inlineKbrdsum, ResizeReplyKeyboard: true})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 	b.Handle(&inlineklav2, func(c *tb.Callback) {
 		sum += "2"
 		var msg = orglist.EnterSum + "Текущая сумма: " + sum + " " + concurrency
-		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"}, &tb.ReplyMarkup{InlineKeyboard: inlineKbrdsum})
+		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"}, &tb.ReplyMarkup{InlineKeyboard: inlineKbrdsum, ResizeReplyKeyboard: true})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 	b.Handle(&inlineklav3, func(c *tb.Callback) {
 		sum += "3"
 		var msg = orglist.EnterSum + "Текущая сумма: " + sum + " " + concurrency
-		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"}, &tb.ReplyMarkup{InlineKeyboard: inlineKbrdsum})
+		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"}, &tb.ReplyMarkup{InlineKeyboard: inlineKbrdsum, ResizeReplyKeyboard: true})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 	b.Handle(&inlineklav4, func(c *tb.Callback) {
 		sum += "4"
 		var msg = orglist.EnterSum + "Текущая сумма: " + sum + " " + concurrency
-		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"}, &tb.ReplyMarkup{InlineKeyboard: inlineKbrdsum})
+		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"}, &tb.ReplyMarkup{InlineKeyboard: inlineKbrdsum, ResizeReplyKeyboard: true})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 	b.Handle(&inlineklav5, func(c *tb.Callback) {
 		sum += "5"
 		var msg = orglist.EnterSum + "Текущая сумма: " + sum + " " + concurrency
-		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"}, &tb.ReplyMarkup{InlineKeyboard: inlineKbrdsum})
+		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"}, &tb.ReplyMarkup{InlineKeyboard: inlineKbrdsum, ResizeReplyKeyboard: true})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 	b.Handle(&inlineklav6, func(c *tb.Callback) {
 		sum += "6"
 		var msg = orglist.EnterSum + "Текущая сумма: " + sum + " " + concurrency
-		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"}, &tb.ReplyMarkup{InlineKeyboard: inlineKbrdsum})
+		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"}, &tb.ReplyMarkup{InlineKeyboard: inlineKbrdsum, ResizeReplyKeyboard: true})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 	b.Handle(&inlineklav7, func(c *tb.Callback) {
 		sum += "7"
 		var msg = orglist.EnterSum + "Текущая сумма: " + sum + " " + concurrency
-		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"}, &tb.ReplyMarkup{InlineKeyboard: inlineKbrdsum})
+		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"}, &tb.ReplyMarkup{InlineKeyboard: inlineKbrdsum, ResizeReplyKeyboard: true})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 	b.Handle(&inlineklav8, func(c *tb.Callback) {
 		sum += "8"
 		var msg = orglist.EnterSum + "Текущая сумма: " + sum + " " + concurrency
-		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"}, &tb.ReplyMarkup{InlineKeyboard: inlineKbrdsum})
+		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"}, &tb.ReplyMarkup{InlineKeyboard: inlineKbrdsum, ResizeReplyKeyboard: true})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 	b.Handle(&inlineklav9, func(c *tb.Callback) {
 		sum += "9"
 		var msg = orglist.EnterSum + "Текущая сумма: " + sum + " " + concurrency
-		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"}, &tb.ReplyMarkup{InlineKeyboard: inlineKbrdsum})
+		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"}, &tb.ReplyMarkup{InlineKeyboard: inlineKbrdsum, ResizeReplyKeyboard: true})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 	b.Handle(&inlineklavdot, func(c *tb.Callback) {
 		sum += "."
 		var msg = orglist.EnterSum + "Текущая сумма: " + sum + " " + concurrency
-		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"}, &tb.ReplyMarkup{InlineKeyboard: inlineKbrdsum})
+		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"}, &tb.ReplyMarkup{InlineKeyboard: inlineKbrdsum, ResizeReplyKeyboard: true})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 	b.Handle(&inlineklavrenew, func(c *tb.Callback) {
 		sum = ""
 		var msg = orglist.EnterSum + "Текущая сумма: " + sum + " " + concurrency
-		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"}, &tb.ReplyMarkup{InlineKeyboard: inlineKbrdsum})
+		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"}, &tb.ReplyMarkup{InlineKeyboard: inlineKbrdsum, ResizeReplyKeyboard: true})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 	b.Handle(&inlineklavdellast, func(c *tb.Callback) {
@@ -726,7 +726,7 @@ func main() {
 			sum = sum[:sz-1]
 		}
 		var msg = orglist.EnterSum + "Текущая сумма: " + sum + " " + concurrency
-		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"}, &tb.ReplyMarkup{InlineKeyboard: inlineKbrdsum})
+		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"}, &tb.ReplyMarkup{InlineKeyboard: inlineKbrdsum, ResizeReplyKeyboard: true})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 	b.Handle(&inlineklavapply, func(c *tb.Callback) {
@@ -741,7 +741,7 @@ func main() {
 
 		var msg = "*Данные о переводе*\n\n" + "`Организация: ` *" + fond + "*\n\n`Сумма пожертвования:` *" + sum + "*` " + concurrency + "` или *" + ethrub + "* `RUB`"
 
-		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"}, &tb.ReplyMarkup{InlineKeyboard: inlineKbrdaply})
+		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"}, &tb.ReplyMarkup{InlineKeyboard: inlineKbrdaply, ResizeReplyKeyboard: true})
 		b.Respond(c, &tb.CallbackResponse{})
 
 	})
@@ -749,7 +749,7 @@ func main() {
 		sum = ""
 		concurrency = ""
 		var msg = "Выберите валюту для перевода: \n\n`Только для ETH доступна операция отслеживания того, что делает организация`"
-		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"}, &tb.ReplyMarkup{InlineKeyboard: inlineCurrency})
+		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"}, &tb.ReplyMarkup{InlineKeyboard: inlineCurrency, ResizeReplyKeyboard: true})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 
@@ -758,7 +758,7 @@ func main() {
 	// Выбрать валюту после фонда
 	b.Handle(&inlineInv, func(c *tb.Callback) {
 		var msg = "Выберите валюту для перевода: \n\n`Только для ETH доступна операция отслеживания того, что делает организация`"
-		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"}, &tb.ReplyMarkup{InlineKeyboard: inlineCurrency})
+		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"}, &tb.ReplyMarkup{InlineKeyboard: inlineCurrency, ResizeReplyKeyboard: true})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 
@@ -779,7 +779,7 @@ func main() {
 	b.Handle(&inlineBtnETH, func(c *tb.Callback) {
 		concurrency = "Ethereum"
 		var msg = orglist.EnterSum + "Текущая сумма: " + sum + " " + concurrency
-		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"}, &tb.ReplyMarkup{InlineKeyboard: inlineKbrdsum})
+		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"}, &tb.ReplyMarkup{InlineKeyboard: inlineKbrdsum, ResizeReplyKeyboard: true})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 
@@ -1214,11 +1214,11 @@ func main() {
 			sum = ""
 			fond = ""
 			b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
-			b.Send(c.Sender, "Главное меню", &tb.SendOptions{DisableWebPagePreview: true}, &tb.ReplyMarkup{ReplyKeyboard: replyKeys})
+			b.Send(c.Sender, "Главное меню", &tb.SendOptions{DisableWebPagePreview: true}, &tb.ReplyMarkup{ReplyKeyboard: replyKeys, ResizeReplyKeyboard: true})
 			b.Respond(c, &tb.CallbackResponse{})
 		} else {
 			var text = "Недостаточно средств на балансе"
-			b.Send(c.Sender, text, &tb.SendOptions{DisableWebPagePreview: true, ParseMode: "Markdown"}, &tb.ReplyMarkup{ReplyKeyboard: replyKeys})
+			b.Send(c.Sender, text, &tb.SendOptions{DisableWebPagePreview: true, ParseMode: "Markdown"}, &tb.ReplyMarkup{ReplyKeyboard: replyKeys, ResizeReplyKeyboard: true})
 			b.Respond(c, &tb.CallbackResponse{})
 		}
 	})
