@@ -796,14 +796,19 @@ func main() {
 	b.Handle(&voteButtonYes0, func(c *tb.Callback) {
 		user := mongo.FindUserByID(session, userID)
 		var msg = vote(user.EthPrvKey, "1", "true")
-		mongo.AddVoter(session, voteID[0], userID, true)
+		if msg != "Не удалось проголосвать. Возможно, у вас недостаточно средств для голоса." {
+			mongo.AddVoter(session, voteID[0], userID, true)
+		}
+
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 	b.Handle(&voteButtonNo0, func(c *tb.Callback) {
 		user := mongo.FindUserByID(session, userID)
 		var msg = vote(user.EthPrvKey, "1", "false")
-		mongo.AddVoter(session, voteID[0], userID, false)
+		if msg != "Не удалось проголосвать. Возможно, у вас недостаточно средств для голоса." {
+			mongo.AddVoter(session, voteID[0], userID, false)
+		}
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
@@ -811,14 +816,18 @@ func main() {
 	b.Handle(&voteButtonYes1, func(c *tb.Callback) {
 		user := mongo.FindUserByID(session, userID)
 		var msg = vote(user.EthPrvKey, "2", "true")
-		mongo.AddVoter(session, voteID[1], userID, true)
+		if msg != "Не удалось проголосвать. Возможно, у вас недостаточно средств для голоса." {
+			mongo.AddVoter(session, voteID[1], userID, true)
+		}
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 	b.Handle(&voteButtonNo1, func(c *tb.Callback) {
 		user := mongo.FindUserByID(session, userID)
 		var msg = vote(user.EthPrvKey, "2", "false")
-		mongo.AddVoter(session, voteID[1], userID, false)
+		if msg != "Не удалось проголосвать. Возможно, у вас недостаточно средств для голоса." {
+			mongo.AddVoter(session, voteID[1], userID, false)
+		}
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
@@ -826,14 +835,18 @@ func main() {
 	b.Handle(&voteButtonYes2, func(c *tb.Callback) {
 		user := mongo.FindUserByID(session, userID)
 		var msg = vote(user.EthPrvKey, "3", "true")
-		mongo.AddVoter(session, voteID[2], userID, true)
+		if msg != "Не удалось проголосвать. Возможно, у вас недостаточно средств для голоса." {
+			mongo.AddVoter(session, voteID[2], userID, true)
+		}
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 	b.Handle(&voteButtonNo2, func(c *tb.Callback) {
 		user := mongo.FindUserByID(session, userID)
 		var msg = vote(user.EthPrvKey, "3", "false")
-		mongo.AddVoter(session, voteID[2], userID, false)
+		if msg != "Не удалось проголосвать. Возможно, у вас недостаточно средств для голоса." {
+			mongo.AddVoter(session, voteID[2], userID, false)
+		}
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
@@ -841,14 +854,18 @@ func main() {
 	b.Handle(&voteButtonYes3, func(c *tb.Callback) {
 		user := mongo.FindUserByID(session, userID)
 		var msg = vote(user.EthPrvKey, "4", "true")
-		mongo.AddVoter(session, voteID[3], userID, true)
+		if msg != "Не удалось проголосвать. Возможно, у вас недостаточно средств для голоса." {
+			mongo.AddVoter(session, voteID[3], userID, true)
+		}
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 	b.Handle(&voteButtonNo3, func(c *tb.Callback) {
 		user := mongo.FindUserByID(session, userID)
 		var msg = vote(user.EthPrvKey, "4", "false")
-		mongo.AddVoter(session, voteID[3], userID, false)
+		if msg != "Не удалось проголосвать. Возможно, у вас недостаточно средств для голоса." {
+			mongo.AddVoter(session, voteID[3], userID, false)
+		}
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
@@ -856,7 +873,9 @@ func main() {
 	b.Handle(&voteButtonYes4, func(c *tb.Callback) {
 		user := mongo.FindUserByID(session, userID)
 		var msg = vote(user.EthPrvKey, "5", "true")
-		mongo.AddVoter(session, voteID[4], userID, true)
+		if msg != "Не удалось проголосвать. Возможно, у вас недостаточно средств для голоса." {
+			mongo.AddVoter(session, voteID[4], userID, true)
+		}
 
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
@@ -864,7 +883,9 @@ func main() {
 	b.Handle(&voteButtonNo4, func(c *tb.Callback) {
 		user := mongo.FindUserByID(session, userID)
 		var msg = vote(user.EthPrvKey, "5", "false")
-		mongo.AddVoter(session, voteID[4], userID, false)
+		if msg != "Не удалось проголосвать. Возможно, у вас недостаточно средств для голоса." {
+			mongo.AddVoter(session, voteID[4], userID, false)
+		}
 
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
@@ -873,7 +894,9 @@ func main() {
 	b.Handle(&voteButtonYes5, func(c *tb.Callback) {
 		user := mongo.FindUserByID(session, userID)
 		var msg = vote(user.EthPrvKey, "6", "true")
-		mongo.AddVoter(session, voteID[5], userID, true)
+		if msg != "Не удалось проголосвать. Возможно, у вас недостаточно средств для голоса." {
+			mongo.AddVoter(session, voteID[5], userID, true)
+		}
 
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
@@ -881,7 +904,9 @@ func main() {
 	b.Handle(&voteButtonNo5, func(c *tb.Callback) {
 		user := mongo.FindUserByID(session, userID)
 		var msg = vote(user.EthPrvKey, "6", "false")
-		mongo.AddVoter(session, voteID[5], userID, false)
+		if msg != "Не удалось проголосвать. Возможно, у вас недостаточно средств для голоса." {
+			mongo.AddVoter(session, voteID[5], userID, false)
+		}
 
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
@@ -890,7 +915,9 @@ func main() {
 	b.Handle(&voteButtonYes6, func(c *tb.Callback) {
 		user := mongo.FindUserByID(session, userID)
 		var msg = vote(user.EthPrvKey, "7", "true")
-		mongo.AddVoter(session, voteID[6], userID, true)
+		if msg != "Не удалось проголосвать. Возможно, у вас недостаточно средств для голоса." {
+			mongo.AddVoter(session, voteID[6], userID, true)
+		}
 
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
@@ -898,7 +925,9 @@ func main() {
 	b.Handle(&voteButtonNo6, func(c *tb.Callback) {
 		user := mongo.FindUserByID(session, userID)
 		var msg = vote(user.EthPrvKey, "7", "false")
-		mongo.AddVoter(session, voteID[6], userID, false)
+		if msg != "Не удалось проголосвать. Возможно, у вас недостаточно средств для голоса." {
+			mongo.AddVoter(session, voteID[6], userID, false)
+		}
 
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
@@ -907,7 +936,9 @@ func main() {
 	b.Handle(&voteButtonYes7, func(c *tb.Callback) {
 		user := mongo.FindUserByID(session, userID)
 		var msg = vote(user.EthPrvKey, "8", "true")
-		mongo.AddVoter(session, voteID[7], userID, true)
+		if msg != "Не удалось проголосвать. Возможно, у вас недостаточно средств для голоса." {
+			mongo.AddVoter(session, voteID[7], userID, true)
+		}
 
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
@@ -915,7 +946,9 @@ func main() {
 	b.Handle(&voteButtonNo7, func(c *tb.Callback) {
 		user := mongo.FindUserByID(session, userID)
 		var msg = vote(user.EthPrvKey, "8", "false")
-		mongo.AddVoter(session, voteID[7], userID, false)
+		if msg != "Не удалось проголосвать. Возможно, у вас недостаточно средств для голоса." {
+			mongo.AddVoter(session, voteID[7], userID, false)
+		}
 
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
@@ -924,7 +957,9 @@ func main() {
 	b.Handle(&voteButtonYes8, func(c *tb.Callback) {
 		user := mongo.FindUserByID(session, userID)
 		var msg = vote(user.EthPrvKey, "9", "true")
-		mongo.AddVoter(session, voteID[8], userID, true)
+		if msg != "Не удалось проголосвать. Возможно, у вас недостаточно средств для голоса." {
+			mongo.AddVoter(session, voteID[8], userID, true)
+		}
 
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
@@ -932,7 +967,9 @@ func main() {
 	b.Handle(&voteButtonNo8, func(c *tb.Callback) {
 		user := mongo.FindUserByID(session, userID)
 		var msg = vote(user.EthPrvKey, "9", "false")
-		mongo.AddVoter(session, voteID[8], userID, false)
+		if msg != "Не удалось проголосвать. Возможно, у вас недостаточно средств для голоса." {
+			mongo.AddVoter(session, voteID[8], userID, false)
+		}
 
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
@@ -941,16 +978,18 @@ func main() {
 	b.Handle(&voteButtonYes9, func(c *tb.Callback) {
 		user := mongo.FindUserByID(session, userID)
 		var msg = vote(user.EthPrvKey, "10", "true")
-		mongo.AddVoter(session, voteID[9], userID, true)
-
+		if msg != "Не удалось проголосвать. Возможно, у вас недостаточно средств для голоса." {
+			mongo.AddVoter(session, voteID[9], userID, true)
+		}
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 	b.Handle(&voteButtonNo9, func(c *tb.Callback) {
 		user := mongo.FindUserByID(session, userID)
 		var msg = vote(user.EthPrvKey, "10", "false")
-		mongo.AddVoter(session, voteID[9], userID, false)
-
+		if msg != "Не удалось проголосвать. Возможно, у вас недостаточно средств для голоса." {
+			mongo.AddVoter(session, voteID[9], userID, false)
+		}
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
@@ -958,14 +997,18 @@ func main() {
 	b.Handle(&voteButtonYes10, func(c *tb.Callback) {
 		user := mongo.FindUserByID(session, userID)
 		var msg = vote(user.EthPrvKey, "11", "true")
-		mongo.AddVoter(session, voteID[10], userID, true)
+		if msg != "Не удалось проголосвать. Возможно, у вас недостаточно средств для голоса." {
+			mongo.AddVoter(session, voteID[10], userID, true)
+		}
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 	b.Handle(&voteButtonNo10, func(c *tb.Callback) {
 		user := mongo.FindUserByID(session, userID)
 		var msg = vote(user.EthPrvKey, "11", "false")
-		mongo.AddVoter(session, voteID[10], userID, false)
+		if msg != "Не удалось проголосвать. Возможно, у вас недостаточно средств для голоса." {
+			mongo.AddVoter(session, voteID[10], userID, false)
+		}
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
@@ -973,14 +1016,18 @@ func main() {
 	b.Handle(&voteButtonYes11, func(c *tb.Callback) {
 		user := mongo.FindUserByID(session, userID)
 		var msg = vote(user.EthPrvKey, "12", "true")
-		mongo.AddVoter(session, voteID[11], userID, true)
+		if msg != "Не удалось проголосвать. Возможно, у вас недостаточно средств для голоса." {
+			mongo.AddVoter(session, voteID[11], userID, true)
+		}
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 	b.Handle(&voteButtonNo11, func(c *tb.Callback) {
 		user := mongo.FindUserByID(session, userID)
 		var msg = vote(user.EthPrvKey, "12", "false")
-		mongo.AddVoter(session, voteID[11], userID, false)
+		if msg != "Не удалось проголосвать. Возможно, у вас недостаточно средств для голоса." {
+			mongo.AddVoter(session, voteID[11], userID, false)
+		}
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
@@ -988,14 +1035,18 @@ func main() {
 	b.Handle(&voteButtonYes12, func(c *tb.Callback) {
 		user := mongo.FindUserByID(session, userID)
 		var msg = vote(user.EthPrvKey, "13", "true")
-		mongo.AddVoter(session, voteID[12], userID, true)
+		if msg != "Не удалось проголосвать. Возможно, у вас недостаточно средств для голоса." {
+			mongo.AddVoter(session, voteID[12], userID, true)
+		}
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 	b.Handle(&voteButtonNo12, func(c *tb.Callback) {
 		user := mongo.FindUserByID(session, userID)
 		var msg = vote(user.EthPrvKey, "13", "false")
-		mongo.AddVoter(session, voteID[12], userID, false)
+		if msg != "Не удалось проголосвать. Возможно, у вас недостаточно средств для голоса." {
+			mongo.AddVoter(session, voteID[12], userID, false)
+		}
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
@@ -1003,14 +1054,18 @@ func main() {
 	b.Handle(&voteButtonYes13, func(c *tb.Callback) {
 		user := mongo.FindUserByID(session, userID)
 		var msg = vote(user.EthPrvKey, "14", "true")
-		mongo.AddVoter(session, voteID[13], userID, true)
+		if msg != "Не удалось проголосвать. Возможно, у вас недостаточно средств для голоса." {
+			mongo.AddVoter(session, voteID[13], userID, true)
+		}
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 	b.Handle(&voteButtonNo13, func(c *tb.Callback) {
 		user := mongo.FindUserByID(session, userID)
 		var msg = vote(user.EthPrvKey, "14", "false")
-		mongo.AddVoter(session, voteID[13], userID, false)
+		if msg != "Не удалось проголосвать. Возможно, у вас недостаточно средств для голоса." {
+			mongo.AddVoter(session, voteID[13], userID, false)
+		}
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
@@ -1018,14 +1073,18 @@ func main() {
 	b.Handle(&voteButtonYes14, func(c *tb.Callback) {
 		user := mongo.FindUserByID(session, userID)
 		var msg = vote(user.EthPrvKey, "15", "true")
-		mongo.AddVoter(session, voteID[14], userID, true)
+		if msg != "Не удалось проголосвать. Возможно, у вас недостаточно средств для голоса." {
+			mongo.AddVoter(session, voteID[14], userID, true)
+		}
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 	b.Handle(&voteButtonNo14, func(c *tb.Callback) {
 		user := mongo.FindUserByID(session, userID)
 		var msg = vote(user.EthPrvKey, "15", "false")
-		mongo.AddVoter(session, voteID[14], userID, false)
+		if msg != "Не удалось проголосвать. Возможно, у вас недостаточно средств для голоса." {
+			mongo.AddVoter(session, voteID[14], userID, false)
+		}
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
@@ -1033,14 +1092,18 @@ func main() {
 	b.Handle(&voteButtonYes15, func(c *tb.Callback) {
 		user := mongo.FindUserByID(session, userID)
 		var msg = vote(user.EthPrvKey, "16", "true")
-		mongo.AddVoter(session, voteID[15], userID, true)
+		if msg != "Не удалось проголосвать. Возможно, у вас недостаточно средств для голоса." {
+			mongo.AddVoter(session, voteID[15], userID, true)
+		}
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 	b.Handle(&voteButtonNo15, func(c *tb.Callback) {
 		user := mongo.FindUserByID(session, userID)
 		var msg = vote(user.EthPrvKey, "16", "false")
-		mongo.AddVoter(session, voteID[15], userID, false)
+		if msg != "Не удалось проголосвать. Возможно, у вас недостаточно средств для голоса." {
+			mongo.AddVoter(session, voteID[15], userID, false)
+		}
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
@@ -1048,14 +1111,18 @@ func main() {
 	b.Handle(&voteButtonYes16, func(c *tb.Callback) {
 		user := mongo.FindUserByID(session, userID)
 		var msg = vote(user.EthPrvKey, "17", "true")
-		mongo.AddVoter(session, voteID[16], userID, true)
+		if msg != "Не удалось проголосвать. Возможно, у вас недостаточно средств для голоса." {
+			mongo.AddVoter(session, voteID[16], userID, true)
+		}
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 	b.Handle(&voteButtonNo16, func(c *tb.Callback) {
 		user := mongo.FindUserByID(session, userID)
 		var msg = vote(user.EthPrvKey, "17", "false")
-		mongo.AddVoter(session, voteID[16], userID, false)
+		if msg != "Не удалось проголосвать. Возможно, у вас недостаточно средств для голоса." {
+			mongo.AddVoter(session, voteID[16], userID, false)
+		}
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
@@ -1063,14 +1130,18 @@ func main() {
 	b.Handle(&voteButtonYes17, func(c *tb.Callback) {
 		user := mongo.FindUserByID(session, userID)
 		var msg = vote(user.EthPrvKey, "18", "true")
-		mongo.AddVoter(session, voteID[17], userID, true)
+		if msg != "Не удалось проголосвать. Возможно, у вас недостаточно средств для голоса." {
+			mongo.AddVoter(session, voteID[17], userID, true)
+		}
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 	b.Handle(&voteButtonNo17, func(c *tb.Callback) {
 		user := mongo.FindUserByID(session, userID)
 		var msg = vote(user.EthPrvKey, "18", "false")
-		mongo.AddVoter(session, voteID[17], userID, false)
+		if msg != "Не удалось проголосвать. Возможно, у вас недостаточно средств для голоса." {
+			mongo.AddVoter(session, voteID[17], userID, false)
+		}
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
@@ -1078,14 +1149,18 @@ func main() {
 	b.Handle(&voteButtonYes18, func(c *tb.Callback) {
 		user := mongo.FindUserByID(session, userID)
 		var msg = vote(user.EthPrvKey, "19", "true")
-		mongo.AddVoter(session, voteID[18], userID, true)
+		if msg != "Не удалось проголосвать. Возможно, у вас недостаточно средств для голоса." {
+			mongo.AddVoter(session, voteID[18], userID, true)
+		}
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 	b.Handle(&voteButtonNo18, func(c *tb.Callback) {
 		user := mongo.FindUserByID(session, userID)
 		var msg = vote(user.EthPrvKey, "19", "false")
-		mongo.AddVoter(session, voteID[18], userID, false)
+		if msg != "Не удалось проголосвать. Возможно, у вас недостаточно средств для голоса." {
+			mongo.AddVoter(session, voteID[18], userID, false)
+		}
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
@@ -1093,14 +1168,18 @@ func main() {
 	b.Handle(&voteButtonYes19, func(c *tb.Callback) {
 		user := mongo.FindUserByID(session, userID)
 		var msg = vote(user.EthPrvKey, "20", "true")
-		mongo.AddVoter(session, voteID[19], userID, true)
+		if msg != "Не удалось проголосвать. Возможно, у вас недостаточно средств для голоса." {
+			mongo.AddVoter(session, voteID[19], userID, true)
+		}
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 	b.Handle(&voteButtonNo19, func(c *tb.Callback) {
 		user := mongo.FindUserByID(session, userID)
 		var msg = vote(user.EthPrvKey, "20", "false")
-		mongo.AddVoter(session, voteID[19], userID, false)
+		if msg != "Не удалось проголосвать. Возможно, у вас недостаточно средств для голоса." {
+			mongo.AddVoter(session, voteID[19], userID, false)
+		}
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
@@ -1108,14 +1187,18 @@ func main() {
 	b.Handle(&voteButtonYes20, func(c *tb.Callback) {
 		user := mongo.FindUserByID(session, userID)
 		var msg = vote(user.EthPrvKey, "21", "true")
-		mongo.AddVoter(session, voteID[20], userID, true)
+		if msg != "Не удалось проголосвать. Возможно, у вас недостаточно средств для голоса." {
+			mongo.AddVoter(session, voteID[20], userID, true)
+		}
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 	b.Handle(&voteButtonNo20, func(c *tb.Callback) {
 		user := mongo.FindUserByID(session, userID)
 		var msg = vote(user.EthPrvKey, "21", "false")
-		mongo.AddVoter(session, voteID[20], userID, false)
+		if msg != "Не удалось проголосвать. Возможно, у вас недостаточно средств для голоса." {
+			mongo.AddVoter(session, voteID[20], userID, false)
+		}
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
@@ -1130,7 +1213,9 @@ func main() {
 	b.Handle(&voteButtonNo21, func(c *tb.Callback) {
 		user := mongo.FindUserByID(session, userID)
 		var msg = vote(user.EthPrvKey, "22", "false")
-		mongo.AddVoter(session, voteID[21], userID, false)
+		if msg != "Не удалось проголосвать. Возможно, у вас недостаточно средств для голоса." {
+			mongo.AddVoter(session, voteID[21], userID, false)
+		}
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
@@ -1138,14 +1223,18 @@ func main() {
 	b.Handle(&voteButtonYes22, func(c *tb.Callback) {
 		user := mongo.FindUserByID(session, userID)
 		var msg = vote(user.EthPrvKey, "23", "true")
-		mongo.AddVoter(session, voteID[22], userID, true)
+		if msg != "Не удалось проголосвать. Возможно, у вас недостаточно средств для голоса." {
+			mongo.AddVoter(session, voteID[22], userID, true)
+		}
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 	b.Handle(&voteButtonNo22, func(c *tb.Callback) {
 		user := mongo.FindUserByID(session, userID)
 		var msg = vote(user.EthPrvKey, "23", "false")
-		mongo.AddVoter(session, voteID[22], userID, false)
+		if msg != "Не удалось проголосвать. Возможно, у вас недостаточно средств для голоса." {
+			mongo.AddVoter(session, voteID[22], userID, false)
+		}
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
@@ -1153,14 +1242,18 @@ func main() {
 	b.Handle(&voteButtonYes23, func(c *tb.Callback) {
 		user := mongo.FindUserByID(session, userID)
 		var msg = vote(user.EthPrvKey, "24", "true")
-		mongo.AddVoter(session, voteID[23], userID, true)
+		if msg != "Не удалось проголосвать. Возможно, у вас недостаточно средств для голоса." {
+			mongo.AddVoter(session, voteID[23], userID, true)
+		}
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 	b.Handle(&voteButtonNo23, func(c *tb.Callback) {
 		user := mongo.FindUserByID(session, userID)
 		var msg = vote(user.EthPrvKey, "24", "false")
-		mongo.AddVoter(session, voteID[23], userID, false)
+		if msg != "Не удалось проголосвать. Возможно, у вас недостаточно средств для голоса." {
+			mongo.AddVoter(session, voteID[23], userID, false)
+		}
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
@@ -1168,14 +1261,18 @@ func main() {
 	b.Handle(&voteButtonYes24, func(c *tb.Callback) {
 		user := mongo.FindUserByID(session, userID)
 		var msg = vote(user.EthPrvKey, "25", "true")
-		mongo.AddVoter(session, voteID[24], userID, true)
+		if msg != "Не удалось проголосвать. Возможно, у вас недостаточно средств для голоса." {
+			mongo.AddVoter(session, voteID[24], userID, true)
+		}
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
 	b.Handle(&voteButtonNo24, func(c *tb.Callback) {
 		user := mongo.FindUserByID(session, userID)
 		var msg = vote(user.EthPrvKey, "25", "false")
-		mongo.AddVoter(session, voteID[24], userID, false)
+		if msg != "Не удалось проголосвать. Возможно, у вас недостаточно средств для голоса." {
+			mongo.AddVoter(session, voteID[24], userID, false)
+		}
 		b.Edit(c.Message, msg, &tb.SendOptions{ParseMode: "Markdown"})
 		b.Respond(c, &tb.CallbackResponse{})
 	})
